@@ -9,3 +9,25 @@ Reduces farming costs by removing informal middlemen and improving overall resou
 Ensures secure authentication, payments, and trust mechanisms for safe and transparent transactions.
 
 Promotes sustainable agriculture by applying shared-economy principles to farming.
+
+📑 Table of Contents
+
+Why AgroShare
+
+Core Features
+
+System Overview
+
+Tech Stack
+
+Authentication & Security
+
+Major Modules
+
+API Documentation
+
+Project Status
+
+Future Enhancements
+
+Author
