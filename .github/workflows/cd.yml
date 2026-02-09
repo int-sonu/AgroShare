@@ -1,0 +1,16 @@
+name: Backend CD
+
+on:
+  workflow_run:
+    workflows: ["Backend CI"]  
+    types:
+      - completed
+
+jobs:
+  backend-cd:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Start CD
+        run: echo "CD triggered after CI success"
