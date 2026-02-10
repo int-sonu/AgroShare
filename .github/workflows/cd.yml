@@ -1,4 +1,4 @@
-name: CD - Deploy to EC2
+name: CD - Deploy Frontend & Backend
 
 on:
   workflow_run:
@@ -8,16 +8,20 @@ on:
 
 jobs:
   deploy:
+    name: Deploy to Server
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
 
     steps:
-      - name: Start CD
-        run: echo "CD triggered after CI success"
-
+      # -----------------------------
+      # Checkout
+      # -----------------------------
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      # -----------------------------
+      # Setup pnpm & Node
+      # -----------------------------
       - name: Install pnpm
         uses: pnpm/action-setup@v2
         with:
@@ -29,100 +33,44 @@ jobs:
           node-version: 20
           cache: pnpm
 
+      # -----------------------------
+      # Install dependencies
+      # -----------------------------
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      # ---------- BUILD ----------
-      - name: Build schemas
-        working-directory: schemas
-        run: pnpm run build
-
+      # -----------------------------
+      # Build Backend (Node + TS)
+      # -----------------------------
       - name: Build backend
-        working-directory: backend
-        run: pnpm run build
+        run: pnpm --filter backend build
 
+      # -----------------------------
+      # Build Frontend (Next.js)
+      # -----------------------------
       - name: Build frontend
-        working-directory: frontend
         env:
-          NEXT_PUBLIC_API_URL: ${{ secrets.BACKEND_URL }}
-        run: pnpm run build
+          NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
+        run: pnpm --filter frontend build
 
-      # ---------- SSH SETUP ----------
-      - name: Setup SSH
+      # -----------------------------
+      # Deploy Backend
+      # -----------------------------
+      - name: Deploy backend
         run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/ec2.pem
-          chmod 600 ~/.ssh/ec2.pem
-          ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
+          echo "Deploying backend..."
+          cd backend
+          pm2 delete backend || echo "backend not running"
+          pm2 start dist/server.js --name backend
+          pm2 save
 
-      # ---------- DEPLOY BACKEND ----------
-      - name: Deploy backend & schemas
+      # -----------------------------
+      # Deploy Frontend
+      # -----------------------------
+      - name: Deploy frontend
         run: |
-          rsync -avz --delete \
-            -e "ssh -i ~/.ssh/ec2.pem" \
-            backend/dist backend/package.json \
-            ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:${{ secrets.APP_DIR }}/backend/
-
-          rsync -avz --delete \
-            -e "ssh -i ~/.ssh/ec2.pem" \
-            schemas/ \
-            ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:${{ secrets.APP_DIR }}/schemas/
-
-          rsync -avz \
-            -e "ssh -i ~/.ssh/ec2.pem" \
-            pnpm-workspace.yaml package.json pnpm-lock.yaml \
-            ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:${{ secrets.APP_DIR }}/
-
-      - name: Restart backend & worker
-        run: |
-          ssh -i ~/.ssh/ec2.pem ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
-            set -e
-            export NVM_DIR="$HOME/.nvm"
-            source "$NVM_DIR/nvm.sh"
-
-            cd ${{ secrets.APP_DIR }}/backend
-            CI=true pnpm install --prod --frozen-lockfile --ignore-scripts --force
-
-            pm2 delete backend || true
-            pm2 start dist/app.js --name backend
-
-            pm2 delete worker || true
-            pm2 start dist/workers/index.js --name worker
-
-            pm2 save
-          EOF
-
-      # ---------- DEPLOY FRONTEND ----------
-      - name: Deploy frontend (Next.js standalone)
-        run: |
-          ssh -i ~/.ssh/ec2.pem ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} \
-            "mkdir -p ${{ secrets.APP_DIR }}/frontend-deploy/frontend/.next/static \
-                     ${{ secrets.APP_DIR }}/frontend-deploy/frontend/public"
-
-          rsync -avz --delete \
-            -e "ssh -i ~/.ssh/ec2.pem" \
-            frontend/.next/standalone/ \
-            ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:${{ secrets.APP_DIR }}/frontend-deploy/
-
-          rsync -avz \
-            -e "ssh -i ~/.ssh/ec2.pem" \
-            frontend/public/ \
-            ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:${{ secrets.APP_DIR }}/frontend-deploy/frontend/public/
-
-          rsync -avz \
-            -e "ssh -i ~/.ssh/ec2.pem" \
-            frontend/.next/static/ \
-            ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:${{ secrets.APP_DIR }}/frontend-deploy/frontend/.next/static/
-
-      - name: Restart frontend
-        run: |
-          ssh -i ~/.ssh/ec2.pem ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
-            set -e
-            export NVM_DIR="$HOME/.nvm"
-            source "$NVM_DIR/nvm.sh"
-
-            cd ${{ secrets.APP_DIR }}/frontend-deploy/frontend
-            pm2 delete frontend || true
-            PORT=3000 pm2 start server.js --name frontend
-            pm2 save
-          EOF
+          echo "Deploying frontend..."
+          cd frontend
+          pm2 delete frontend || echo "frontend not running"
+          pm2 start npm --name frontend -- start
+          pm2 save
