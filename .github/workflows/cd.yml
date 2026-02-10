@@ -1,76 +1,50 @@
-name: CD - Deploy Frontend & Backend
+name: Backend CD
 
 on:
   workflow_run:
-    workflows: ["CI - Frontend & Backend"]
+    workflows: ["Backend CI"]
     types:
       - completed
 
 jobs:
-  deploy:
-    name: Deploy to Server
+  deploy-backend:
+    name: Deploy Backend
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
 
     steps:
       # -----------------------------
-      # Checkout
+      # Checkout code
       # -----------------------------
       - name: Checkout repository
         uses: actions/checkout@v4
 
       # -----------------------------
-      # Setup pnpm & Node
+      # Setup Node.js
       # -----------------------------
-      - name: Install pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: 9
-
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
-          cache: pnpm
+          node-version: 22
 
       # -----------------------------
-      # Install dependencies
+      # Install backend dependencies
       # -----------------------------
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: npm install
+        working-directory: backend
 
       # -----------------------------
-      # Build Backend (Node + TS)
+      # Build backend (TypeScript)
       # -----------------------------
       - name: Build backend
-        run: pnpm --filter backend build
+        run: npm run build
+        working-directory: backend
 
       # -----------------------------
-      # Build Frontend (Next.js)
-      # -----------------------------
-      - name: Build frontend
-        env:
-          NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
-        run: pnpm --filter frontend build
-
-      # -----------------------------
-      # Deploy Backend
+      # Deploy step (placeholder)
       # -----------------------------
       - name: Deploy backend
         run: |
           echo "Deploying backend..."
-          cd backend
-          pm2 delete backend || echo "backend not running"
-          pm2 start dist/server.js --name backend
-          pm2 save
-
-      # -----------------------------
-      # Deploy Frontend
-      # -----------------------------
-      - name: Deploy frontend
-        run: |
-          echo "Deploying frontend..."
-          cd frontend
-          pm2 delete frontend || echo "frontend not running"
-          pm2 start npm --name frontend -- start
-          pm2 save
+          echo "Restart service / upload artifacts here"
