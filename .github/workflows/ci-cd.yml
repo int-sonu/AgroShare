@@ -57,6 +57,7 @@ jobs:
           path: ${{ matrix.path }}/${{ matrix.output }}
           retention-days: 1
           include-hidden-files: true
+          if-no-files-found: error
 
   # ========================================================================
   # CD JOB: Deploy (Mock/Placeholder)
