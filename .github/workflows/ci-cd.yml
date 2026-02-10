@@ -1,0 +1,71 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  # ========================================================================
+  # CI JOB: Lint, Test, and Build
+  # ========================================================================
+  ci:
+    name: CI (Lint & Build)
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        package: [backend, myapp]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 9
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint ${{ matrix.package }}
+        run: pnpm --filter ${{ matrix.package }} lint
+
+      - name: Build ${{ matrix.package }}
+        run: pnpm --filter ${{ matrix.package }} build
+        env:
+            # Add environment variables here if needed for build
+            CI: true
+
+  # ========================================================================
+  # CD JOB: Deploy (Mock/Placeholder)
+  # ========================================================================
+  deploy:
+    name: Deploy
+    needs: ci
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Deploy Backend
+        run: |
+          echo "Deploying backend..."
+          # Add your actual deployment commands here, e.g.:
+          # scp -r dist/ user@server:/var/www/backend
+          # ssh user@server 'systemctl restart backend'
+      
+      - name: Deploy Frontend
+        run: |
+          echo "Deploying frontend..."
+          # Add your actual deployment commands here, e.g.:
+          # scp -r .next/ user@server:/var/www/frontend
