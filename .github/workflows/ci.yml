@@ -12,7 +12,7 @@ on:
 jobs:
   backend:
     name: Backend CI
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
 
     steps:
       - name: Checkout repository
@@ -40,7 +40,7 @@ jobs:
 
   frontend:
     name: Frontend CI
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
 
     steps:
       - name: Checkout repository
