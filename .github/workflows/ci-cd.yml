@@ -56,6 +56,7 @@ jobs:
           name: ${{ matrix.package }}-build
           path: ${{ matrix.path }}/${{ matrix.output }}
           retention-days: 1
+          include-hidden-files: true
 
   # ========================================================================
   # CD JOB: Deploy (Mock/Placeholder)
