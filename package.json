@@ -3,7 +3,6 @@
   "private": true,
   "scripts": {
     "lint": "pnpm -r run lint",
-    "build": "pnpm -r run build",
-    "prepare": "husky"
+    "build": "pnpm -r run build"
   }
 }
