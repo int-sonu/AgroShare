@@ -8,9 +8,6 @@ on:
   workflow_dispatch:
 
 jobs:
-  # =====================================================
-  # CI JOB (Backend + Frontend using Matrix Strategy)
-  # =====================================================
   ci:
     name: CI (${{ matrix.package }})
     runs-on: ubuntu-latest
@@ -27,53 +24,44 @@ jobs:
             output: .next
 
     steps:
-      # Checkout code
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Setup pnpm
-      - name: Install pnpm
+      - name: Setup pnpm
         uses: pnpm/action-setup@v3
         with:
           version: 10
 
-      # Setup Node.js
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: 'pnpm'
 
-      # Install dependencies
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      # Lint
+      - name: Type Check
+        run: pnpm type-check
+
       - name: Lint ${{ matrix.package }}
         run: pnpm --filter ${{ matrix.package }} lint
 
-      # Optional Test (if you add tests later)
       - name: Test ${{ matrix.package }}
         run: pnpm --filter ${{ matrix.package }} test --if-present
 
-      # Build
       - name: Build ${{ matrix.package }}
         run: pnpm --filter ${{ matrix.package }} build
         env:
           CI: true
 
-      # Upload Build Artifact
-      - name: Upload ${{ matrix.package }} Artifact
+      - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.package }}-build
           path: ${{ matrix.path }}/${{ matrix.output }}
           retention-days: 1
 
-
-  # =====================================================
-  # CD JOB (Deploy Only On Main Push)
-  # =====================================================
   deploy:
     name: Deploy
     needs: ci
@@ -81,27 +69,23 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Download Backend Artifact
       - name: Download Backend Artifact
         uses: actions/download-artifact@v4
         with:
           name: backend-build
           path: backend/dist
 
-      # Download Frontend Artifact
       - name: Download Frontend Artifact
         uses: actions/download-artifact@v4
         with:
           name: myapp-build
           path: frontend/myapp/.next
 
-      # Mock Backend Deployment
       - name: Deploy Backend
         run: |
           echo "Deploying backend..."
           ls -R backend/dist
 
-      # Mock Frontend Deployment
       - name: Deploy Frontend
         run: |
           echo "Deploying frontend..."
