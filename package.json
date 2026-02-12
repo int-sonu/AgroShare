@@ -3,7 +3,7 @@
   "private": true,
   "scripts": {
     "lint": "pnpm -r run lint",
-"build": "next build",
+    "build": "pnpm -r run build",
       "type-check": "pnpm -r exec tsc --noEmit"
 
   }
