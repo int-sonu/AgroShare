@@ -25,32 +25,32 @@ jobs:
             output: .next
 
     steps:
-      - name: 🔍 Checkout repository
+      - name:  Checkout repository
         uses: actions/checkout@v4
 
-      - name: 📦 Install pnpm
+      - name:  Install pnpm
         uses: pnpm/action-setup@v3
         with:
-          version: 9
+          version: 10
 
-      - name: 🟢 Setup Node.js
+      - name:  Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: 'pnpm'
 
-      - name: 📥 Install dependencies
+      - name:  Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: 🧹 Lint ${{ matrix.package }}
+      - name:  Lint ${{ matrix.package }}
         run: pnpm --filter ${{ matrix.package }} lint
 
-      - name: 🏗️ Build ${{ matrix.package }}
+      - name:  Build ${{ matrix.package }}
         run: pnpm --filter ${{ matrix.package }} build
         env:
           CI: true
 
-      - name: 📤 Upload ${{ matrix.package }} Artifact
+      - name:  Upload ${{ matrix.package }} Artifact
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.package }}-build
@@ -61,34 +61,34 @@ jobs:
   # CD JOB: Deploy (Mock/Placeholder with Artifact Download)
   # ========================================================================
   deploy:
-    name: 🚀 Deploy
+    name:  Deploy
     needs: ci
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     runs-on: ubuntu-latest
     
     steps:
-      - name: 🔍 Checkout repository
+      - name:  Checkout repository
         uses: actions/checkout@v4
 
-      - name: 📥 Download Backend Artifact
+      - name:  Download Backend Artifact
         uses: actions/download-artifact@v4
         with:
           name: backend-build
           path: backend/dist
 
-      - name: 📥 Download Frontend Artifact
+      - name:  Download Frontend Artifact
         uses: actions/download-artifact@v4
         with:
           name: myapp-build
           path: frontend/myapp/.next
 
-      - name: 🚢 Deploy Backend
+      - name:  Deploy Backend
         run: |
           echo "Deploying backend..."
           ls -R backend/dist
           # Add actual deployment commands here
       
-      - name: 🚢 Deploy Frontend
+      - name:  Deploy Frontend
         run: |
           echo "Deploying frontend..."
           ls -R frontend/myapp/.next
