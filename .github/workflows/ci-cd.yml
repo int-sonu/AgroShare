@@ -36,7 +36,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'pnpm'
+          cache: pnpm
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -64,32 +64,35 @@ jobs:
 
   deploy:
     name: Deploy
+    runs-on: ubuntu-latest
     needs: ci
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-    runs-on: ubuntu-latest
 
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
       - name: Download Backend Artifact
         uses: actions/download-artifact@v4
         with:
           name: backend-build
-          path: backend/dist
+          path: backend
 
       - name: Download Frontend Artifact
         uses: actions/download-artifact@v4
         with:
           name: myapp-build
-          path: frontend/myapp/.next
+          path: frontend/myapp
 
-      - name: Deploy Backend
+      - name: Show Backend Files
         run: |
-          echo "Deploying backend..."
-          ls -R backend/dist
+          echo "Backend files:"
+          ls -R backend
 
-      - name: Deploy Frontend
+      - name: Show Frontend Files
         run: |
-          echo "Deploying frontend..."
-          ls -R frontend/myapp/.next
+          echo "Frontend files:"
+          ls -R frontend/myapp
 
       - name: Deployment Complete
         run: echo "Monolithic deployment successful!"
