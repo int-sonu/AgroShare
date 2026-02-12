@@ -1,33 +1,17 @@
 {
-  "name": "backend",
+  "name": "agroshare-root",
   "version": "1.0.0",
-  "description": "",
-  "main": "dist/server.js",
-  "type": "module",
+  "private": true,
+  "description": "Monorepo root for AgroShare",
   "scripts": {
-    "dev": "tsx watch src/server.ts",
-    "build": "tsc",
-    "start": "node dist/server.js",
-"lint": "eslint .",
-
-    "lint:fix": "eslint . --fix",
+    "lint": "pnpm -r run lint",
+    "build": "pnpm -r run build",
     "format": "prettier --write .",
     "prepare": "husky"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "dependencies": {
-    "bcryptjs": "^3.0.3",
-    "cors": "^2.8.6",
-    "dotenv": "^17.2.4",
-    "express": "^4.22.1",
-    "express-validator": "^7.3.1",
-    "jsonwebtoken": "^9.0.3",
-    "mongoose": "^9.1.6",
-    "morgan": "^1.10.1",
-    "winston": "^3.19.0"
-  },
   "devDependencies": {
     "@eslint/js": "^9.39.2",
     "@types/cors": "^2.8.19",

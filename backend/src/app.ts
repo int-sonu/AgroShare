@@ -1,9 +1,9 @@
 import express from "express";
 import cors from "cors";
 import morgan from "morgan";
-
 import router from "./routes/health.routes";
 import { errorHandler } from "./middlewares/errorHandler";
+
 
 const app = express();
 

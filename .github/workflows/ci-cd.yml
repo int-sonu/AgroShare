@@ -1,4 +1,4 @@
-name: CI/CD Pipeline
+name: Monolithic CI/CD Pipeline
 
 on:
   push:
@@ -8,13 +8,15 @@ on:
   workflow_dispatch:
 
 jobs:
-  # ========================================================================
-  # CI JOB: Lint and Build (with Artifact Upload)
-  # ========================================================================
+  # =====================================================
+  # CI JOB (Backend + Frontend using Matrix Strategy)
+  # =====================================================
   ci:
     name: CI (${{ matrix.package }})
     runs-on: ubuntu-latest
+
     strategy:
+      fail-fast: false
       matrix:
         include:
           - package: backend
@@ -25,71 +27,85 @@ jobs:
             output: .next
 
     steps:
-      - name:  Checkout repository
+      # Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name:  Install pnpm
+      # Setup pnpm
+      - name: Install pnpm
         uses: pnpm/action-setup@v3
         with:
           version: 10
 
-      - name:  Setup Node.js
+      # Setup Node.js
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: 'pnpm'
 
-      - name:  Install dependencies
+      # Install dependencies
+      - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name:  Lint ${{ matrix.package }}
+      # Lint
+      - name: Lint ${{ matrix.package }}
         run: pnpm --filter ${{ matrix.package }} lint
 
-      - name:  Build ${{ matrix.package }}
+      # Optional Test (if you add tests later)
+      - name: Test ${{ matrix.package }}
+        run: pnpm --filter ${{ matrix.package }} test --if-present
+
+      # Build
+      - name: Build ${{ matrix.package }}
         run: pnpm --filter ${{ matrix.package }} build
         env:
           CI: true
 
-      - name:  Upload ${{ matrix.package }} Artifact
+      # Upload Build Artifact
+      - name: Upload ${{ matrix.package }} Artifact
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.package }}-build
           path: ${{ matrix.path }}/${{ matrix.output }}
           retention-days: 1
 
-  # ========================================================================
-  # CD JOB: Deploy (Mock/Placeholder with Artifact Download)
-  # ========================================================================
+
+  # =====================================================
+  # CD JOB (Deploy Only On Main Push)
+  # =====================================================
   deploy:
-    name:  Deploy
+    name: Deploy
     needs: ci
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     runs-on: ubuntu-latest
-    
-    steps:
-      - name:  Checkout repository
-        uses: actions/checkout@v4
 
-      - name:  Download Backend Artifact
+    steps:
+      # Download Backend Artifact
+      - name: Download Backend Artifact
         uses: actions/download-artifact@v4
         with:
           name: backend-build
           path: backend/dist
 
-      - name:  Download Frontend Artifact
+      # Download Frontend Artifact
+      - name: Download Frontend Artifact
         uses: actions/download-artifact@v4
         with:
           name: myapp-build
           path: frontend/myapp/.next
 
-      - name:  Deploy Backend
+      # Mock Backend Deployment
+      - name: Deploy Backend
         run: |
           echo "Deploying backend..."
           ls -R backend/dist
-          # Add actual deployment commands here
-      
-      - name:  Deploy Frontend
+
+      # Mock Frontend Deployment
+      - name: Deploy Frontend
         run: |
           echo "Deploying frontend..."
           ls -R frontend/myapp/.next
-          # Add actual deployment commands here
+
+      - name: Deployment Complete
+        run: echo "Monolithic deployment successful!"
