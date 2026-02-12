@@ -5,67 +5,91 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
+  workflow_dispatch:
 
 jobs:
   # ========================================================================
-  # CI JOB: Lint, Test, and Build
+  # CI JOB: Lint and Build (with Artifact Upload)
   # ========================================================================
   ci:
-    name: CI (Lint & Build)
+    name: CI (${{ matrix.package }})
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        package: [backend, myapp]
+        include:
+          - package: backend
+            path: backend
+            output: dist
+          - package: myapp
+            path: frontend/myapp
+            output: .next
 
     steps:
-      - name: Checkout repository
+      - name: 🔍 Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install pnpm
+      - name: 📦 Install pnpm
         uses: pnpm/action-setup@v3
         with:
           version: 9
 
-      - name: Setup Node.js
+      - name: 🟢 Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: 'pnpm'
 
-      - name: Install dependencies
+      - name: 📥 Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Lint ${{ matrix.package }}
+      - name: 🧹 Lint ${{ matrix.package }}
         run: pnpm --filter ${{ matrix.package }} lint
 
-      - name: Build ${{ matrix.package }}
+      - name: 🏗️ Build ${{ matrix.package }}
         run: pnpm --filter ${{ matrix.package }} build
         env:
-            # Add environment variables here if needed for build
-            CI: true
+          CI: true
+
+      - name: 📤 Upload ${{ matrix.package }} Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.package }}-build
+          path: ${{ matrix.path }}/${{ matrix.output }}
+          retention-days: 1
 
   # ========================================================================
-  # CD JOB: Deploy (Mock/Placeholder)
+  # CD JOB: Deploy (Mock/Placeholder with Artifact Download)
   # ========================================================================
   deploy:
-    name: Deploy
+    name: 🚀 Deploy
     needs: ci
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     runs-on: ubuntu-latest
     
     steps:
-      - name: Checkout repository
+      - name: 🔍 Checkout repository
         uses: actions/checkout@v4
 
-      - name: Deploy Backend
+      - name: 📥 Download Backend Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: backend-build
+          path: backend/dist
+
+      - name: 📥 Download Frontend Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: myapp-build
+          path: frontend/myapp/.next
+
+      - name: 🚢 Deploy Backend
         run: |
           echo "Deploying backend..."
-          # Add your actual deployment commands here, e.g.:
-          # scp -r dist/ user@server:/var/www/backend
-          # ssh user@server 'systemctl restart backend'
+          ls -R backend/dist
+          # Add actual deployment commands here
       
-      - name: Deploy Frontend
+      - name: 🚢 Deploy Frontend
         run: |
           echo "Deploying frontend..."
-          # Add your actual deployment commands here, e.g.:
-          # scp -r .next/ user@server:/var/www/frontend
+          ls -R frontend/myapp/.next
+          # Add actual deployment commands here
