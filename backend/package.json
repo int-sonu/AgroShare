@@ -5,7 +5,7 @@
   "description": "Monorepo root for AgroShare",
   "scripts": {
     "lint": "pnpm -r run lint",
-    "build": "pnpm -r run build",
+    "build": "tsc",
     "type-check": "pnpm -r exec tsc --noEmit",
     "format": "prettier --write ."
   },
