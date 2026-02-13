@@ -1,10 +1,21 @@
 {
-  "name": "agroshare",
+  "name": "AgroShare",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
-    "lint": "pnpm -r run lint",
-    "build": "pnpm -r run build",
-    "type-check": "pnpm -r exec tsc --noEmit",
-    "format": "prettier --write ."
+    "lint": "pnpm -r lint",
+    "format": "prettier --write .",
+    "prepare": "husky"
+  },
+  "devDependencies": {
+    "husky": "^9.1.7",
+    "lint-staged": "^16.2.7",
+    "prettier": "^3.8.1"
+  },
+  "lint-staged": {
+    "*.{ts,tsx,js}": [
+      "pnpm lint",
+      "prettier --write"
+    ]
   }
 }

@@ -1,6 +1,6 @@
 🌱 AgroShare – Farm Input Sharing Platform
 
-AgroShare is a SaaS-based web application that helps farmers rent and share agricultural tools,  and machinery within local regions.
+AgroShare is a SaaS-based web application that helps farmers rent and share agricultural tools, and machinery within local regions.
 
 Enables location-based discovery, real-time availability tracking, and a structured booking system.
 
@@ -9,7 +9,6 @@ Reduces farming costs by removing informal middlemen and improving overall resou
 Ensures secure authentication, payments, and trust mechanisms for safe and transparent transactions.
 
 Promotes sustainable agriculture by applying shared-economy principles to farming.
-
 
 ## 📑 Table of Contents
 
@@ -29,10 +28,11 @@ Promotes sustainable agriculture by applying shared-economy principles to farmin
 ## 🎯 Why AgroShare
 
 Small and medium-scale farmers often face:
-- High equipment costs  
-- Dependence on middlemen  
-- Poor availability and price transparency  
-- Manual and unreliable booking methods  
+
+- High equipment costs
+- Dependence on middlemen
+- Poor availability and price transparency
+- Manual and unreliable booking methods
 
 **AgroShare solves this** using a shared-economy model tailored for agriculture.
 
@@ -53,26 +53,26 @@ Small and medium-scale farmers often face:
 
 ## 🏗️ System Overview
 
-- **Architecture:** SaaS-based modular system  
-- **API Style:** RESTful APIs  
-- **Authentication:** JWT (Access & Refresh Tokens)  
-- **Authorization:** Role-Based Access Control (RBAC)  
-- **Scalability:** Multi-region ready, stateless backend  
+- **Architecture:** SaaS-based modular system
+- **API Style:** RESTful APIs
+- **Authentication:** JWT (Access & Refresh Tokens)
+- **Authorization:** Role-Based Access Control (RBAC)
+- **Scalability:** Multi-region ready, stateless backend
 
 ---
 
 ## 🛠️ Tech Stack
 
-| Layer | Technology |
-|------|-----------|
-| **Frontend** | **Next.js**, React.js, Tailwind CSS |
-| **Backend** | Node.js, Express.js |
-| **Database** | MongoDB |
-| **Authentication** | JWT (Access & Refresh Tokens) |
-| **API Testing** | Postman |
-| **Design** | Figma |
-| **Version Control** | Git, GitHub |
-| **Architecture** | SaaS, REST |
+| Layer               | Technology                          |
+| ------------------- | ----------------------------------- |
+| **Frontend**        | **Next.js**, React.js, Tailwind CSS |
+| **Backend**         | Node.js, Express.js                 |
+| **Database**        | MongoDB                             |
+| **Authentication**  | JWT (Access & Refresh Tokens)       |
+| **API Testing**     | Postman                             |
+| **Design**          | Figma                               |
+| **Version Control** | Git, GitHub                         |
+| **Architecture**    | SaaS, REST                          |
 
 > **Why Next.js?**  
 > Provides better SEO, server-side rendering (SSR), faster performance, and a production-ready frontend architecture.
@@ -94,12 +94,14 @@ Small and medium-scale farmers often face:
 ## 📦 Major Modules
 
 ### 👨‍🌾 Seller Module
+
 - List tools, machinery, and seeds
 - Set pricing and availability dates
 - Accept or reject booking requests
 - Track earnings and booking history
 
 ### 🚜 Renter Module
+
 - Search nearby farm inputs
 - Filter by category, price, and date
 - Book and pay securely
@@ -107,6 +109,7 @@ Small and medium-scale farmers often face:
 - Rate and review sellers
 
 ### 🧑‍💼 Admin Module
+
 - Manage users and listings
 - Monitor bookings and payments
 - Handle disputes
@@ -140,5 +143,4 @@ Core SaaS features are implemented, with ongoing improvements in performance, se
 
 ## 👤 Author
 
-**Sonu Sebastian**  
- 
+**Sonu Sebastian**

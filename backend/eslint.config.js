@@ -1,44 +1,31 @@
-import js from "@eslint/js";
-import globals from "globals";
-import tseslint from "typescript-eslint";
-import prettierConfig from "eslint-config-prettier";
-import { defineConfig } from "eslint/config";
+import js from '@eslint/js';
+import tsParser from '@typescript-eslint/parser';
+import tsPlugin from '@typescript-eslint/eslint-plugin';
+import prettier from 'eslint-config-prettier';
+import globals from 'globals';
 
-export default defineConfig([
-  // 🔥 Ignore build folders (VERY IMPORTANT)
-  {
-    ignores: ["dist/**", "node_modules/**"],
-  },
-
-  // Base JS rules
+export default [
   js.configs.recommended,
-
-  // TypeScript rules
-  ...tseslint.configs.recommended,
-
   {
-    files: ["**/*.{js,ts}"],
+    files: ['**/*.ts'],
     languageOptions: {
-      ecmaVersion: "latest",
-      sourceType: "module",
-      globals: globals.node,
+      parser: tsParser,
+      parserOptions: {
+        sourceType: 'module',
+        ecmaVersion: 'latest',
+      },
+      globals: {
+        ...globals.node, // ✅ ADD THIS
+      },
+    },
+    plugins: {
+      '@typescript-eslint': tsPlugin,
     },
     rules: {
-      "no-console": "off",
-
-      // disable base rule
-      "no-unused-vars": "off",
-
-      // TypeScript-aware rule
-      "@typescript-eslint/no-unused-vars": [
-        "error",
-        {
-          argsIgnorePattern: "^_",
-          varsIgnorePattern: "^_",
-        },
-      ],
+      ...tsPlugin.configs.recommended.rules,
+      '@typescript-eslint/no-unused-vars': 'warn',
+      '@typescript-eslint/no-explicit-any': 'warn',
     },
   },
-
-  prettierConfig,
-]);
+  prettier,
+];
