@@ -10,15 +10,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # ------------------------
-      # Checkout
-      # ------------------------
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # ------------------------
-      # Setup Node + pnpm
-      # ------------------------
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -30,15 +24,9 @@ jobs:
       - name: Activate pnpm
         run: corepack prepare pnpm@10 --activate
 
-      # ------------------------
-      # Install Dependencies
-      # ------------------------
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      # ------------------------
-      # CI Steps
-      # ------------------------
       - name: Lint
         run: pnpm -r lint
 
@@ -52,7 +40,7 @@ jobs:
         run: pnpm --filter myapp build
 
       # ------------------------
-      # Deploy (ONLY on main push)
+      # Deploy Backend (EC2)
       # ------------------------
       - name: Deploy Backend to EC2
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
@@ -72,8 +60,11 @@ jobs:
             pnpm install --frozen-lockfile
             pnpm --filter backend build
 
-            pm2 restart backend || pm2 start dist/server.js --name backend
+            pm2 restart backend || pm2 start backend/dist/server.js --name backend
 
+      # ------------------------
+      # Deploy Frontend (Vercel)
+      # ------------------------
       - name: Deploy Frontend to Vercel
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         run: |
