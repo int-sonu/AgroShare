@@ -1,120 +1,82 @@
-name: Monolithic CI/CD Pipeline
+name: CI/CD
 
 on:
   push:
     branches: [main]
   pull_request:
-    branches: [main]
-  workflow_dispatch:
 
 jobs:
-  ci:
-    name: CI (${{ matrix.package }})
+  build-test-deploy:
     runs-on: ubuntu-latest
 
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - package: backend
-          - package: myapp
-
     steps:
+      # ------------------------
+      # Checkout
+      # ------------------------
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v3
-        with:
-          version: 10
-
+      # ------------------------
+      # Setup Node + pnpm
+      # ------------------------
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: pnpm
 
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Activate pnpm
+        run: corepack prepare pnpm@10 --activate
+
+      # ------------------------
+      # Install Dependencies
+      # ------------------------
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      # 🔍 Debug workspace detection
-      - name: Show workspace packages
-        run: pnpm list -r
+      # ------------------------
+      # CI Steps
+      # ------------------------
+      - name: Lint
+        run: pnpm -r lint
 
-      # Optional (if stable)
       - name: Type Check
-        run: pnpm type-check
+        run: pnpm -r exec tsc --noEmit
 
-      - name: Lint ${{ matrix.package }}
-        run: pnpm --filter ${{ matrix.package }} lint
+      - name: Build Backend
+        run: pnpm --filter backend build
 
-      - name: Build ${{ matrix.package }}
-        run: pnpm --filter ${{ matrix.package }} build
-        env:
-          CI: true
+      - name: Build Frontend
+        run: pnpm --filter myapp build
 
-      # 🔎 Debug backend output
-      - name: Debug Backend Output
-        if: matrix.package == 'backend'
+      # ------------------------
+      # Deploy (ONLY on main push)
+      # ------------------------
+      - name: Deploy Backend to EC2
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            cd ${{ secrets.EC2_APP_PATH }}
+
+            git pull origin main
+
+            corepack enable
+            corepack prepare pnpm@10 --activate
+
+            pnpm install --frozen-lockfile
+            pnpm --filter backend build
+
+            pm2 restart backend || pm2 start dist/server.js --name backend
+
+      - name: Deploy Frontend to Vercel
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         run: |
-          echo "Backend dist contents:"
-          ls -la backend
-          ls -la backend/dist || echo "No dist folder found"
-
-      # 🔎 Debug frontend output
-      - name: Debug Frontend Output
-        if: matrix.package == 'myapp'
-        run: |
-          echo "Frontend contents:"
-          ls -la frontend/myapp
-          ls -la frontend/myapp/.next || echo ".next folder not found"
-
-      # Upload backend artifact
-      - name: Upload Backend Artifact
-        if: matrix.package == 'backend'
-        uses: actions/upload-artifact@v4
-        with:
-          name: backend-build
-          path: backend/dist
-          if-no-files-found: error
-
-      # Upload frontend artifact
-      - name: Upload Frontend Artifact
-        if: matrix.package == 'myapp'
-        uses: actions/upload-artifact@v4
-        with:
-          name: myapp-build
-          path: frontend/myapp/.next
-          if-no-files-found: error
-
-
-  deploy:
-    name: Deploy
-    runs-on: ubuntu-latest
-    needs: ci
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Download Backend Artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: backend-build
-          path: backend
-
-      - name: Download Frontend Artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: myapp-build
-          path: frontend/myapp
-
-      - name: Show Backend Files
-        run: ls -R backend
-
-      - name: Show Frontend Files
-        run: ls -R frontend/myapp
-
-      - name: Deployment Complete
-        run: echo "Monolithic deployment successful!"
+          npm install -g vercel
+          vercel --prod --token=${{ secrets.VERCEL_TOKEN }}
+        working-directory: frontend/myapp
