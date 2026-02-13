@@ -5,6 +5,11 @@ import prettierConfig from "eslint-config-prettier";
 import { defineConfig } from "eslint/config";
 
 export default defineConfig([
+  // 🔥 Ignore build folders (VERY IMPORTANT)
+  {
+    ignores: ["dist/**", "node_modules/**"],
+  },
+
   // Base JS rules
   js.configs.recommended,
 
@@ -21,10 +26,10 @@ export default defineConfig([
     rules: {
       "no-console": "off",
 
-      // ⛔ disable base rule (important)
+      // disable base rule
       "no-unused-vars": "off",
 
-      // ✅ TypeScript-aware rule
+      // TypeScript-aware rule
       "@typescript-eslint/no-unused-vars": [
         "error",
         {

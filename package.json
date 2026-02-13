@@ -4,7 +4,7 @@
   "scripts": {
     "lint": "pnpm -r run lint",
     "build": "pnpm -r run build",
-      "type-check": "pnpm -r exec tsc --noEmit"
-
+    "type-check": "pnpm -r exec tsc --noEmit",
+    "format": "prettier --write ."
   }
 }
