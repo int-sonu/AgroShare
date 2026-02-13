@@ -37,6 +37,11 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      # 🔍 Debug workspace detection
+      - name: Show workspace packages
+        run: pnpm list -r
+
+      # Optional (if stable)
       - name: Type Check
         run: pnpm type-check
 
@@ -47,6 +52,22 @@ jobs:
         run: pnpm --filter ${{ matrix.package }} build
         env:
           CI: true
+
+      # 🔎 Debug backend output
+      - name: Debug Backend Output
+        if: matrix.package == 'backend'
+        run: |
+          echo "Backend dist contents:"
+          ls -la backend
+          ls -la backend/dist || echo "No dist folder found"
+
+      # 🔎 Debug frontend output
+      - name: Debug Frontend Output
+        if: matrix.package == 'myapp'
+        run: |
+          echo "Frontend contents:"
+          ls -la frontend/myapp
+          ls -la frontend/myapp/.next || echo ".next folder not found"
 
       # Upload backend artifact
       - name: Upload Backend Artifact
@@ -65,6 +86,7 @@ jobs:
           name: myapp-build
           path: frontend/myapp/.next
           if-no-files-found: error
+
 
   deploy:
     name: Deploy
