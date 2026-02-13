@@ -1,5 +1,5 @@
 {
-  "name": "agroshare-root",
+  "name": "agroshare",
   "private": true,
   "scripts": {
     "lint": "pnpm -r run lint",

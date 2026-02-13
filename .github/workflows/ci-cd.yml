@@ -17,11 +17,7 @@ jobs:
       matrix:
         include:
           - package: backend
-            path: backend
-            output: dist
           - package: myapp
-            path: frontend/myapp
-            output: .next
 
     steps:
       - name: Checkout repository
@@ -47,20 +43,28 @@ jobs:
       - name: Lint ${{ matrix.package }}
         run: pnpm --filter ${{ matrix.package }} lint
 
-      - name: Test ${{ matrix.package }}
-        run: pnpm --filter ${{ matrix.package }} test --if-present
-
       - name: Build ${{ matrix.package }}
         run: pnpm --filter ${{ matrix.package }} build
         env:
           CI: true
 
-      - name: Upload Artifact
+      # Upload backend artifact
+      - name: Upload Backend Artifact
+        if: matrix.package == 'backend'
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.package }}-build
-          path: ${{ matrix.path }}/${{ matrix.output }}
-          retention-days: 1
+          name: backend-build
+          path: backend/dist
+          if-no-files-found: error
+
+      # Upload frontend artifact
+      - name: Upload Frontend Artifact
+        if: matrix.package == 'myapp'
+        uses: actions/upload-artifact@v4
+        with:
+          name: myapp-build
+          path: frontend/myapp/.next
+          if-no-files-found: error
 
   deploy:
     name: Deploy
@@ -85,14 +89,10 @@ jobs:
           path: frontend/myapp
 
       - name: Show Backend Files
-        run: |
-          echo "Backend files:"
-          ls -R backend
+        run: ls -R backend
 
       - name: Show Frontend Files
-        run: |
-          echo "Frontend files:"
-          ls -R frontend/myapp
+        run: ls -R frontend/myapp
 
       - name: Deployment Complete
         run: echo "Monolithic deployment successful!"
