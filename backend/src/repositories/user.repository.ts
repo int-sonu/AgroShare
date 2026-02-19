@@ -18,14 +18,20 @@ export const updateRefreshToken = (userId: string, token: string | null) => {
   });
 };
 
-export const Findemailwithpassword = (email: string) => {
+export const findEmailWithPassword = (email: string) => {
   return User.findOne({ email }).select('+password');
-};
-
-export const findById = (id: string) => {
-  return User.findById(id);
 };
 
 export const findByIdWithRefreshToken = (id: string) => {
   return User.findById(id).select('+refreshToken');
+};
+
+export const findByResetToken = (token: string) => {
+  return User.findOne({ resetPasswordToken: token }).select(
+    '+resetPasswordToken +resetPasswordExpires +refreshToken',
+  );
+};
+
+export const saveUser = (user: any) => {
+  return user.save();
 };

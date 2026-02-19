@@ -9,6 +9,13 @@ export const generateAccessToken = (userId: string) => {
   });
 };
 
+export const verifyAccessToken = (token: string) => {
+  const secret = process.env.JWT_ACCESS_SECRET;
+  if (!secret) throw new Error('JWT_ACCESS_SECRET not defined');
+
+  return jwt.verify(token, secret);
+};
+
 export const generateRefreshToken = (userId: string) => {
   const secret = process.env.JWT_REFRESH_SECRET;
   if (!secret) throw new Error('JWT_REFRESH_SECRET not defined');
@@ -18,16 +25,25 @@ export const generateRefreshToken = (userId: string) => {
   });
 };
 
-export const verifyAccessToken = (token: string) => {
-  const secret = process.env.JWT_ACCESS_SECRET;
-  if (!secret) throw new Error('JWT_ACCESS_SECRET not defined');
+export const verifyRefreshToken = (token: string) => {
+  const secret = process.env.JWT_REFRESH_SECRET;
+  if (!secret) throw new Error('JWT_REFRESH_SECRET not defined');
 
   return jwt.verify(token, secret);
 };
 
-export const verifyRefreshToken = (token: string) => {
-  const secret = process.env.JWT_REFRESH_SECRET;
-  if (!secret) throw new Error('JWT_REFRESH_SECRET not defined');
+export const generateResetToken = (userId: string) => {
+  const secret = process.env.JWT_RESET_SECRET;
+  if (!secret) throw new Error('JWT_RESET_SECRET not defined');
+
+  return jwt.sign({ userId }, secret, {
+    expiresIn: '10m',
+  });
+};
+
+export const verifyResetToken = (token: string) => {
+  const secret = process.env.JWT_RESET_SECRET;
+  if (!secret) throw new Error('JWT_RESET_SECRET not defined');
 
   return jwt.verify(token, secret);
 };
