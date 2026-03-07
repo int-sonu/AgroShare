@@ -1,3 +1,4 @@
+import { ICategory } from '../models/category.model.js';
 import { CategoryRepository } from '../repositories/category.repository.js';
 
 export class CategoryService {

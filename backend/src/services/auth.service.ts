@@ -1,37 +1,37 @@
-import crypto from "crypto";
-import { JwtPayload } from "jsonwebtoken";
-import { Types } from "mongoose";
-import * as userRepository from "../repositories/user.repository.js";
+import crypto from 'crypto';
+import { JwtPayload } from 'jsonwebtoken';
+import { Types } from 'mongoose';
+import * as userRepository from '../repositories/user.repository.js';
 import {
   generateAccessToken,
   generateRefreshToken,
   verifyRefreshToken,
   generateResetToken,
   verifyResetToken,
-} from "../utils/jwt.js";
-import { hashPassword, comparePassword } from "../utils/hash.js";
-import { sendResetEmail } from "./email.service.js";
-import Seller from "../models/seller.model.js";
+} from '../utils/jwt.js';
+import { hashPassword, comparePassword } from '../utils/hash.js';
+import { sendResetEmail } from './email.service.js';
+import Seller from '../models/seller.model.js';
 
-import { SignupInput, LoginInput } from "../types/auth.types.js";
+import { SignupInput, LoginInput } from '../types/auth.types.js';
 
 export const register = async (data: SignupInput) => {
-  if (data.role === "admin") {
-    throw new Error("Admin registration not allowed");
+  if (data.role === 'admin') {
+    throw new Error('Admin registration not allowed');
   }
 
   const emailExists = await userRepository.findByEmail(data.email);
-  if (emailExists) throw new Error("Email already registered");
+  if (emailExists) throw new Error('Email already registered');
 
   const phoneExists = await userRepository.findByPhone(data.phone);
-  if (phoneExists) throw new Error("Phone already registered");
+  if (phoneExists) throw new Error('Phone already registered');
 
   const hashedPassword = await hashPassword(data.password);
 
   const user = await userRepository.createUser({
     ...data,
     password: hashedPassword,
-  });
+  } as any);
 
   return {
     id: user.id,
@@ -45,14 +45,14 @@ export const login = async (data: LoginInput) => {
   const { email, password } = data;
 
   const user = await userRepository.findEmailWithPassword(email);
-  if (!user) throw new Error("Invalid credentials");
+  if (!user) throw new Error('Invalid credentials');
 
-  if (user.status !== "active") {
-    throw new Error("Account is disabled");
+  if (user.status !== 'active') {
+    throw new Error('Account is disabled');
   }
 
   const isMatch = await comparePassword(password, user.password);
-  if (!isMatch) throw new Error("Invalid credentials");
+  if (!isMatch) throw new Error('Invalid credentials');
 
   const accessToken = generateAccessToken({
     id: (user._id as Types.ObjectId).toString(),
@@ -61,28 +61,19 @@ export const login = async (data: LoginInput) => {
 
   const refreshToken = generateRefreshToken((user._id as Types.ObjectId).toString());
 
-  const hashedRefreshToken = crypto
-    .createHash("sha256")
-    .update(refreshToken)
-    .digest("hex");
+  const hashedRefreshToken = crypto.createHash('sha256').update(refreshToken).digest('hex');
 
-  await userRepository.updateRefreshToken(
-    user._id.toString(),
-    hashedRefreshToken
-  );
+  await userRepository.updateRefreshToken(user._id.toString(), hashedRefreshToken);
 
-  let redirect = "/dashboard";
+  let redirect = '/dashboard';
 
-  if (user.role === "admin") {
-    redirect = "/admin/dashboard";
-  }
-  else if (user.role === "seller") {
+  if (user.role === 'admin') {
+    redirect = '/admin/dashboard';
+  } else if (user.role === 'seller') {
     const seller = await Seller.findOne({ userId: user._id });
 
     redirect =
-      !seller || !seller.isProfileComplete
-        ? "/seller/complete-profile"
-        : "/seller/dashboard";
+      !seller || !seller.isProfileComplete ? '/seller/complete-profile' : '/seller/dashboard';
   }
 
   return {
@@ -101,34 +92,21 @@ export const login = async (data: LoginInput) => {
 export const refresh = async (token: string) => {
   const decoded = verifyRefreshToken(token) as JwtPayload & { userId: string };
 
-  const user = await userRepository.findByIdWithRefreshToken(
-    decoded.userId
-  );
+  const user = await userRepository.findByIdWithRefreshToken(decoded.userId);
 
-  if (!user) throw new Error("Invalid refresh token");
+  if (!user) throw new Error('Invalid refresh token');
 
-  const hashedIncoming = crypto
-    .createHash("sha256")
-    .update(token)
-    .digest("hex");
+  const hashedIncoming = crypto.createHash('sha256').update(token).digest('hex');
 
   if (user.refreshToken !== hashedIncoming) {
-    throw new Error("Invalid refresh token");
+    throw new Error('Invalid refresh token');
   }
 
-  const newRefreshToken = generateRefreshToken(
-    user._id.toString()
-  );
+  const newRefreshToken = generateRefreshToken(user._id.toString());
 
-  const hashedNewRefresh = crypto
-    .createHash("sha256")
-    .update(newRefreshToken)
-    .digest("hex");
+  const hashedNewRefresh = crypto.createHash('sha256').update(newRefreshToken).digest('hex');
 
-  await userRepository.updateRefreshToken(
-    user._id.toString(),
-    hashedNewRefresh
-  );
+  await userRepository.updateRefreshToken(user._id.toString(), hashedNewRefresh);
 
   const newAccessToken = generateAccessToken({
     id: user._id.toString(),
@@ -141,22 +119,18 @@ export const refresh = async (token: string) => {
   };
 };
 
-
 export const logout = async (userId: string) => {
   await userRepository.updateRefreshToken(userId, null);
-  return { message: "Logged out successfully" };
+  return { message: 'Logged out successfully' };
 };
 
 export const forgotPassword = async (email: string) => {
   const user = await userRepository.findByEmail(email);
-  if (!user) throw new Error("User not found");
+  if (!user) throw new Error('User not found');
 
   const resetToken = generateResetToken(user._id.toString());
 
-  const hashedToken = crypto
-    .createHash("sha256")
-    .update(resetToken)
-    .digest("hex");
+  const hashedToken = crypto.createHash('sha256').update(resetToken).digest('hex');
 
   user.resetPasswordToken = hashedToken;
   user.resetPasswordExpires = new Date(Date.now() + 10 * 60 * 1000);
@@ -167,28 +141,18 @@ export const forgotPassword = async (email: string) => {
 
   await sendResetEmail(user.email, resetUrl);
 
-  return { message: "Reset link sent" };
+  return { message: 'Reset link sent' };
 };
 
-export const resetPassword = async (
-  token: string,
-  newPassword: string
-) => {
+export const resetPassword = async (token: string, newPassword: string) => {
   verifyResetToken(token);
 
-  const hashedToken = crypto
-    .createHash("sha256")
-    .update(token)
-    .digest("hex");
+  const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
 
   const user = await userRepository.findByResetToken(hashedToken);
 
-  if (
-    !user ||
-    !user.resetPasswordExpires ||
-    user.resetPasswordExpires < new Date()
-  ) {
-    throw new Error("Invalid or expired token");
+  if (!user || !user.resetPasswordExpires || user.resetPasswordExpires < new Date()) {
+    throw new Error('Invalid or expired token');
   }
 
   user.password = await hashPassword(newPassword);
@@ -200,5 +164,5 @@ export const resetPassword = async (
 
   await userRepository.saveUser(user);
 
-  return { message: "Password updated successfully" };
+  return { message: 'Password updated successfully' };
 };
