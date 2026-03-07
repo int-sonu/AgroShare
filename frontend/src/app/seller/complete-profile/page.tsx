@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { useAuth } from "@/context/AuthContext";
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/context/AuthContext';
 
 export default function CreateProfile() {
   const router = useRouter();
@@ -10,40 +10,37 @@ export default function CreateProfile() {
 
   const [loading, setLoading] = useState(false);
   const [checking, setChecking] = useState(true);
-  const [error, setError] = useState("");
+  const [error, setError] = useState('');
 
   const [form, setForm] = useState({
-    sellerType: "individual",
-    businessName: "",
-    state: "",
-    district: "",
-    city: "",
-    address: "",
-    pincode: "",
+    sellerType: 'individual',
+    businessName: '',
+    state: '',
+    district: '',
+    city: '',
+    address: '',
+    pincode: '',
   });
 
   useEffect(() => {
     const checkProfile = async () => {
       if (!accessToken) {
-        router.push("/auth/login");
+        router.push('/auth/login');
         return;
       }
 
       try {
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/seller/profile`,
-          {
-            headers: {
-              Authorization: `Bearer ${accessToken}`,
-            },
-          }
-        );
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/seller/profile`, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        });
 
         if (res.ok) {
-          router.replace("/seller/dashboard");
+          router.replace('/seller/dashboard');
         }
-      } catch (err) {
-        console.log("No profile yet");
+      } catch {
+        console.log('No profile yet');
       } finally {
         setChecking(false);
       }
@@ -54,42 +51,41 @@ export default function CreateProfile() {
     }
   }, [accessToken, authLoading, router]);
 
-  const handleChange = (e: any) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
+  ) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e: any) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setError("");
+    setError('');
 
     if (!accessToken) {
-      router.push("/auth/login");
+      router.push('/auth/login');
       return;
     }
 
     try {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/seller/profile`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${accessToken}`,
-          },
-          body: JSON.stringify(form),
-        }
-      );
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/seller/profile`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${accessToken}`,
+        },
+        body: JSON.stringify(form),
+      });
 
       const data = await res.json();
 
       if (!res.ok) {
-        throw new Error(data.message || "Failed to create profile");
+        throw new Error(data.message || 'Failed to create profile');
       }
 
-      router.replace("/seller/dashboard");
-    } catch (err: any) {
-      setError(err.message);
+      router.replace('/seller/dashboard');
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Something went wrong');
     } finally {
       setLoading(false);
     }
@@ -102,15 +98,9 @@ export default function CreateProfile() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
       <div className="w-full max-w-xl bg-white p-8 rounded-xl shadow-lg">
-        <h2 className="text-2xl font-semibold mb-6 text-gray-800">
-          Complete Seller Profile
-        </h2>
+        <h2 className="text-2xl font-semibold mb-6 text-gray-800">Complete Seller Profile</h2>
 
-        {error && (
-          <div className="bg-red-100 text-red-600 p-2 rounded mb-4">
-            {error}
-          </div>
-        )}
+        {error && <div className="bg-red-100 text-red-600 p-2 rounded mb-4">{error}</div>}
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <select
@@ -123,7 +113,7 @@ export default function CreateProfile() {
             <option value="shop">Shop</option>
           </select>
 
-          {form.sellerType === "shop" && (
+          {form.sellerType === 'shop' && (
             <input
               name="businessName"
               placeholder="Business Name"
@@ -133,18 +123,48 @@ export default function CreateProfile() {
             />
           )}
 
-          <input name="state" placeholder="State" required onChange={handleChange} className="w-full border rounded-md p-2" />
-          <input name="district" placeholder="District" required onChange={handleChange} className="w-full border rounded-md p-2" />
-          <input name="city" placeholder="City" required onChange={handleChange} className="w-full border rounded-md p-2" />
-          <textarea name="address" placeholder="Full Address" required onChange={handleChange} className="w-full border rounded-md p-2" />
-          <input name="pincode" placeholder="Pincode" required onChange={handleChange} className="w-full border rounded-md p-2" />
+          <input
+            name="state"
+            placeholder="State"
+            required
+            onChange={handleChange}
+            className="w-full border rounded-md p-2"
+          />
+          <input
+            name="district"
+            placeholder="District"
+            required
+            onChange={handleChange}
+            className="w-full border rounded-md p-2"
+          />
+          <input
+            name="city"
+            placeholder="City"
+            required
+            onChange={handleChange}
+            className="w-full border rounded-md p-2"
+          />
+          <textarea
+            name="address"
+            placeholder="Full Address"
+            required
+            onChange={handleChange}
+            className="w-full border rounded-md p-2"
+          />
+          <input
+            name="pincode"
+            placeholder="Pincode"
+            required
+            onChange={handleChange}
+            className="w-full border rounded-md p-2"
+          />
 
           <button
             type="submit"
             disabled={loading}
             className="w-full bg-black text-white py-2 rounded-md"
           >
-            {loading ? "Saving..." : "Save Profile"}
+            {loading ? 'Saving...' : 'Save Profile'}
           </button>
         </form>
       </div>

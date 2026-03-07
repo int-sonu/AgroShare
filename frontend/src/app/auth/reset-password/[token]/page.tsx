@@ -28,16 +28,13 @@ export default function ResetPasswordPage() {
     try {
       setLoading(true);
 
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/auth/reset-password/${token}`,
-        {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ password }),
-        }
-      );
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/reset-password/${token}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ password }),
+      });
 
       const data = await res.json();
 
@@ -50,9 +47,10 @@ export default function ResetPasswordPage() {
       setTimeout(() => {
         router.push('/auth/login');
       }, 2000);
-
-    } catch (err: any) {
-      setError(err.message || 'Reset link expired. Please request a new one.');
+    } catch (err: unknown) {
+      setError(
+        err instanceof Error ? err.message : 'Reset link expired. Please request a new one.',
+      );
     } finally {
       setLoading(false);
     }
@@ -61,10 +59,7 @@ export default function ResetPasswordPage() {
   return (
     <div className="flex items-center justify-center min-h-[calc(100vh-80px)] bg-gray-100 px-4">
       <div className="bg-white p-8 rounded-xl shadow-lg w-full max-w-md">
-
-        <h2 className="text-2xl font-bold text-center mb-6">
-          Reset Password
-        </h2>
+        <h2 className="text-2xl font-bold text-center mb-6">Reset Password</h2>
 
         {error && (
           <div className="text-red-500 text-sm text-center mb-4">
@@ -83,15 +78,10 @@ export default function ResetPasswordPage() {
           </div>
         )}
 
-        {message && (
-          <div className="text-green-600 text-sm text-center mb-4">
-            {message}
-          </div>
-        )}
+        {message && <div className="text-green-600 text-sm text-center mb-4">{message}</div>}
 
         {!message && (
           <form onSubmit={handleSubmit} className="space-y-4">
-
             <input
               type="password"
               placeholder="New Password"
@@ -117,10 +107,8 @@ export default function ResetPasswordPage() {
             >
               {loading ? 'Updating...' : 'Update Password'}
             </button>
-
           </form>
         )}
-
       </div>
     </div>
   );

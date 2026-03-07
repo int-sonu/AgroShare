@@ -1,17 +1,11 @@
-"use client";
+'use client';
 
-import {
-  createContext,
-  useContext,
-  useState,
-  useEffect,
-  ReactNode,
-} from "react";
+import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
 interface User {
   id: string;
   email: string;
-   name: string; 
+  name: string;
   role: string;
 }
 
@@ -33,13 +27,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     const restoreSession = async () => {
       try {
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/auth/refresh`,
-          {
-            method: "POST",
-            credentials: "include",
-          }
-        );
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/refresh`, {
+          method: 'POST',
+          credentials: 'include',
+        });
 
         if (!res.ok) {
           setLoading(false);
@@ -50,20 +41,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
         setAccessToken(data.accessToken);
 
-        const userRes = await fetch(
-`${process.env.NEXT_PUBLIC_API_URL}/auth/user`,          {
-            headers: {
-              Authorization: `Bearer ${data.accessToken}`,
-            },
-          }
-        );
+        const userRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/user`, {
+          headers: {
+            Authorization: `Bearer ${data.accessToken}`,
+          },
+        });
 
         if (userRes.ok) {
           const userData = await userRes.json();
           setUser(userData.user);
         }
-
-      } catch (error) {
+      } catch {
         setUser(null);
       } finally {
         setLoading(false);
@@ -81,8 +69,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const logout = async () => {
     try {
       await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/logout`, {
-        method: "POST",
-        credentials: "include",
+        method: 'POST',
+        credentials: 'include',
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
@@ -91,13 +79,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     setUser(null);
     setAccessToken(null);
-    window.location.href = "/";
+    window.location.href = '/';
   };
 
   return (
-    <AuthContext.Provider
-      value={{ user, accessToken, login, logout, loading }}
-    >
+    <AuthContext.Provider value={{ user, accessToken, login, logout, loading }}>
       {!loading && children}
     </AuthContext.Provider>
   );
@@ -106,7 +92,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error("useAuth must be used within AuthProvider");
+    throw new Error('useAuth must be used within AuthProvider');
   }
   return context;
 };

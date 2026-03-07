@@ -1,7 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 
 interface Category {
   _id: string;
@@ -16,28 +17,30 @@ export default function CategoriesPage() {
 
   const [categories, setCategories] = useState<Category[]>([]);
 
-  const fetchCategories = async () => {
+  const fetchCategories = useCallback(async () => {
     try {
-      const res = await fetch('http://localhost:5000/categories');
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/categories`);
       const data = await res.json();
       setCategories(data.data || []);
-    } catch (error) {
+    } catch {
       console.error('Failed to fetch categories');
     }
-  };
+  }, []);
 
   useEffect(() => {
-    fetchCategories();
-  }, []);
+    (async () => {
+      await fetchCategories();
+    })();
+  }, [fetchCategories]);
 
   const deleteCategory = async (id: string) => {
     try {
-      await fetch(`http://localhost:5000/categories/${id}`, {
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/categories/${id}`, {
         method: 'DELETE',
       });
 
       fetchCategories();
-    } catch (error) {
+    } catch {
       console.error('Delete failed');
     }
   };
@@ -46,7 +49,7 @@ export default function CategoriesPage() {
     const newStatus = currentStatus === 'active' ? 'inactive' : 'active';
 
     try {
-      await fetch(`http://localhost:5000/categories/${id}/status`, {
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/categories/${id}/status`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -55,7 +58,7 @@ export default function CategoriesPage() {
       });
 
       fetchCategories();
-    } catch (error) {
+    } catch {
       console.error('Status update failed');
     }
   };
@@ -89,11 +92,14 @@ export default function CategoriesPage() {
             {categories.map((cat) => (
               <tr key={cat._id} className="border-b hover:bg-gray-50">
                 <td className="p-4">
-                  <img
-                    src={`${process.env.NEXT_PUBLIC_API_URL}/${cat.image}`}
-                    alt={cat.name}
-                    className="w-12 h-12 object-cover rounded"
-                  />
+                  <div className="relative w-12 h-12">
+                    <Image
+                      src={`${process.env.NEXT_PUBLIC_API_URL}/${cat.image}`}
+                      alt={cat.name}
+                      fill
+                      className="object-cover rounded"
+                    />
+                  </div>
                 </td>
 
                 <td className="p-4 font-medium text-gray-900">{cat.name}</td>

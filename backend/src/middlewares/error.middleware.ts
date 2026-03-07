@@ -1,11 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 
-export const errorHandler = (
-  err: unknown,
-  _req: Request,
-  res: Response,
-  _next: NextFunction,
-) => {
+export const errorHandler = (err: unknown, _req: Request, res: Response, _next: NextFunction) => {
   console.error(err);
 
   let statusCode = 500;
@@ -15,12 +10,12 @@ export const errorHandler = (
     message = err.message;
   }
 
-  if ((err as any)?.name === 'CastError') {
+  if ((err as { name?: string })?.name === 'CastError') {
     statusCode = 400;
     message = 'Invalid ID format';
   }
 
-  if ((err as any)?.code === 11000) {
+  if ((err as { code?: number })?.code === 11000) {
     statusCode = 400;
     message = 'Duplicate field value';
   }

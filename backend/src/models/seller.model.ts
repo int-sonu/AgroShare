@@ -1,9 +1,9 @@
-import mongoose, { Schema, Document, Model } from "mongoose";
+import mongoose, { Schema, Document } from 'mongoose';
 
 export interface ISeller extends Document {
   userId: mongoose.Types.ObjectId;
 
-  sellerType: "individual" | "shop";
+  sellerType: 'individual' | 'shop';
   businessName?: string;
   profileImage?: string;
 
@@ -15,7 +15,7 @@ export interface ISeller extends Document {
 
   isProfileComplete: boolean;
 
-  verificationStatus: "pending" | "approved" | "rejected";
+  verificationStatus: 'pending' | 'approved' | 'rejected';
   verificationNote?: string;
 
   bankName?: string;
@@ -38,7 +38,7 @@ const sellerSchema = new Schema<ISeller>(
   {
     userId: {
       type: Schema.Types.ObjectId,
-      ref: "User",
+      ref: 'User',
       required: true,
       unique: true,
       index: true,
@@ -46,7 +46,7 @@ const sellerSchema = new Schema<ISeller>(
 
     sellerType: {
       type: String,
-      enum: ["individual", "shop"],
+      enum: ['individual', 'shop'],
       required: true,
     },
 
@@ -54,7 +54,7 @@ const sellerSchema = new Schema<ISeller>(
       type: String,
       trim: true,
       required: function (this: ISeller) {
-        return this.sellerType === "shop";
+        return this.sellerType === 'shop';
       },
     },
 
@@ -67,7 +67,7 @@ const sellerSchema = new Schema<ISeller>(
     pincode: {
       type: String,
       required: true,
-      match: [/^[0-9]{6}$/, "Invalid pincode"],
+      match: [/^[0-9]{6}$/, 'Invalid pincode'],
     },
 
     isProfileComplete: {
@@ -77,8 +77,8 @@ const sellerSchema = new Schema<ISeller>(
 
     verificationStatus: {
       type: String,
-      enum: ["pending", "approved", "rejected"],
-      default: "pending",
+      enum: ['pending', 'approved', 'rejected'],
+      default: 'pending',
     },
 
     verificationNote: String,
@@ -95,7 +95,7 @@ const sellerSchema = new Schema<ISeller>(
       type: String,
       trim: true,
       uppercase: true,
-      match: [/^[A-Z]{4}0[A-Z0-9]{6}$/, "Invalid IFSC code"],
+      match: [/^[A-Z]{4}0[A-Z0-9]{6}$/, 'Invalid IFSC code'],
     },
 
     bankAdded: {
@@ -121,13 +121,13 @@ const sellerSchema = new Schema<ISeller>(
       default: 1,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
-sellerSchema.virtual("fullAddress").get(function (this: ISeller) {
+sellerSchema.virtual('fullAddress').get(function (this: ISeller) {
   return `${this.address}, ${this.city}, ${this.district}, ${this.state} - ${this.pincode}`;
 });
 
 sellerSchema.index({ state: 1, district: 1, city: 1 });
 
-export default mongoose.model<ISeller>("Seller", sellerSchema);
+export default mongoose.model<ISeller>('Seller', sellerSchema);

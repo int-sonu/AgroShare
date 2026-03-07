@@ -29,7 +29,7 @@ export default function AddCategoryForm({ refresh, close }: AddCategoryProps) {
     try {
       setLoading(true);
 
-      const res = await fetch('http://localhost:5000/categories', {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/categories`, {
         method: 'POST',
         body: formData,
       });
@@ -45,8 +45,8 @@ export default function AddCategoryForm({ refresh, close }: AddCategoryProps) {
       setDescription('');
       setStatus('active');
       setImage(null);
-    } catch (error) {
-      console.error('Create category failed', error);
+    } catch (error: unknown) {
+      console.error('Create category failed', error instanceof Error ? error.message : error);
     } finally {
       setLoading(false);
     }
