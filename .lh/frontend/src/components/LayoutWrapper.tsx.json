@@ -1,0 +1,34 @@
+{
+    "sourceFile": "frontend/src/components/LayoutWrapper.tsx",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 4,
+            "patches": [
+                {
+                    "date": 1772789023441,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1772789307186,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,8 +1,8 @@\n \"use client\";\r\n \r\n import { usePathname } from \"next/navigation\";\r\n-import Navbar from \"@/components/navbar\";\r\n+import Navbar from \"@/components/Navbaravbar\";\r\n import Footer from \"@/components/footer\";\r\n \r\n export default function LayoutWrapper({\r\n   children,\r\n"
+                },
+                {
+                    "date": 1772791684238,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,8 +1,8 @@\n \"use client\";\r\n \r\n import { usePathname } from \"next/navigation\";\r\n-import Navbar from \"@/components/Navbaravbar\";\r\n+import Navbar from \"@/components/navbar\";\r\n import Footer from \"@/components/footer\";\r\n \r\n export default function LayoutWrapper({\r\n   children,\r\n"
+                },
+                {
+                    "date": 1772791701934,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,8 +1,8 @@\n \"use client\";\r\n \r\n import { usePathname } from \"next/navigation\";\r\n-import Navbar from \"@/components/navbar\";\r\n+import navbar from \"@/components/navbar\";\r\n import Footer from \"@/components/footer\";\r\n \r\n export default function LayoutWrapper({\r\n   children,\r\n"
+                },
+                {
+                    "date": 1772791707563,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,8 +1,8 @@\n \"use client\";\r\n \r\n import { usePathname } from \"next/navigation\";\r\n-import navbar from \"@/components/navbar\";\r\n+import Navbar from \"@/components/navbar\";\r\n import Footer from \"@/components/footer\";\r\n \r\n export default function LayoutWrapper({\r\n   children,\r\n"
+                }
+            ],
+            "date": 1772789023441,
+            "name": "Commit-0",
+            "content": "\"use client\";\r\n\r\nimport { usePathname } from \"next/navigation\";\r\nimport Navbar from \"@/components/navbar\";\r\nimport Footer from \"@/components/footer\";\r\n\r\nexport default function LayoutWrapper({\r\n  children,\r\n}: {\r\n  children: React.ReactNode;\r\n}) {\r\n  const pathname = usePathname();\r\n\r\n  const hideLayout =\r\n    pathname.startsWith(\"/admin\") || pathname.startsWith(\"/seller\");\r\n\r\n  return (\r\n    <>\r\n      {!hideLayout && <Navbar />}\r\n      <main className=\"flex-1\">{children}</main>\r\n      {!hideLayout && <Footer />}\r\n    </>\r\n  );\r\n}"
+        }
+    ]
+}

@@ -1,0 +1,18 @@
+{
+    "sourceFile": "frontend/src/components/admin/categories-table.tsx",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1772813340165,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1772813340165,
+            "name": "Commit-0",
+            "content": "import {\r\n  Table,\r\n  TableBody,\r\n  TableCell,\r\n  TableHead,\r\n  TableHeader,\r\n  TableRow,\r\n} from \"@/components/ui/table\"\r\n\r\nexport default function CategoriesTable({categories}:any){\r\n\r\n  return (\r\n\r\n    <Table>\r\n\r\n      <TableHeader>\r\n\r\n        <TableRow>\r\n          <TableHead>Image</TableHead>\r\n          <TableHead>Name</TableHead>\r\n          <TableHead>Status</TableHead>\r\n        </TableRow>\r\n\r\n      </TableHeader>\r\n\r\n      <TableBody>\r\n\r\n        {categories.map((cat:any)=>(\r\n          <TableRow key={cat._id}>\r\n\r\n            <TableCell>\r\n\r\n              <img\r\n                src={`http://localhost:5000/uploads/categories/${cat.image}`}\r\n                className=\"w-10 h-10 object-cover\"\r\n              />\r\n\r\n            </TableCell>\r\n\r\n            <TableCell>{cat.name}</TableCell>\r\n\r\n            <TableCell>{cat.status}</TableCell>\r\n\r\n          </TableRow>\r\n        ))}\r\n\r\n      </TableBody>\r\n\r\n    </Table>\r\n\r\n  )\r\n}"
+        }
+    ]
+}

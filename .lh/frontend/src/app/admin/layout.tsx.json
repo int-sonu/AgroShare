@@ -1,0 +1,22 @@
+{
+    "sourceFile": "frontend/src/app/admin/layout.tsx",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 1,
+            "patches": [
+                {
+                    "date": 1772793705121,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1772793757339,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -0,0 +1,26 @@\n+import AdminSidebar from \"@/components/admin/AdminSidebar\";\r\n+import AdminNavbar from \"@/components/admin/AdminNavbar\";\r\n+\r\n+export default function AdminLayout({\r\n+  children,\r\n+}: {\r\n+  children: React.ReactNode;\r\n+}) {\r\n+  return (\r\n+    <div className=\"flex min-h-screen\">\r\n+\r\n+      <AdminSidebar />\r\n+\r\n+      <div className=\"flex flex-col flex-1\">\r\n+\r\n+        <AdminNavbar />\r\n+\r\n+        <main className=\"flex-1 bg-gray-100 p-8\">\r\n+          {children}\r\n+        </main>\r\n+\r\n+      </div>\r\n+\r\n+    </div>\r\n+  );\r\n+}\n\\ No newline at end of file\n"
+                }
+            ],
+            "date": 1772793705121,
+            "name": "Commit-0",
+            "content": ""
+        }
+    ]
+}

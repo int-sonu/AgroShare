@@ -1,0 +1,38 @@
+{
+    "sourceFile": "frontend/src/app/auth/forgot-password/page.tsx",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 5,
+            "patches": [
+                {
+                    "date": 1772792392948,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1772792547173,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -38,9 +38,9 @@\n       <form\r\n         onSubmit={handleSubmit}\r\n         className=\"bg-white p-8 rounded-lg shadow-md w-96 space-y-4\"\r\n       >\r\n-        <h2 className=\"text-xl font-bold text-center\">\r\n+        <h2 className=\"text-xl font-bold text-center text-gray-900\">\r\n           Forgot Password\r\n         </h2>\r\n \r\n         <input\r\n"
+                },
+                {
+                    "date": 1772792556017,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -45,9 +45,9 @@\n \r\n         <input\r\n           type=\"email\"\r\n           placeholder=\"Enter your email\"\r\n-          className=\"w-full border p-2 rounded\"\r\n+          className=\"w-full border p-2 rounded text-gray-900\"\r\n           value={email}\r\n           onChange={(e) => setEmail(e.target.value)}\r\n           required\r\n         />\r\n"
+                },
+                {
+                    "date": 1772792562203,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -45,9 +45,9 @@\n \r\n         <input\r\n           type=\"email\"\r\n           placeholder=\"Enter your email\"\r\n-          className=\"w-full border p-2 rounded text-gray-900\"\r\n+          className=\"w-full border p-2 rounded \"\r\n           value={email}\r\n           onChange={(e) => setEmail(e.target.value)}\r\n           required\r\n         />\r\n"
+                },
+                {
+                    "date": 1772792568233,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -45,8 +45,9 @@\n \r\n         <input\r\n           type=\"email\"\r\n           placeholder=\"Enter your email\"\r\n+          className=\"w-full border p-2 rounded text-gray-900\"\r\n           className=\"w-full border p-2 rounded \"\r\n           value={email}\r\n           onChange={(e) => setEmail(e.target.value)}\r\n           required\r\n"
+                },
+                {
+                    "date": 1772792579810,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -46,9 +46,8 @@\n         <input\r\n           type=\"email\"\r\n           placeholder=\"Enter your email\"\r\n           className=\"w-full border p-2 rounded text-gray-900\"\r\n-          className=\"w-full border p-2 rounded \"\r\n           value={email}\r\n           onChange={(e) => setEmail(e.target.value)}\r\n           required\r\n         />\r\n"
+                }
+            ],
+            "date": 1772792392948,
+            "name": "Commit-0",
+            "content": "'use client';\r\n\r\nimport { useState } from 'react';\r\n\r\nexport default function ForgotPasswordPage() {\r\n  const [email, setEmail] = useState('');\r\n  const [message, setMessage] = useState('');\r\n  const [loading, setLoading] = useState(false);\r\n\r\n  const handleSubmit = async (e: any) => {\r\n    e.preventDefault();\r\n\r\n    setLoading(true);\r\n    setMessage('');\r\n\r\n    const res = await fetch(\r\n      `${process.env.NEXT_PUBLIC_API_URL}/auth/forgot-password`,\r\n      {\r\n        method: 'POST',\r\n        headers: { 'Content-Type': 'application/json' },\r\n        body: JSON.stringify({ email }),\r\n      }\r\n    );\r\n\r\n    const data = await res.json();\r\n\r\n    if (res.ok) {\r\n      setMessage(\"If this email exists, a reset link has been sent.\");\r\n    } else {\r\n      setMessage(data.message);\r\n    }\r\n\r\n    setLoading(false);\r\n  };\r\n\r\n  return (\r\n    <div className=\"flex items-center justify-center min-h-screen bg-gray-100\">\r\n      <form\r\n        onSubmit={handleSubmit}\r\n        className=\"bg-white p-8 rounded-lg shadow-md w-96 space-y-4\"\r\n      >\r\n        <h2 className=\"text-xl font-bold text-center\">\r\n          Forgot Password\r\n        </h2>\r\n\r\n        <input\r\n          type=\"email\"\r\n          placeholder=\"Enter your email\"\r\n          className=\"w-full border p-2 rounded\"\r\n          value={email}\r\n          onChange={(e) => setEmail(e.target.value)}\r\n          required\r\n        />\r\n\r\n        <button\r\n          type=\"submit\"\r\n          disabled={loading}\r\n          className=\"w-full bg-black text-white p-2 rounded\"\r\n        >\r\n          {loading ? \"Sending...\" : \"Send Reset Link\"}\r\n        </button>\r\n\r\n        {message && (\r\n          <p className=\"text-sm text-center text-gray-600\">\r\n            {message}\r\n          </p>\r\n        )}\r\n      </form>\r\n    </div>\r\n  );\r\n}"
+        }
+    ]
+}

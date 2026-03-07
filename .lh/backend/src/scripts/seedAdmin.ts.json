@@ -1,0 +1,102 @@
+{
+    "sourceFile": "backend/src/scripts/seedAdmin.ts",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 21,
+            "patches": [
+                {
+                    "date": 1772796312820,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1772796340409,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,8 +1,8 @@\n import mongoose from \"mongoose\";\r\n import dotenv from \"dotenv\";\r\n import { hashPassword } from \"../src/utils/hash\";\r\n-import { User } from \"../src/models/user.model\";\r\n+import { User } from \"../src/models/user.model.js\";\r\n \r\n dotenv.config();\r\n \r\n dotenv.config();\r\n"
+                },
+                {
+                    "date": 1772796347492,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,8 +1,8 @@\n import mongoose from \"mongoose\";\r\n import dotenv from \"dotenv\";\r\n-import { hashPassword } from \"../src/utils/hash\";\r\n-import { User } from \"../src/models/user.model.js\";\r\n+import { hashPassword } from \"../src/utils/hash.js\";\r\n+import { User } from \"../src/models/user.model.\";\r\n \r\n dotenv.config();\r\n \r\n dotenv.config();\r\n"
+                },
+                {
+                    "date": 1772796355569,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,8 +1,8 @@\n import mongoose from \"mongoose\";\r\n import dotenv from \"dotenv\";\r\n import { hashPassword } from \"../src/utils/hash.js\";\r\n-import { User } from \"../src/models/user.model.\";\r\n+import { User } from \"../src/models/user.model\";\r\n \r\n dotenv.config();\r\n \r\n dotenv.config();\r\n"
+                },
+                {
+                    "date": 1772796507622,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,9 +1,10 @@\n import mongoose from \"mongoose\";\r\n import dotenv from \"dotenv\";\r\n-import { hashPassword } from \"../src/utils/hash.js\";\r\n-import { User } from \"../src/models/user.model\";\r\n+import { hashPassword } from \"../utils/hash\";\r\n+import { User } from \"../models/user.model\";\r\n \r\n+\r\n dotenv.config();\r\n \r\n dotenv.config();\r\n \r\n"
+                },
+                {
+                    "date": 1772796566771,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,10 +1,37 @@\n import mongoose from \"mongoose\";\r\n import dotenv from \"dotenv\";\r\n-import { hashPassword } from \"../utils/hash\";\r\n-import { User } from \"../models/user.model\";\r\n+Node.js v22.18.0\r\n \r\n+C:\\AgroShare\\backend>pnpm exec ts-node src/scripts/seedAdmin.ts\r\n+Error: Cannot find module 'C:\\AgroShare\\backend\\src\\utils\\hash' imported from C:\\AgroShare\\backend\\src\\scripts\\seedAdmin.ts\r\n+    at finalizeResolution (node:internal/modules/esm/resolve:274:11)\r\n+    at moduleResolve (node:internal/modules/esm/resolve:859:10)\r\n+    at defaultResolve (node:internal/modules/esm/resolve:983:11)\r\n+    at ModuleLoader.defaultResolve (node:internal/modules/esm/loader:783:12)\r\n+    at ModuleLoader.#cachedDefaultResolve (node:internal/modules/esm/loader:707:25)\r\n+    at ModuleLoader.resolve (node:internal/modules/esm/loader:690:38)\r\n+    at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:307:38)\r\n+    at ModuleJob._link (node:internal/modules/esm/module_job:183:49) {\r\n+  code: 'ERR_MODULE_NOT_FOUND',\r\n+  url: 'file:///C:/AgroShare/backend/src/utils/hash'\r\n+}\r\n \r\n+C:\\AgroShare\\backend>npx ts-node src/scripts/seedAdmin.ts\r\n+Error: Cannot find module 'C:\\AgroShare\\backend\\src\\utils\\hash' imported from C:\\AgroShare\\backend\\src\\scripts\\seedAdmin.ts\r\n+    at finalizeResolution (node:internal/modules/esm/resolve:274:11)\r\n+    at moduleResolve (node:internal/modules/esm/resolve:859:10)\r\n+    at defaultResolve (node:internal/modules/esm/resolve:983:11)\r\n+    at ModuleLoader.defaultResolve (node:internal/modules/esm/loader:783:12)\r\n+    at ModuleLoader.#cachedDefaultResolve (node:internal/modules/esm/loader:707:25)\r\n+    at ModuleLoader.resolve (node:internal/modules/esm/loader:690:38)\r\n+    at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:307:38)\r\n+    at ModuleJob._link (node:internal/modules/esm/module_job:183:49) {\r\n+  code: 'ERR_MODULE_NOT_FOUND',\r\n+  url: 'file:///C:/AgroShare/backend/src/utils/hash'\r\n+}\r\n+\r\n+C:\\AgroShare\\backend>\r\n dotenv.config();\r\n \r\n dotenv.config();\r\n \r\n"
+                },
+                {
+                    "date": 1772796573989,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,37 +1,8 @@\n import mongoose from \"mongoose\";\r\n import dotenv from \"dotenv\";\r\n-Node.js v22.18.0\r\n-\r\n-C:\\AgroShare\\backend>pnpm exec ts-node src/scripts/seedAdmin.ts\r\n-Error: Cannot find module 'C:\\AgroShare\\backend\\src\\utils\\hash' imported from C:\\AgroShare\\backend\\src\\scripts\\seedAdmin.ts\r\n-    at finalizeResolution (node:internal/modules/esm/resolve:274:11)\r\n-    at moduleResolve (node:internal/modules/esm/resolve:859:10)\r\n-    at defaultResolve (node:internal/modules/esm/resolve:983:11)\r\n-    at ModuleLoader.defaultResolve (node:internal/modules/esm/loader:783:12)\r\n-    at ModuleLoader.#cachedDefaultResolve (node:internal/modules/esm/loader:707:25)\r\n-    at ModuleLoader.resolve (node:internal/modules/esm/loader:690:38)\r\n-    at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:307:38)\r\n-    at ModuleJob._link (node:internal/modules/esm/module_job:183:49) {\r\n-  code: 'ERR_MODULE_NOT_FOUND',\r\n-  url: 'file:///C:/AgroShare/backend/src/utils/hash'\r\n-}\r\n-\r\n-C:\\AgroShare\\backend>npx ts-node src/scripts/seedAdmin.ts\r\n-Error: Cannot find module 'C:\\AgroShare\\backend\\src\\utils\\hash' imported from C:\\AgroShare\\backend\\src\\scripts\\seedAdmin.ts\r\n-    at finalizeResolution (node:internal/modules/esm/resolve:274:11)\r\n-    at moduleResolve (node:internal/modules/esm/resolve:859:10)\r\n-    at defaultResolve (node:internal/modules/esm/resolve:983:11)\r\n-    at ModuleLoader.defaultResolve (node:internal/modules/esm/loader:783:12)\r\n-    at ModuleLoader.#cachedDefaultResolve (node:internal/modules/esm/loader:707:25)\r\n-    at ModuleLoader.resolve (node:internal/modules/esm/loader:690:38)\r\n-    at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:307:38)\r\n-    at ModuleJob._link (node:internal/modules/esm/module_job:183:49) {\r\n-  code: 'ERR_MODULE_NOT_FOUND',\r\n-  url: 'file:///C:/AgroShare/backend/src/utils/hash'\r\n-}\r\n-\r\n-C:\\AgroShare\\backend>\r\n+import { hashPassword } from \"../utils/hash.ts\";\r\n+import { User } from \"../models/user.model.ts\";\r\n dotenv.config();\r\n \r\n dotenv.config();\r\n \r\n"
+                },
+                {
+                    "date": 1772796579547,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,8 +1,8 @@\n import mongoose from \"mongoose\";\r\n import dotenv from \"dotenv\";\r\n import { hashPassword } from \"../utils/hash.ts\";\r\n-import { User } from \"../models/user.model.ts\";\r\n+import { User } from \"../models/user.model.js\";\r\n dotenv.config();\r\n \r\n dotenv.config();\r\n \r\n"
+                },
+                {
+                    "date": 1772796698522,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,8 +1,7 @@\n import mongoose from \"mongoose\";\r\n import dotenv from \"dotenv\";\r\n-import { hashPassword } from \"../utils/hash.ts\";\r\n-import { User } from \"../models/user.model.js\";\r\n+import { hashPassword } from \"../utils/hash.ts\";import { User } from \"../models/user.model.js\";\r\n dotenv.config();\r\n \r\n dotenv.config();\r\n \r\n"
+                },
+                {
+                    "date": 1772796714213,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,7 +1,8 @@\n import mongoose from \"mongoose\";\r\n import dotenv from \"dotenv\";\r\n-import { hashPassword } from \"../utils/hash.ts\";import { User } from \"../models/user.model.js\";\r\n+import { hashPassword } from \"../utils/hash.js\";\r\n+import { User } from \"../models/user.model.js\";\r\n dotenv.config();\r\n \r\n dotenv.config();\r\n \r\n"
+                },
+                {
+                    "date": 1772796793567,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -3,9 +3,8 @@\n import { hashPassword } from \"../utils/hash.js\";\r\n import { User } from \"../models/user.model.js\";\r\n dotenv.config();\r\n \r\n-dotenv.config();\r\n \r\n const seedAdmin = async () => {\r\n   try {\r\n     await mongoose.connect(process.env.MONGO_URI!);\r\n"
+                },
+                {
+                    "date": 1772796894469,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,15 +1,20 @@\n import mongoose from \"mongoose\";\r\n import dotenv from \"dotenv\";\r\n-import { hashPassword } from \"../utils/hash.js\";\r\n-import { User } from \"../models/user.model.js\";\r\n+\r\n+import { hashPassword } from \"../utils/hash.ts\";\r\n+import { User } from \"../models/user.model.ts\";\r\n+\r\n dotenv.config();\r\n \r\n-\r\n const seedAdmin = async () => {\r\n   try {\r\n-    await mongoose.connect(process.env.MONGO_URI!);\r\n+    // connect to database\r\n+    await mongoose.connect(process.env.MONGO_URI as string);\r\n \r\n+    console.log(\"MongoDB connected\");\r\n+\r\n+    // check if admin already exists\r\n     const existingAdmin = await User.findOne({\r\n       email: \"admin@agroshare.com\",\r\n     });\r\n \r\n@@ -17,20 +22,23 @@\n       console.log(\"Admin already exists\");\r\n       process.exit(0);\r\n     }\r\n \r\n+    // hash password\r\n     const hashedPassword = await hashPassword(\"Admin@123\");\r\n \r\n+    // create admin\r\n     await User.create({\r\n       name: \"Super Admin\",\r\n       email: \"admin@agroshare.com\",\r\n       phone: \"9876543210\",\r\n       password: hashedPassword,\r\n       role: \"admin\",\r\n-       status: \"active\",\r\n+      status: \"active\",\r\n     });\r\n \r\n     console.log(\"Admin created successfully\");\r\n+\r\n     process.exit(0);\r\n   } catch (error) {\r\n     console.error(\"Seed error:\", error);\r\n     process.exit(1);\r\n"
+                },
+                {
+                    "date": 1772796899642,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -7,14 +7,12 @@\n dotenv.config();\r\n \r\n const seedAdmin = async () => {\r\n   try {\r\n-    // connect to database\r\n     await mongoose.connect(process.env.MONGO_URI as string);\r\n \r\n     console.log(\"MongoDB connected\");\r\n \r\n-    // check if admin already exists\r\n     const existingAdmin = await User.findOne({\r\n       email: \"admin@agroshare.com\",\r\n     });\r\n \r\n"
+                },
+                {
+                    "date": 1772796907489,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,9 +1,9 @@\n import mongoose from \"mongoose\";\r\n import dotenv from \"dotenv\";\r\n \r\n import { hashPassword } from \"../utils/hash.ts\";\r\n-import { User } from \"../models/user.model.ts\";\r\n+import { User } from \"../models/user.model.s\";\r\n \r\n dotenv.config();\r\n \r\n const seedAdmin = async () => {\r\n@@ -20,12 +20,10 @@\n       console.log(\"Admin already exists\");\r\n       process.exit(0);\r\n     }\r\n \r\n-    // hash password\r\n     const hashedPassword = await hashPassword(\"Admin@123\");\r\n \r\n-    // create admin\r\n     await User.create({\r\n       name: \"Super Admin\",\r\n       email: \"admin@agroshare.com\",\r\n       phone: \"9876543210\",\r\n"
+                },
+                {
+                    "date": 1772796913605,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,9 +1,9 @@\n import mongoose from \"mongoose\";\r\n import dotenv from \"dotenv\";\r\n \r\n-import { hashPassword } from \"../utils/hash.ts\";\r\n-import { User } from \"../models/user.model.s\";\r\n+import { hashPassword } from \"../utils/hash.js\";\r\n+import { User } from \"../models/user.model.js\";\r\n \r\n dotenv.config();\r\n \r\n const seedAdmin = async () => {\r\n"
+                },
+                {
+                    "date": 1772797054169,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,12 +1,11 @@\n import mongoose from \"mongoose\";\r\n import dotenv from \"dotenv\";\r\n \r\n-import { hashPassword } from \"../utils/hash.js\";\r\n-import { User } from \"../models/user.model.js\";\r\n+import { hashPassword } from \"../utils/hash.ts\";\r\n+import { User } from \"../models/user.model.ts\";\r\n \r\n dotenv.config();\r\n-\r\n const seedAdmin = async () => {\r\n   try {\r\n     await mongoose.connect(process.env.MONGO_URI as string);\r\n \r\n"
+                },
+                {
+                    "date": 1772797123124,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -4,16 +4,17 @@\n import { hashPassword } from \"../utils/hash.ts\";\r\n import { User } from \"../models/user.model.ts\";\r\n \r\n dotenv.config();\r\n+\r\n const seedAdmin = async () => {\r\n   try {\r\n     await mongoose.connect(process.env.MONGO_URI as string);\r\n \r\n     console.log(\"MongoDB connected\");\r\n \r\n     const existingAdmin = await User.findOne({\r\n-      email: \"admin@agroshare.com\",\r\n+      email: \"\",\r\n     });\r\n \r\n     if (existingAdmin) {\r\n       console.log(\"Admin already exists\");\r\n"
+                },
+                {
+                    "date": 1772797143116,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -12,9 +12,9 @@\n \r\n     console.log(\"MongoDB connected\");\r\n \r\n     const existingAdmin = await User.findOne({\r\n-      email: \"\",\r\n+      email: \"info.agroshare@gmail.com\",\r\n     });\r\n \r\n     if (existingAdmin) {\r\n       console.log(\"Admin already exists\");\r\n"
+                },
+                {
+                    "date": 1772797151083,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -24,9 +24,9 @@\n     const hashedPassword = await hashPassword(\"Admin@123\");\r\n \r\n     await User.create({\r\n       name: \"Super Admin\",\r\n-      email: \"admin@agroshare.com\",\r\n+      email: \"info.agroshare@gmail.com\",\r\n       phone: \"9876543210\",\r\n       password: hashedPassword,\r\n       role: \"admin\",\r\n       status: \"active\",\r\n"
+                },
+                {
+                    "date": 1772797156358,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -23,9 +23,9 @@\n \r\n     const hashedPassword = await hashPassword(\"Admin@123\");\r\n \r\n     await User.create({\r\n-      name: \"Super Admin\",\r\n+      name: \"Admin\",\r\n       email: \"info.agroshare@gmail.com\",\r\n       phone: \"9876543210\",\r\n       password: hashedPassword,\r\n       role: \"admin\",\r\n"
+                },
+                {
+                    "date": 1772797318976,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,9 +1,9 @@\n import mongoose from \"mongoose\";\r\n import dotenv from \"dotenv\";\r\n \r\n import { hashPassword } from \"../utils/hash.ts\";\r\n-import { User } from \"../models/user.model.ts\";\r\n+import { User } from \"../models/user.model.js\";\r\n \r\n dotenv.config();\r\n \r\n const seedAdmin = async () => {\r\n"
+                },
+                {
+                    "date": 1772797326027,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,8 +1,8 @@\n import mongoose from \"mongoose\";\r\n import dotenv from \"dotenv\";\r\n \r\n-import { hashPassword } from \"../utils/hash.ts\";\r\n+import { hashPassword } from \"../utils/hash.js\";\r\n import { User } from \"../models/user.model.js\";\r\n \r\n dotenv.config();\r\n \r\n"
+                }
+            ],
+            "date": 1772796312820,
+            "name": "Commit-0",
+            "content": "import mongoose from \"mongoose\";\r\nimport dotenv from \"dotenv\";\r\nimport { hashPassword } from \"../src/utils/hash\";\r\nimport { User } from \"../src/models/user.model\";\r\n\r\ndotenv.config();\r\n\r\ndotenv.config();\r\n\r\nconst seedAdmin = async () => {\r\n  try {\r\n    await mongoose.connect(process.env.MONGO_URI!);\r\n\r\n    const existingAdmin = await User.findOne({\r\n      email: \"admin@agroshare.com\",\r\n    });\r\n\r\n    if (existingAdmin) {\r\n      console.log(\"Admin already exists\");\r\n      process.exit(0);\r\n    }\r\n\r\n    const hashedPassword = await hashPassword(\"Admin@123\");\r\n\r\n    await User.create({\r\n      name: \"Super Admin\",\r\n      email: \"admin@agroshare.com\",\r\n      phone: \"9876543210\",\r\n      password: hashedPassword,\r\n      role: \"admin\",\r\n       status: \"active\",\r\n    });\r\n\r\n    console.log(\"Admin created successfully\");\r\n    process.exit(0);\r\n  } catch (error) {\r\n    console.error(\"Seed error:\", error);\r\n    process.exit(1);\r\n  }\r\n};\r\n\r\nseedAdmin();"
+        }
+    ]
+}

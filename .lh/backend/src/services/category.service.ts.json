@@ -1,0 +1,30 @@
+{
+    "sourceFile": "backend/src/services/category.service.ts",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 3,
+            "patches": [
+                {
+                    "date": 1772797942613,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1772821711046,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,22 +1,25 @@\n-import { CategoryRepository } from \"../repositories/category.repository.js\";\r\n+import Category from \"../models/category.model.js\";\r\n \r\n export class CategoryService {\r\n \r\n-  private repo = new CategoryRepository();\r\n+  createCategory = async (data: any) => {\r\n+    return await Category.create(data);\r\n+  };\r\n \r\n-  async createCategory(data:any){\r\n+  getCategories = async () => {\r\n+    return await Category.find();\r\n+  };\r\n \r\n-    const exists = await this.repo.findByName(data.name);\r\n+  getCategoryById = async (id: string) => {\r\n+    return await Category.findById(id);\r\n+  };\r\n \r\n-    if(exists){\r\n-      throw new Error(\"Category already exists\");\r\n-    }\r\n+  updateCategory = async (id: string, data: any) => {\r\n+    return await Category.findByIdAndUpdate(id, data, { new: true });\r\n+  };\r\n \r\n-    return this.repo.create(data);\r\n-  }\r\n+  deleteCategory = async (id: string) => {\r\n+    return await Category.findByIdAndDelete(id);\r\n+  };\r\n \r\n-  async getCategories(){\r\n-    return this.repo.findAll();\r\n-  }\r\n-\r\n }\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1772821744531,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,5 +1,5 @@\n-import Category from \"../models/category.model.js\";\r\n+import Category from \"../models/category.model\";\r\n \r\n export class CategoryService {\r\n \r\n   createCategory = async (data: any) => {\r\n"
+                },
+                {
+                    "date": 1772822090839,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,25 +1,41 @@\n-import Category from \"../models/category.model\";\r\n+import { CategoryRepository } from \"../repositories/category.repository.js\";\r\n \r\n export class CategoryService {\r\n \r\n-  createCategory = async (data: any) => {\r\n-    return await Category.create(data);\r\n-  };\r\n+  private repository = new CategoryRepository();\r\n \r\n-  getCategories = async () => {\r\n-    return await Category.find();\r\n-  };\r\n+  async createCategory(data: any) {\r\n \r\n-  getCategoryById = async (id: string) => {\r\n-    return await Category.findById(id);\r\n-  };\r\n+    const existing = await this.repository.findAll();\r\n \r\n-  updateCategory = async (id: string, data: any) => {\r\n-    return await Category.findByIdAndUpdate(id, data, { new: true });\r\n-  };\r\n+    if (existing.some(c => c.name === data.name)) {\r\n+      throw new Error(\"Category already exists\");\r\n+    }\r\n \r\n-  deleteCategory = async (id: string) => {\r\n-    return await Category.findByIdAndDelete(id);\r\n-  };\r\n+    return await this.repository.create(data);\r\n+  }\r\n \r\n+  async getCategories() {\r\n+    return await this.repository.findAll();\r\n+  }\r\n+\r\n+  async getCategoryById(id: string) {\r\n+\r\n+    const category = await this.repository.findById(id);\r\n+\r\n+    if (!category) {\r\n+      throw new Error(\"Category not found\");\r\n+    }\r\n+\r\n+    return category;\r\n+  }\r\n+\r\n+  async updateCategory(id: string, data: any) {\r\n+    return await this.repository.update(id, data);\r\n+  }\r\n+\r\n+  async deleteCategory(id: string) {\r\n+    return await this.repository.delete(id);\r\n+  }\r\n+\r\n }\n\\ No newline at end of file\n"
+                }
+            ],
+            "date": 1772797942613,
+            "name": "Commit-0",
+            "content": "import { CategoryRepository } from \"../repositories/category.repository.js\";\r\n\r\nexport class CategoryService {\r\n\r\n  private repo = new CategoryRepository();\r\n\r\n  async createCategory(data:any){\r\n\r\n    const exists = await this.repo.findByName(data.name);\r\n\r\n    if(exists){\r\n      throw new Error(\"Category already exists\");\r\n    }\r\n\r\n    return this.repo.create(data);\r\n  }\r\n\r\n  async getCategories(){\r\n    return this.repo.findAll();\r\n  }\r\n\r\n}"
+        }
+    ]
+}

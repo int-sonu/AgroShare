@@ -1,0 +1,22 @@
+{
+    "sourceFile": "frontend/src/components/admin/AdminSidebar.tsx",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 1,
+            "patches": [
+                {
+                    "date": 1772794830236,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1772813321627,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,1 +1,86 @@\n-AdminNav\n\\ No newline at end of file\n+\"use client\";\r\n+\r\n+import Link from \"next/link\";\r\n+import { usePathname } from \"next/navigation\";\r\n+import {LayoutDashboard,Users,Tractor,ShoppingCart,Layers,CreditCard,Star,BarChart,Settings,HelpCircle,} from \"lucide-react\";\r\n+\r\n+export default function AdminSidebar() {\r\n+  const pathname = usePathname();\r\n+\r\n+  const linkClass = (path: string) =>\r\n+    `flex items-center gap-3 px-4 py-2 rounded-md text-sm ${\r\n+      pathname === path\r\n+        ? \"bg-green-600 text-white\"\r\n+        : \"text-gray-300 hover:bg-gray-700\"\r\n+    }`;\r\n+\r\n+  return (\r\n+    <aside className=\"w-64 bg-gray-900 text-white min-h-screen p-4\">\r\n+\r\n+      <div className=\"mb-8\">\r\n+        <h2 className=\"text-xl font-bold text-green-500\">\r\n+          AgroShare Admin\r\n+        </h2>\r\n+      </div>\r\n+\r\n+      <nav className=\"space-y-2\">\r\n+\r\n+        <Link href=\"/admin/dashboard\" className={linkClass(\"/admin/dashboard\")}>\r\n+          <LayoutDashboard size={18} />\r\n+          Dashboard\r\n+        </Link>\r\n+\r\n+        <Link href=\"/admin/users\" className={linkClass(\"/admin/users\")}>\r\n+          <Users size={18} />\r\n+          Users\r\n+        </Link>\r\n+\r\n+        <Link href=\"/admin/sellers\" className={linkClass(\"/admin/sellers\")}>\r\n+          <Users size={18} />\r\n+          Sellers\r\n+        </Link>\r\n+\r\n+        <Link href=\"/admin/machines\" className={linkClass(\"/admin/machines\")}>\r\n+          <Tractor size={18} />\r\n+          Machines\r\n+        </Link>\r\n+\r\n+        <Link href=\"/admin/orders\" className={linkClass(\"/admin/orders\")}>\r\n+          <ShoppingCart size={18} />\r\n+          Orders\r\n+        </Link>\r\n+\r\n+        <Link href=\"/admin/categories\" className={linkClass(\"/admin/categories\")}>\r\n+          <Layers size={18} />\r\n+          Categories\r\n+        </Link>\r\n+\r\n+        <Link href=\"/admin/payments\" className={linkClass(\"/admin/payments\")}>\r\n+          <CreditCard size={18} />\r\n+          Payments\r\n+        </Link>\r\n+\r\n+        <Link href=\"/admin/reviews\" className={linkClass(\"/admin/reviews\")}>\r\n+          <Star size={18} />\r\n+          Reviews\r\n+        </Link>\r\n+\r\n+        <Link href=\"/admin/reports\" className={linkClass(\"/admin/reports\")}>\r\n+          <BarChart size={18} />\r\n+          Reports\r\n+        </Link>\r\n+\r\n+        <Link href=\"/admin/settings\" className={linkClass(\"/admin/settings\")}>\r\n+          <Settings size={18} />\r\n+          Settings\r\n+        </Link>\r\n+\r\n+        <Link href=\"/admin/support\" className={linkClass(\"/admin/support\")}>\r\n+          <HelpCircle size={18} />\r\n+          Support\r\n+        </Link>\r\n+\r\n+      </nav>\r\n+    </aside>\r\n+  );\r\n+}\n\\ No newline at end of file\n"
+                }
+            ],
+            "date": 1772794830236,
+            "name": "Commit-0",
+            "content": "AdminNav"
+        }
+    ]
+}

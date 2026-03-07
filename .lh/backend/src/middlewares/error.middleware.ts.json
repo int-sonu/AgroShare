@@ -1,0 +1,18 @@
+{
+    "sourceFile": "backend/src/middlewares/error.middleware.ts",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1772814450921,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1772814450921,
+            "name": "Commit-0",
+            "content": "import { Request, Response, NextFunction } from 'express';\n\nexport const errorHandler = (\n  err: unknown,\n  _req: Request,\n  res: Response,\n  _next: NextFunction,\n) => {\n  console.error(err);\n\n  let statusCode = 500;\n  let message = 'Internal Server Error';\n\n  if (err instanceof Error) {\n    message = err.message;\n  }\n\n  if ((err as any)?.name === 'CastError') {\n    statusCode = 400;\n    message = 'Invalid ID format';\n  }\n\n  if ((err as any)?.code === 11000) {\n    statusCode = 400;\n    message = 'Duplicate field value';\n  }\n\n  res.status(statusCode).json({\n    success: false,\n    message,\n    ...(process.env.NODE_ENV === 'development' && {\n      stack: err instanceof Error ? err.stack : undefined,\n    }),\n  });\n};\n"
+        }
+    ]
+}

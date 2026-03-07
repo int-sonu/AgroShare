@@ -1,0 +1,30 @@
+{
+    "sourceFile": "backend/scripts/seedAdmin.ts",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 3,
+            "patches": [
+                {
+                    "date": 1772795959650,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1772796062628,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,8 +1,8 @@\n import mongoose from \"mongoose\";\r\n import dotenv from \"dotenv\";\r\n-import { hashPassword } from \"../utils/hash.js\";\r\n-import { User } from \"../models/user.model.js\";\r\n+import { hashPassword } from \"../utils/hash\";\r\n+import { User } from \"../models/user.model\";\r\n \r\n dotenv.config();\r\n \r\n dotenv.config();\r\n"
+                },
+                {
+                    "date": 1772796085381,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,8 +1,8 @@\n import mongoose from \"mongoose\";\r\n import dotenv from \"dotenv\";\r\n-import { hashPassword } from \"../utils/hash\";\r\n-import { User } from \"../models/user.model\";\r\n+import { hashPassword } from \"../utils/hash.js\";\r\n+import { User } from \"../models/user.model.js\";\r\n \r\n dotenv.config();\r\n \r\n dotenv.config();\r\n"
+                },
+                {
+                    "date": 1772796133645,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,8 +1,8 @@\n import mongoose from \"mongoose\";\r\n import dotenv from \"dotenv\";\r\n-import { hashPassword } from \"../utils/hash.js\";\r\n-import { User } from \"../models/user.model.js\";\r\n+import { hashPassword } from \"../utils/hash\";\r\n+import { User } from \"../models/user.model\";\r\n \r\n dotenv.config();\r\n \r\n dotenv.config();\r\n"
+                }
+            ],
+            "date": 1772795959650,
+            "name": "Commit-0",
+            "content": "import mongoose from \"mongoose\";\r\nimport dotenv from \"dotenv\";\r\nimport { hashPassword } from \"../utils/hash.js\";\r\nimport { User } from \"../models/user.model.js\";\r\n\r\ndotenv.config();\r\n\r\ndotenv.config();\r\n\r\nconst seedAdmin = async () => {\r\n  try {\r\n    await mongoose.connect(process.env.MONGO_URI!);\r\n\r\n    const existingAdmin = await User.findOne({\r\n      email: \"admin@agroshare.com\",\r\n    });\r\n\r\n    if (existingAdmin) {\r\n      console.log(\"Admin already exists\");\r\n      process.exit(0);\r\n    }\r\n\r\n    const hashedPassword = await hashPassword(\"Admin@123\");\r\n\r\n    await User.create({\r\n      name: \"Super Admin\",\r\n      email: \"admin@agroshare.com\",\r\n      phone: \"9876543210\",\r\n      password: hashedPassword,\r\n      role: \"admin\",\r\n       status: \"active\",\r\n    });\r\n\r\n    console.log(\"Admin created successfully\");\r\n    process.exit(0);\r\n  } catch (error) {\r\n    console.error(\"Seed error:\", error);\r\n    process.exit(1);\r\n  }\r\n};\r\n\r\nseedAdmin();"
+        }
+    ]
+}

@@ -1,0 +1,18 @@
+{
+    "sourceFile": "backend/src/app.ts",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1772798014667,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1772798014667,
+            "name": "Commit-0",
+            "content": "import express from 'express';\r\nimport cors from 'cors';\r\nimport morgan from 'morgan';\r\nimport authRoutes from './routes/auth.routes.js';\r\nimport categoryRoutes from './routes/category.routes.js';\r\nimport adminRoutes from \"./routes/admin.routes.js\";\r\n\r\nimport sellerRoutes from './routes/seller.routes.js';\r\nimport logger, { morganStream } from './config/logger.js';\r\nimport cookieParser from \"cookie-parser\";\r\n\r\nconst app = express();\r\napp.use(cors({\r\n    origin: \"http://localhost:3000\",\r\n    credentials: true,\r\n  })\r\n);\r\napp.use(express.json());\r\napp.use(cookieParser());\r\napp.use(morgan('dev', { stream: morganStream }));\r\n\r\n\r\n\r\napp.use('/auth', authRoutes);\r\napp.use('/categories', categoryRoutes);\r\napp.use('/seller', sellerRoutes); \r\napp.use(\"/admin\", adminRoutes);\r\napp.use(\"/uploads\", express.static(\"uploads\"));\r\n\r\napp.get('/health', (_req, res) => {\r\n  logger.info('Health check endpoint hit');\r\n  res.status(200).json({ status: 'Backend is running' });\r\n});\r\n\r\n\r\nexport default app;\r\n"
+        }
+    ]
+}

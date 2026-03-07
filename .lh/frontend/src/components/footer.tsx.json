@@ -1,0 +1,18 @@
+{
+    "sourceFile": "frontend/src/components/footer.tsx",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1772789202639,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1772789202639,
+            "name": "Commit-0",
+            "content": "'use client';\r\n\r\nimport Link from \"next/link\";\r\n\r\nexport default function Footer() {\r\n  return (\r\n    <footer className=\"bg-gray-900 text-gray-300 pt-16 pb-8\">\r\n\r\n      <div className=\"container mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-10\">\r\n\r\n        <div>\r\n          <h2 className=\"text-2xl font-bold text-white mb-4\">\r\n            AgroShare<span className=\"text-green-500\">.</span>\r\n          </h2>\r\n          <p className=\"text-sm leading-relaxed\">\r\n            A trusted digital marketplace connecting sellers of modern\r\n            agricultural machinery with farmers across the region.\r\n          </p>\r\n        </div>\r\n\r\n        <div>\r\n          <h3 className=\"text-white font-semibold mb-4\">Quick Links</h3>\r\n          <ul className=\"space-y-2 text-sm\">\r\n            <li><Link href=\"/\" className=\"hover:text-green-500\">Home</Link></li>\r\n            <li><Link href=\"/categories\" className=\"hover:text-green-500\">Categories</Link></li>\r\n            <li><Link href=\"/about\" className=\"hover:text-green-500\">About Us</Link></li>\r\n            <li><Link href=\"/contact\" className=\"hover:text-green-500\">Contact</Link></li>\r\n          </ul>\r\n        </div>\r\n\r\n        <div>\r\n          <h3 className=\"text-white font-semibold mb-4\">For Sellers</h3>\r\n          <ul className=\"space-y-2 text-sm\">\r\n            <li><Link href=\"/auth/register\" className=\"hover:text-green-500\">Become a Seller</Link></li>\r\n            <li><Link href=\"/dashboard\" className=\"hover:text-green-500\">Seller Dashboard</Link></li>\r\n            <li><Link href=\"/pricing\" className=\"hover:text-green-500\">Pricing</Link></li>\r\n            <li><Link href=\"/support\" className=\"hover:text-green-500\">Support</Link></li>\r\n          </ul>\r\n        </div>\r\n\r\n        <div>\r\n          <h3 className=\"text-white font-semibold mb-4\">Contact</h3>\r\n          <ul className=\"space-y-2 text-sm\">\r\n            <li>Email: support@agroshare.com</li>\r\n            <li>Phone: +91 98765 43210</li>\r\n            <li>Kochi, Kerala, India</li>\r\n          </ul>\r\n        </div>\r\n\r\n      </div>\r\n\r\n      <div className=\"border-t border-gray-700 mt-12 pt-6 text-center text-sm text-gray-400\">\r\n        © {new Date().getFullYear()} AgroShare. All rights reserved.\r\n      </div>\r\n\r\n    </footer>\r\n  );\r\n}"
+        }
+    ]
+}

@@ -1,0 +1,18 @@
+{
+    "sourceFile": "backend/src/middlewares/adminAuth.ts",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1772822019128,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1772822019128,
+            "name": "Commit-0",
+            "content": "import { Request, Response, NextFunction } from \"express\";\r\nimport jwt from \"jsonwebtoken\";\r\n\r\nexport const adminAuth = (\r\n  req: Request,\r\n  res: Response,\r\n  next: NextFunction\r\n) => {\r\n\r\n  const token = req.headers.authorization?.split(\" \")[1];\r\n\r\n  if (!token) {\r\n    return res.status(401).json({\r\n      success: false,\r\n      message: \"Unauthorized\",\r\n    });\r\n  }\r\n\r\n  try {\r\n\r\n    const decoded: any = jwt.verify(\r\n      token,\r\n      process.env.JWT_SECRET as string\r\n    );\r\n\r\n    if (decoded.role !== \"admin\") {\r\n      return res.status(403).json({\r\n        success: false,\r\n        message: \"Admin access only\",\r\n      });\r\n    }\r\n\r\n    next();\r\n\r\n  } catch (error) {\r\n\r\n    return res.status(401).json({\r\n      success: false,\r\n      message: \"Invalid token\",\r\n    });\r\n\r\n  }\r\n\r\n};"
+        }
+    ]
+}

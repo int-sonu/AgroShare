@@ -1,0 +1,18 @@
+{
+    "sourceFile": "backend/src/utils/jwt.ts",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1772812888997,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1772812888997,
+            "name": "Commit-0",
+            "content": "import jwt from 'jsonwebtoken';\r\nexport const generateAccessToken = (\r\n  user: { id: string; role: string }\r\n) => {\r\n  const secret = process.env.JWT_ACCESS_SECRET;\r\n  if (!secret) throw new Error('JWT_ACCESS_SECRET not defined');\r\n\r\n  return jwt.sign(\r\n    {\r\n      userId: user.id,\r\n      role: user.role,\r\n    },\r\n    secret,\r\n    { expiresIn: '15m' }\r\n  );\r\n};\r\n\r\nexport const verifyAccessToken = (token: string) => {\r\n  const secret = process.env.JWT_ACCESS_SECRET;\r\n  if (!secret) throw new Error('JWT_ACCESS_SECRET not defined');\r\n\r\n  return jwt.verify(token, secret);\r\n};\r\n\r\nexport const generateRefreshToken = (userId: string) => {\r\n  const secret = process.env.JWT_REFRESH_SECRET;\r\n  if (!secret) throw new Error('JWT_REFRESH_SECRET not defined');\r\n\r\n  return jwt.sign({ userId }, secret, {\r\n    expiresIn: '7d',\r\n  });\r\n};\r\n\r\nexport const verifyRefreshToken = (token: string) => {\r\n  const secret = process.env.JWT_REFRESH_SECRET;\r\n  if (!secret) throw new Error('JWT_REFRESH_SECRET not defined');\r\n\r\n  return jwt.verify(token, secret);\r\n};\r\n\r\nexport const generateResetToken = (userId: string) => {\r\n  const secret = process.env.JWT_RESET_SECRET;\r\n  if (!secret) throw new Error('JWT_RESET_SECRET not defined');\r\n\r\n  return jwt.sign({ userId }, secret, {\r\n    expiresIn: '10m',\r\n  });\r\n};\r\n\r\nexport const verifyResetToken = (token: string) => {\r\n  const secret = process.env.JWT_RESET_SECRET;\r\n  if (!secret) throw new Error('JWT_RESET_SECRET not defined');\r\n\r\n  return jwt.verify(token, secret);\r\n};\r\n"
+        }
+    ]
+}

@@ -1,0 +1,18 @@
+{
+    "sourceFile": "frontend/src/components/admin/UsersTable.tsx",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1772794842533,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1772794842533,
+            "name": "Commit-0",
+            "content": "import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow,} from \"@/components/ui/table\";\r\n\r\nexport default function UsersTable({ users }: any) {\r\n  return (\r\n    <Table>\r\n      <TableHeader>\r\n        <TableRow>\r\n          <TableHead>Name</TableHead>\r\n          <TableHead>Email</TableHead>\r\n          <TableHead>Phone</TableHead>\r\n          <TableHead>Status</TableHead>\r\n        </TableRow>\r\n      </TableHeader>\r\n\r\n      <TableBody>\r\n        {users.map((u: any) => (\r\n          <TableRow key={u._id}>\r\n            <TableCell>{u.name}</TableCell>\r\n            <TableCell>{u.email}</TableCell>\r\n            <TableCell>{u.phone}</TableCell>\r\n            <TableCell>{u.status}</TableCell>\r\n          </TableRow>\r\n        ))}\r\n      </TableBody>\r\n    </Table>\r\n  );\r\n}"
+        }
+    ]
+}

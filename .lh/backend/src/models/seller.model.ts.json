@@ -1,0 +1,18 @@
+{
+    "sourceFile": "backend/src/models/seller.model.ts",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1772797575594,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1772797575594,
+            "name": "Commit-0",
+            "content": "import mongoose, { Schema, Document, Model } from \"mongoose\";\r\n\r\nexport interface ISeller extends Document {\r\n  userId: mongoose.Types.ObjectId;\r\n\r\n  sellerType: \"individual\" | \"shop\";\r\n  businessName?: string;\r\n  profileImage?: string;\r\n\r\n  state: string;\r\n  district: string;\r\n  city: string;\r\n  address: string;\r\n  pincode: string;\r\n\r\n  isProfileComplete: boolean;\r\n\r\n  verificationStatus: \"pending\" | \"approved\" | \"rejected\";\r\n  verificationNote?: string;\r\n\r\n  bankName?: string;\r\n  accountNumber?: string;\r\n  ifscCode?: string;\r\n  bankAdded: boolean;\r\n\r\n  deliveryAvailable: boolean;\r\n  deliveryRadius?: number;\r\n\r\n  profileStep: number;\r\n\r\n  createdAt: Date;\r\n  updatedAt: Date;\r\n\r\n  fullAddress?: string;\r\n}\r\n\r\nconst sellerSchema = new Schema<ISeller>(\r\n  {\r\n    userId: {\r\n      type: Schema.Types.ObjectId,\r\n      ref: \"User\",\r\n      required: true,\r\n      unique: true,\r\n      index: true,\r\n    },\r\n\r\n    sellerType: {\r\n      type: String,\r\n      enum: [\"individual\", \"shop\"],\r\n      required: true,\r\n    },\r\n\r\n    businessName: {\r\n      type: String,\r\n      trim: true,\r\n      required: function (this: ISeller) {\r\n        return this.sellerType === \"shop\";\r\n      },\r\n    },\r\n\r\n    profileImage: String,\r\n\r\n    state: { type: String, required: true, trim: true },\r\n    district: { type: String, required: true, trim: true },\r\n    city: { type: String, required: true, trim: true },\r\n    address: { type: String, required: true, trim: true },\r\n    pincode: {\r\n      type: String,\r\n      required: true,\r\n      match: [/^[0-9]{6}$/, \"Invalid pincode\"],\r\n    },\r\n\r\n    isProfileComplete: {\r\n      type: Boolean,\r\n      default: false,\r\n    },\r\n\r\n    verificationStatus: {\r\n      type: String,\r\n      enum: [\"pending\", \"approved\", \"rejected\"],\r\n      default: \"pending\",\r\n    },\r\n\r\n    verificationNote: String,\r\n\r\n    bankName: { type: String, trim: true },\r\n\r\n    accountNumber: {\r\n      type: String,\r\n      trim: true,\r\n      select: false,\r\n    },\r\n\r\n    ifscCode: {\r\n      type: String,\r\n      trim: true,\r\n      uppercase: true,\r\n      match: [/^[A-Z]{4}0[A-Z0-9]{6}$/, \"Invalid IFSC code\"],\r\n    },\r\n\r\n    bankAdded: {\r\n      type: Boolean,\r\n      default: false,\r\n    },\r\n\r\n    deliveryAvailable: {\r\n      type: Boolean,\r\n      default: false,\r\n    },\r\n\r\n    deliveryRadius: {\r\n      type: Number,\r\n      min: 0,\r\n      required: function (this: ISeller) {\r\n        return this.deliveryAvailable === true;\r\n      },\r\n    },\r\n\r\n    profileStep: {\r\n      type: Number,\r\n      default: 1,\r\n    },\r\n  },\r\n  { timestamps: true }\r\n);\r\n\r\nsellerSchema.virtual(\"fullAddress\").get(function (this: ISeller) {\r\n  return `${this.address}, ${this.city}, ${this.district}, ${this.state} - ${this.pincode}`;\r\n});\r\n\r\nsellerSchema.index({ state: 1, district: 1, city: 1 });\r\n\r\nexport default mongoose.model<ISeller>(\"Seller\", sellerSchema);"
+        }
+    ]
+}

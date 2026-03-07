@@ -1,0 +1,26 @@
+{
+    "sourceFile": "backend/src/middlewares/upload.middleware.ts",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 2,
+            "patches": [
+                {
+                    "date": 1772797704988,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1772812987644,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,17 +1,15 @@\n import multer from \"multer\";\r\n import path from \"path\";\r\n \r\n const storage = multer.diskStorage({\r\n+  destination: (req, file, cb) => {\r\n+    cb(null, \"uploads/categories\");\r\n+  },\r\n \r\n-  destination:(req,file,cb)=>{\r\n-    cb(null,\"uploads/categories\");\r\n+  filename: (req, file, cb) => {\r\n+    const fileName = Date.now() + path.extname(file.originalname);\r\n+    cb(null, fileName);\r\n   },\r\n-\r\n-  filename:(req,file,cb)=>{\r\n-    const name = Date.now() + path.extname(file.originalname);\r\n\\ No newline at end of file\n-    cb(null,name);\r\n-  }\r\n-\r\n });\r\n \r\n-export const uploadCategoryImage = multer({storage});\n+export const uploadCategoryImage = multer({ storage });\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1772813035703,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,13 +1,15 @@\n import multer from \"multer\";\r\n import path from \"path\";\r\n+import { Request } from \"express\";\r\n+import { FileFilterCallback } from \"multer\";\r\n \r\n const storage = multer.diskStorage({\r\n-  destination: (req, file, cb) => {\r\n+  destination: (req: Request, file: Express.Multer.File, cb: Function) => {\r\n     cb(null, \"uploads/categories\");\r\n   },\r\n \r\n-  filename: (req, file, cb) => {\r\n+  filename: (req: Request, file: Express.Multer.File, cb: Function) => {\r\n     const fileName = Date.now() + path.extname(file.originalname);\r\n     cb(null, fileName);\r\n   },\r\n });\r\n"
+                }
+            ],
+            "date": 1772797704988,
+            "name": "Commit-0",
+            "content": "import multer from \"multer\";\r\nimport path from \"path\";\r\n\r\nconst storage = multer.diskStorage({\r\n\r\n  destination:(req,file,cb)=>{\r\n    cb(null,\"uploads/categories\");\r\n  },\r\n\r\n  filename:(req,file,cb)=>{\r\n    const name = Date.now() + path.extname(file.originalname);\r\n    cb(null,name);\r\n  }\r\n\r\n});\r\n\r\nexport const uploadCategoryImage = multer({storage});"
+        }
+    ]
+}

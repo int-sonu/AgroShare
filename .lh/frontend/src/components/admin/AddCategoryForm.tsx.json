@@ -1,0 +1,18 @@
+{
+    "sourceFile": "frontend/src/components/admin/AddCategoryForm.tsx",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1772813299233,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1772813299233,
+            "name": "Commit-0",
+            "content": "\"use client\"\r\n\r\nimport { useState } from \"react\"\r\n\r\nexport default function AddCategoryForm({ refresh, close }: any) {\r\n\r\n  const [name,setName] = useState(\"\")\r\n  const [image,setImage] = useState<File | null>(null)\r\n\r\n  const handleSubmit = async (e:any) => {\r\n\r\n    e.preventDefault()\r\n\r\n    const formData = new FormData()\r\n\r\n    formData.append(\"name\", name)\r\n\r\n    if(image){\r\n      formData.append(\"image\", image)\r\n    }\r\n\r\n    const res = await fetch(\"http://localhost:5000/categories\", {\r\n      method: \"POST\",\r\n      body: formData\r\n    })\r\n\r\n    const data = await res.json()\r\n\r\n    if(data.success){\r\n      alert(\"Category Added\")\r\n      refresh()\r\n      close()\r\n    }\r\n\r\n  }\r\n\r\n  return (\r\n\r\n    <form\r\n      onSubmit={handleSubmit}\r\n      className=\"border p-4 rounded space-y-3\"\r\n    >\r\n\r\n      <input\r\n        className=\"border p-2 w-full\"\r\n        placeholder=\"Category Name\"\r\n        value={name}\r\n        onChange={(e)=>setName(e.target.value)}\r\n      />\r\n\r\n      <input\r\n        type=\"file\"\r\n        onChange={(e)=>setImage(e.target.files?.[0] || null)}\r\n      />\r\n\r\n      <button\r\n        type=\"submit\"\r\n        className=\"bg-black text-white px-4 py-2 rounded\"\r\n      >\r\n        Save\r\n      </button>\r\n\r\n    </form>\r\n\r\n  )\r\n}"
+        }
+    ]
+}

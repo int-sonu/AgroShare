@@ -15,7 +15,7 @@ export default [
         ecmaVersion: 'latest',
       },
       globals: {
-        ...globals.node, // ✅ ADD THIS
+        ...globals.node,
       },
     },
     plugins: {
@@ -23,7 +23,14 @@ export default [
     },
     rules: {
       ...tsPlugin.configs.recommended.rules,
-      '@typescript-eslint/no-unused-vars': 'warn',
+      'no-undef': 'off',
+      '@typescript-eslint/no-unused-vars': [
+        'warn',
+        {
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+        },
+      ],
       '@typescript-eslint/no-explicit-any': 'warn',
     },
   },

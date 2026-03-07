@@ -1,0 +1,18 @@
+{
+    "sourceFile": "backend/src/models/user.model.ts",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1772814550858,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1772814550858,
+            "name": "Commit-0",
+            "content": "import mongoose, { Document, Schema } from 'mongoose';\n\nexport interface IUser extends Document {\n  name: string;\n  email: string;\n  phone: string;\n  password: string;\n  role: 'customer' | 'seller' | 'admin';\n  status: 'active' | 'disabled';\n  refreshToken?: string | null;\n\n  resetPasswordToken?: string;\n  resetPasswordExpires?: Date;\n  passwordChangedAt?: Date;\n\n  createdAt: Date;\n  updatedAt: Date;\n}\n\nconst userSchema = new Schema<IUser>(\n  {\n    name: {\n      type: String,\n      required: true,\n      trim: true,\n      minlength: 2,\n    },\n\n    email: {\n      type: String,\n      required: true,\n      unique: true,\n      lowercase: true,\n      trim: true,\n      match: [/^\\S+@\\S+\\.\\S+$/, 'Invalid email format'],\n    },\n\n    phone: {\n      type: String,\n      required: true,\n      unique: true,\n      match: [/^[6-9]\\d{9}$/, 'Invalid phone number'],\n    },\n\n    password: {\n      type: String,\n      required: true,\n      minlength: 6,\n      select: false,\n    },\n\n    role: {\n      type: String,\n      enum: ['customer', 'seller', 'admin'],\n      default: 'customer',\n    },\n\n    status: {\n      type: String,\n      enum: ['active', 'disabled'],\n      default: 'active',\n    },\n\n    refreshToken: {\n      type: String,\n      default: null,\n      select: false,\n    },\n\n    resetPasswordToken: {\n      type: String,\n      select: false,\n    },\n\n    resetPasswordExpires: {\n      type: Date,\n      select: false,\n    },\n\n    passwordChangedAt: {\n      type: Date,\n    },\n  },\n  {\n    timestamps: true,\n  }\n);\n\nexport const User = mongoose.model<IUser>('User', userSchema);\n"
+        }
+    ]
+}

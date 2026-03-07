@@ -1,0 +1,18 @@
+{
+    "sourceFile": "frontend/src/components/admin/DashboardCards.tsx",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1772794633284,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1772794633284,
+            "name": "Commit-0",
+            "content": "import { Card, CardContent } from \"@/components/ui/card\";\r\nimport { Users, Store, Tractor, ShoppingCart } from \"lucide-react\";\r\n\r\nexport default function DashboardCards({ stats }: any) {\r\n  return (\r\n    <div className=\"grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8\">\r\n\r\n      <Card className=\"hover:shadow-lg transition\">\r\n        <CardContent className=\"p-6 flex items-center justify-between\">\r\n          <div>\r\n            <p className=\"text-gray-500 text-sm\">Users</p>\r\n            <p className=\"text-2xl font-bold\">{stats.totalUsers}</p>\r\n          </div>\r\n          <Users className=\"text-green-600\" size={28} />\r\n        </CardContent>\r\n      </Card>\r\n\r\n      <Card className=\"hover:shadow-lg transition\">\r\n        <CardContent className=\"p-6 flex items-center justify-between\">\r\n          <div>\r\n            <p className=\"text-gray-500 text-sm\">Sellers</p>\r\n            <p className=\"text-2xl font-bold\">{stats.totalSellers}</p>\r\n          </div>\r\n          <Store className=\"text-green-600\" size={28} />\r\n        </CardContent>\r\n      </Card>\r\n\r\n      <Card className=\"hover:shadow-lg transition\">\r\n        <CardContent className=\"p-6 flex items-center justify-between\">\r\n          <div>\r\n            <p className=\"text-gray-500 text-sm\">Machines</p>\r\n            <p className=\"text-2xl font-bold\">{stats.totalMachines}</p>\r\n          </div>\r\n          <Tractor className=\"text-green-600\" size={28} />\r\n        </CardContent>\r\n      </Card>\r\n\r\n      <Card className=\"hover:shadow-lg transition\">\r\n        <CardContent className=\"p-6 flex items-center justify-between\">\r\n          <div>\r\n            <p className=\"text-gray-500 text-sm\">Orders</p>\r\n            <p className=\"text-2xl font-bold\">{stats.totalOrders}</p>\r\n          </div>\r\n          <ShoppingCart className=\"text-green-600\" size={28} />\r\n        </CardContent>\r\n      </Card>\r\n\r\n    </div>\r\n  );\r\n}"
+        }
+    ]
+}

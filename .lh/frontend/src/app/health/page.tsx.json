@@ -1,0 +1,18 @@
+{
+    "sourceFile": "frontend/src/app/health/page.tsx",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1772814081641,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1772814081640,
+            "name": "Commit-0",
+            "content": "\"use client\";\r\n\r\nimport { useEffect, useState } from \"react\";\r\n\r\nexport default function HealthPage() {\r\n  const [status, setStatus] = useState(\"Checking...\");\r\n  const [color, setColor] = useState(\"text-gray-600\");\r\n\r\n  useEffect(() => {\r\n    const checkHealth = async () => {\r\n      try {\r\n        const res = await fetch(\r\n          `${process.env.NEXT_PUBLIC_API_URL}/health`\r\n        );\r\n\r\n        const data = await res.json();\r\n\r\n        if (res.ok) {\r\n          setStatus(data.status);\r\n          setColor(\"text-green-600\");\r\n        } else {\r\n          setStatus(\"Backend error\");\r\n          setColor(\"text-red-600\");\r\n        }\r\n      } catch (error) {\r\n        setStatus(\"Backend not reachable\");\r\n        setColor(\"text-red-600\");\r\n      }\r\n    };\r\n\r\n    checkHealth();\r\n  }, []);\r\n\r\n  return (\r\n    <div className=\"min-h-screen flex items-center justify-center bg-gray-100\">\r\n\r\n      <div className=\"bg-white p-8 rounded-lg shadow-md text-center\">\r\n\r\n        <h1 className=\"text-2xl font-bold mb-4\">\r\n          AgroShare System Health\r\n        </h1>\r\n\r\n        <p className={`text-lg font-semibold ${color}`}>\r\n          {status}\r\n        </p>\r\n\r\n      </div>\r\n\r\n    </div>\r\n  );\r\n}"
+        }
+    ]
+}

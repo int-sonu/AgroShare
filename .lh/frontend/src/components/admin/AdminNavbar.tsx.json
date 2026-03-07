@@ -1,0 +1,18 @@
+{
+    "sourceFile": "frontend/src/components/admin/AdminNavbar.tsx",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1772795068168,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1772795068168,
+            "name": "Commit-0",
+            "content": "\"use client\";\r\n\r\nimport { Bell, Search, Mail, MessageCircle } from \"lucide-react\";\r\nimport { useAuth } from \"@/context/AuthContext\";\r\n\r\nexport default function AdminNavbar() {\r\n  const { user } = useAuth();\r\n\r\n  return (\r\n    <header className=\"h-16 bg-gray-900 text-white border-b border-gray-800 flex items-center justify-between px-6\">\r\n\r\n      <div className=\"flex items-center bg-white  px-3 py-2 rounded-md w-96\">\r\n        <Search size={18} className=\"text-gray-400 mr-2\" />\r\n        <input\r\n          type=\"text\"\r\n          placeholder=\"Search users, machines, orders...\"\r\n          className=\"bg-transparent outline-none text-sm w-full text-white placeholder-gray-400\"\r\n        />\r\n      </div>\r\n\r\n      <div className=\"flex items-center gap-6\">\r\n\r\n        <button className=\"relative hover:text-green-400 transition\">\r\n          <MessageCircle size={20} />\r\n          <span className=\"absolute -top-1 -right-1 bg-green-600 text-xs w-4 h-4 flex items-center justify-center rounded-full\">\r\n            2\r\n          </span>\r\n        </button>\r\n\r\n        <button className=\"relative hover:text-green-400 transition\">\r\n          <Mail size={20} />\r\n          <span className=\"absolute -top-1 -right-1 bg-green-600 text-xs w-4 h-4 flex items-center justify-center rounded-full\">\r\n            1\r\n          </span>\r\n        </button>\r\n\r\n        <button className=\"relative hover:text-green-400 transition\">\r\n          <Bell size={20} />\r\n          <span className=\"absolute -top-1 -right-1 bg-green-600 text-xs w-4 h-4 flex items-center justify-center rounded-full\">\r\n            3\r\n          </span>\r\n        </button>\r\n\r\n        <div className=\"flex items-center gap-2 cursor-pointer\">\r\n          <div className=\"w-8 h-8 bg-green-600 text-white flex items-center justify-center rounded-full font-semibold\">\r\n            {user?.name?.charAt(0)}\r\n          </div>\r\n\r\n          <span className=\"text-sm hidden md:block\">\r\n            {user?.name}\r\n          </span>\r\n        </div>\r\n\r\n      </div>\r\n    </header>\r\n  );\r\n}"
+        }
+    ]
+}

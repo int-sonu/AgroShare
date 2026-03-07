@@ -1,0 +1,18 @@
+{
+    "sourceFile": "frontend/src/app/layout.tsx",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1772788860038,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1772788860038,
+            "name": "Commit-0",
+            "content": "import type { Metadata } from \"next\";\r\nimport { Geist, Geist_Mono } from \"next/font/google\";\r\nimport \"./globals.css\";\r\nimport { AuthProvider } from \"@/context/AuthContext\";\r\nimport LayoutWrapper from \"@/components/LayoutWrapper\";\r\nconst geistSans = Geist({\r\n  variable: \"--font-geist-sans\",\r\n  subsets: [\"latin\"],\r\n});\r\n\r\nconst geistMono = Geist_Mono({\r\n  variable: \"--font-geist-mono\",\r\n  subsets: [\"latin\"],\r\n});\r\n\r\nexport const metadata: Metadata = {\r\n  title: \"AgroShare\",\r\n  description: \"Agriculture Machine Renting Platform\",\r\n};\r\n\r\nexport default function RootLayout({\r\n  children,\r\n}: {\r\n  children: React.ReactNode;\r\n}) {\r\n  return (\r\n    <html lang=\"en\" suppressHydrationWarning>\r\n      <body\r\n        className={`${geistSans.variable} ${geistMono.variable} antialiased`}\r\n      >\r\n        <AuthProvider>\r\n          <LayoutWrapper>{children}</LayoutWrapper>\r\n        </AuthProvider>\r\n      </body>\r\n    </html>\r\n  );\r\n}"
+        }
+    ]
+}

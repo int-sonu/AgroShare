@@ -1,0 +1,18 @@
+{
+    "sourceFile": "backend/src/routes/admin.routes.ts",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1772797648390,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1772797648390,
+            "name": "Commit-0",
+            "content": "import { Router } from \"express\";\r\nimport * as adminController from \"../controllers/admin.controller.js\";\r\nimport { protect, authorize } from \"../middlewares/auth.middleware.js\";\r\n\r\nconst router = Router();\r\n\r\nrouter.get( \"/dashboard\", protect, authorize(\"admin\"), adminController.dashboard);\r\nrouter.get(\"/users\",protect,authorize(\"admin\"),adminController.getUsers);\r\nrouter.get( \"/sellers\", protect, authorize(\"admin\"), adminController.getAllSellers);\r\nrouter.get( \"/sellers/pending\", protect, authorize(\"admin\"), adminController.getPendingSellers);\r\nrouter.get(\"/sellers/pending\",protect,authorize(\"admin\"),adminController.getPendingSellers);\r\nrouter.put( \"/sellers/:sellerId/verify\", protect,authorize(\"admin\"),adminController.verifySeller);\r\nexport default router;"
+        }
+    ]
+}

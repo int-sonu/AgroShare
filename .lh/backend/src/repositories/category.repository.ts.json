@@ -1,0 +1,22 @@
+{
+    "sourceFile": "backend/src/repositories/category.repository.ts",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 1,
+            "patches": [
+                {
+                    "date": 1772797599218,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1772822080105,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,17 +1,25 @@\n-import { Category } from \"../models/category.model.js\";\r\n+import { Category, ICategory } from \"../models/category.model.js\";\r\n \r\n export class CategoryRepository {\r\n \r\n-  async create(data:any){\r\n-    return Category.create(data);\r\n+  async create(data: Partial<ICategory>) {\r\n+    return await Category.create(data);\r\n   }\r\n \r\n-  async findAll(){\r\n-    return Category.find();\r\n+  async findAll() {\r\n+    return await Category.find();\r\n   }\r\n \r\n-  async findByName(name:string){\r\n-    return Category.findOne({name});\r\n+  async findById(id: string) {\r\n+    return await Category.findById(id);\r\n   }\r\n \r\n+  async update(id: string, data: Partial<ICategory>) {\r\n+    return await Category.findByIdAndUpdate(id, data, { new: true });\r\n+  }\r\n+\r\n+  async delete(id: string) {\r\n+    return await Category.findByIdAndDelete(id);\r\n+  }\r\n+\r\n }\n\\ No newline at end of file\n"
+                }
+            ],
+            "date": 1772797599218,
+            "name": "Commit-0",
+            "content": "import { Category } from \"../models/category.model.js\";\r\n\r\nexport class CategoryRepository {\r\n\r\n  async create(data:any){\r\n    return Category.create(data);\r\n  }\r\n\r\n  async findAll(){\r\n    return Category.find();\r\n  }\r\n\r\n  async findByName(name:string){\r\n    return Category.findOne({name});\r\n  }\r\n\r\n}"
+        }
+    ]
+}

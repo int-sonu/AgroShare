@@ -1,0 +1,18 @@
+{
+    "sourceFile": "backend/src/repositories/seller.repository.ts",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1772797624946,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1772797624946,
+            "name": "Commit-0",
+            "content": "import Seller from \"../models/seller.model.js\";\r\n\r\nexport const createSeller = (data: any) => {\r\n  return Seller.create(data);\r\n};\r\n\r\nexport const findSellerByUserId = (userId: string) => {\r\n  return Seller.findOne({ userId });\r\n};\r\n\r\nexport const findSellerById = (sellerId: string) => {\r\n  return Seller.findById(sellerId);\r\n};\r\n\r\nexport const findAllSellers = () => {\r\n  return Seller.find();\r\n};\r\n\r\nexport const updateSellerByUserId = (\r\n  userId: string,\r\n  data: any\r\n) => {\r\n  return Seller.findOneAndUpdate(\r\n    { userId },\r\n    data,\r\n    {\r\n      new: true,\r\n      runValidators: true,\r\n    }\r\n  );\r\n};\r\n\r\nexport const updateSellerStatus = (\r\n  sellerId: string,\r\n  status: \"pending\" | \"verified\" | \"rejected\"\r\n) => {\r\n  return Seller.findByIdAndUpdate(\r\n    sellerId,\r\n    { status },\r\n    { new: true }\r\n  );\r\n};\r\n\r\nexport const deleteSellerByUserId = (userId: string) => {\r\n  return Seller.findOneAndDelete({ userId });\r\n};"
+        }
+    ]
+}

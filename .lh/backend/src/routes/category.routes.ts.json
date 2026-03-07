@@ -1,0 +1,58 @@
+{
+    "sourceFile": "backend/src/routes/category.routes.ts",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 10,
+            "patches": [
+                {
+                    "date": 1772797809419,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1772821783657,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,12 +1,26 @@\n import { Router } from \"express\";\r\n import { CategoryController } from \"../controllers/category.controller.js\";\r\n-import { uploadCategoryImage } from \"../middlewares/upload.middleware.js\";\r\n+import { uploadCategoryImage } from \"../middlewares/multer.js\";\r\n \r\n const router = Router();\r\n const controller = new CategoryController();\r\n \r\n-router.post( \"/\", uploadCategoryImage.single(\"image\"), controller.createCategory);\r\n+router.post(\r\n+  \"/categories\",\r\n+  uploadCategoryImage.single(\"image\"),\r\n+  controller.createCategory\r\n+);\r\n \r\n-router.get(\"/\", controller.getCategories);\r\n+router.get(\"/categories\", controller.getCategories);\r\n \r\n+router.get(\"/categories/:id\", controller.getCategoryById);\r\n+\r\n+router.put(\r\n+  \"/categories/:id\",\r\n+  uploadCategoryImage.single(\"image\"),\r\n+  controller.updateCategory\r\n+);\r\n+\r\n+router.delete(\"/categories/:id\", controller.deleteCategory);\r\n+\r\n export default router;\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1772821789885,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -4,12 +4,9 @@\n \r\n const router = Router();\r\n const controller = new CategoryController();\r\n \r\n-router.post(\r\n-  \"/categories\",\r\n-  uploadCategoryImage.single(\"image\"),\r\n-  controller.createCategory\r\n+router.post( \"/categories\", uploadCategoryImage.single(\"image\"), controller.createCategory\r\n );\r\n \r\n router.get(\"/categories\", controller.getCategories);\r\n \r\n"
+                },
+                {
+                    "date": 1772821796530,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -4,19 +4,15 @@\n \r\n const router = Router();\r\n const controller = new CategoryController();\r\n \r\n-router.post( \"/categories\", uploadCategoryImage.single(\"image\"), controller.createCategory\r\n-);\r\n+router.post( \"/categories\", uploadCategoryImage.single(\"image\"), controller.createCategory);\r\n \r\n router.get(\"/categories\", controller.getCategories);\r\n \r\n router.get(\"/categories/:id\", controller.getCategoryById);\r\n \r\n-router.put(\r\n-  \"/categories/:id\",\r\n-  uploadCategoryImage.single(\"image\"),\r\n-  controller.updateCategory\r\n+router.put( \"/categories/:id\", uploadCategoryImage.single(\"image\"), controller.updateCategory\r\n );\r\n \r\n router.delete(\"/categories/:id\", controller.deleteCategory);\r\n \r\n"
+                },
+                {
+                    "date": 1772822035369,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,19 +1,33 @@\n import { Router } from \"express\";\r\n import { CategoryController } from \"../controllers/category.controller.js\";\r\n import { uploadCategoryImage } from \"../middlewares/multer.js\";\r\n+import { adminAuth } from \"../middlewares/adminAuth.js\";\r\n \r\n const router = Router();\r\n+\r\n const controller = new CategoryController();\r\n \r\n-router.post( \"/categories\", uploadCategoryImage.single(\"image\"), controller.createCategory);\r\n+router.post(\r\n+  \"/categories\",\r\n+  adminAuth,\r\n+  uploadCategoryImage.single(\"image\"),\r\n+  controller.createCategory\r\n+);\r\n \r\n-router.get(\"/categories\", controller.getCategories);\r\n+router.put(\r\n+  \"/categories/:id\",\r\n+  adminAuth,\r\n+  uploadCategoryImage.single(\"image\"),\r\n+  controller.updateCategory\r\n+);\r\n \r\n-router.get(\"/categories/:id\", controller.getCategoryById);\r\n-\r\n-router.put( \"/categories/:id\", uploadCategoryImage.single(\"image\"), controller.updateCategory\r\n+router.delete(\r\n+  \"/categories/:id\",\r\n+  adminAuth,\r\n+  controller.deleteCategory\r\n );\r\n \r\n-router.delete(\"/categories/:id\", controller.deleteCategory);\r\n+router.get(\"/categories\", controller.getCategories);\r\n+router.get(\"/categories/:id\", controller.getCategoryById);\r\n \r\n export default router;\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1772822117177,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,33 +1,29 @@\n import { Router } from \"express\";\r\n import { CategoryController } from \"../controllers/category.controller.js\";\r\n import { uploadCategoryImage } from \"../middlewares/multer.js\";\r\n-import { adminAuth } from \"../middlewares/adminAuth.js\";\r\n \r\n const router = Router();\r\n-\r\n const controller = new CategoryController();\r\n \r\n router.post(\r\n   \"/categories\",\r\n-  adminAuth,\r\n   uploadCategoryImage.single(\"image\"),\r\n   controller.createCategory\r\n );\r\n \r\n+router.get(\"/categories\", controller.getCategories);\r\n+\r\n+router.get(\"/categories/:id\", controller.getCategoryById);\r\n+\r\n router.put(\r\n   \"/categories/:id\",\r\n-  adminAuth,\r\n   uploadCategoryImage.single(\"image\"),\r\n   controller.updateCategory\r\n );\r\n \r\n router.delete(\r\n   \"/categories/:id\",\r\n-  adminAuth,\r\n   controller.deleteCategory\r\n );\r\n \r\n-router.get(\"/categories\", controller.getCategories);\r\n-router.get(\"/categories/:id\", controller.getCategoryById);\r\n-\r\n export default router;\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1772822223568,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,7 +1,7 @@\n import { Router } from \"express\";\r\n import { CategoryController } from \"../controllers/category.controller.js\";\r\n-import { uploadCategoryImage } from \"../middlewares/multer.js\";\r\n+import { uploadCategoryImage } from \"../middlewares/multer\";\r\n \r\n const router = Router();\r\n const controller = new CategoryController();\r\n \r\n"
+                },
+                {
+                    "date": 1772822306811,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,7 +1,7 @@\n import { Router } from \"express\";\r\n import { CategoryController } from \"../controllers/category.controller.js\";\r\n-import { uploadCategoryImage } from \"../middlewares/multer\";\r\n+import { uploadCategoryImage } from \"../middlewares/multer.js\";\r\n \r\n const router = Router();\r\n const controller = new CategoryController();\r\n \r\n"
+                },
+                {
+                    "date": 1772822357847,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -20,10 +20,7 @@\n   uploadCategoryImage.single(\"image\"),\r\n   controller.updateCategory\r\n );\r\n \r\n-router.delete(\r\n-  \"/categories/:id\",\r\n-  controller.deleteCategory\r\n-);\r\n+router.delete(\"/categories/:id\", controller.deleteCategory);\r\n \r\n export default router;\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1772822367303,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -15,9 +15,9 @@\n \r\n router.get(\"/categories/:id\", controller.getCategoryById);\r\n \r\n router.put( \"/categories/:id\",\r\n-  uploadCategoryImage.single(\"image\"),\r\n+ uploadCategoryImage.single(\"image\"),\r\n   controller.updateCategory\r\n );\r\n \r\n router.delete(\r\n"
+                },
+                {
+                    "date": 1772858307830,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -4,10 +4,9 @@\n \r\n const router = Router();\r\n const controller = new CategoryController();\r\n \r\n-router.post( \"/\", uploadCategoryImage.single(\"image\"), (req: any, res: any) => controller.createCategory(req, res)\r\n-);\r\n+router.post( \"/\", uploadCategoryImage.single(\"image\"), (req: any, res: any) => controller.createCategory(req, res));\r\n \r\n router.get(\r\n   \"/\",\r\n   (req: any, res: any) => controller.getCategories(req, res)\r\n"
+                }
+            ],
+            "date": 1772797809419,
+            "name": "Commit-0",
+            "content": "import { Router } from \"express\";\r\nimport { CategoryController } from \"../controllers/category.controller.js\";\r\nimport { uploadCategoryImage } from \"../middlewares/upload.middleware.js\";\r\n\r\nconst router = Router();\r\nconst controller = new CategoryController();\r\n\r\nrouter.post( \"/\", uploadCategoryImage.single(\"image\"), controller.createCategory);\r\n\r\nrouter.get(\"/\", controller.getCategories);\r\n\r\nexport default router;"
+        }
+    ]
+}

@@ -1,0 +1,18 @@
+{
+    "sourceFile": "backend/src/services/seller.service.ts",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1772797960134,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1772797960134,
+            "name": "Commit-0",
+            "content": "import * as sellerRepo from \"../repositories/seller.repository.js\";\r\nimport { ISeller } from \"../models/seller.model.js\";\r\n\r\nconst calculateProfileCompletion = (seller: ISeller) => {\r\n  return (\r\n    seller.state &&\r\n    seller.district &&\r\n    seller.city &&\r\n    seller.address &&\r\n    seller.pincode &&\r\n    seller.sellerType\r\n  );\r\n};\r\n\r\n\r\nexport const createProfile = async (\r\n  userId: string,\r\n  data: Partial<ISeller>\r\n) => {\r\n  const existing = await sellerRepo.findSellerByUserId(userId);\r\n\r\n  if (existing) {\r\n    throw new Error(\"Seller profile already exists\");\r\n  }\r\n\r\n  delete (data as any).status;\r\n  delete (data as any).accountNumber;\r\n  delete (data as any).bankName;\r\n  delete (data as any).ifscCode;\r\n\r\n  const seller = await sellerRepo.createSeller({\r\n    ...data,\r\n    userId,\r\n    status: \"pending\",\r\n  });\r\n\r\n  return seller;\r\n};\r\n\r\n\r\nexport const getMyProfile = async (userId: string) => {\r\n  const seller = await sellerRepo.findSellerByUserId(userId);\r\n\r\n  if (!seller) {\r\n    throw new Error(\"Seller profile not found\");\r\n  }\r\n\r\n  return seller;\r\n};\r\n\r\nexport const updateProfile = async (\r\n  userId: string,\r\n  data: Partial<ISeller>\r\n) => {\r\n  delete (data as any).userId;\r\n  delete (data as any).status;\r\n  delete (data as any).accountNumber;\r\n  delete (data as any).ifscCode;\r\n  delete (data as any).bankName;\r\n\r\n  const seller = await sellerRepo.updateSellerByUserId(userId, data);\r\n\r\n  if (!seller) {\r\n    throw new Error(\"Seller not found\");\r\n  }\r\n\r\n  return seller;\r\n};\r\n\r\nexport const updateBankDetails = async (\r\n  userId: string,\r\n  bankData: {\r\n    bankName: string;\r\n    accountNumber: string;\r\n    ifscCode: string;\r\n  }\r\n) => {\r\n  const seller = await sellerRepo.findSellerByUserId(userId);\r\n\r\n  if (!seller) {\r\n    throw new Error(\"Seller not found\");\r\n  }\r\n  \r\n   if (seller.verificationStatus !== \"approved\") {\r\n    throw new Error(\"Seller not approved by admin\");\r\n  }\r\n  seller.bankName = bankData.bankName;\r\n  seller.accountNumber = bankData.accountNumber;\r\n  seller.ifscCode = bankData.ifscCode;\r\n\r\n  await seller.save();\r\n\r\n  return seller;\r\n};\r\n\r\nexport const verifySeller = async (\r\n  sellerId: string,\r\n  status: \"verified\" | \"rejected\"\r\n) => {\r\n  if (![\"verified\", \"rejected\"].includes(status)) {\r\n    throw new Error(\"Invalid status\");\r\n  }\r\n\r\n  const seller = await sellerRepo.updateSellerStatus(\r\n    sellerId,\r\n    status\r\n  );\r\n\r\n  if (!seller) {\r\n    throw new Error(\"Seller not found\");\r\n  }\r\n\r\n  return seller;\r\n};\r\n\r\nexport const deleteProfile = async (userId: string) => {\r\n  const seller = await sellerRepo.deleteSellerByUserId(userId);\r\n\r\n  if (!seller) {\r\n    throw new Error(\"Seller not found\");\r\n  }\r\n\r\n  return { message: \"Seller profile deleted successfully\" };\r\n};"
+        }
+    ]
+}

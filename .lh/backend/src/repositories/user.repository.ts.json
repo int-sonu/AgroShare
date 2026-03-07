@@ -1,0 +1,26 @@
+{
+    "sourceFile": "backend/src/repositories/user.repository.ts",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 2,
+            "patches": [
+                {
+                    "date": 1772814624972,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1772814632648,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -8,22 +8,32 @@\n export const findByPhone = (phone: string) => {\r\n   return User.findOne({ phone });\r\n };\r\n \r\n+export const findById = (id: string) => {\r\n+  return User.findById(id);\r\n+};\r\n+\r\n export const createUser = (data: any) => {\r\n   return User.create(data);\r\n };\r\n \r\n-export const updateRefreshToken = (userId: string, token: string | null) => {\r\n-  return User.findByIdAndUpdate(userId, {\r\n-    refreshToken: token,\r\n-  });\r\n-};\r\n \r\n export const findEmailWithPassword = (email: string) => {\r\n-  return User.findOne({ email }).select('+password');\r\n+  return User.findOne({ email }).select(\"+password\");\r\n };\r\n \r\n+export const updateRefreshToken = (\r\n+  userId: string,\r\n+  token: string | null\r\n+) => {\r\n+  return User.findByIdAndUpdate(\r\n+    userId,\r\n+    { refreshToken: token },\r\n+    { new: true, runValidators: true }\r\n+  );\r\n+};\r\n+\r\n export const findByIdWithRefreshToken = (id: string) => {\r\n   return User.findById(id).select('+refreshToken');\r\n };\r\n \r\n"
+                },
+                {
+                    "date": 1772814638788,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -32,15 +32,17 @@\n     { new: true, runValidators: true }\r\n   );\r\n };\r\n \r\n+ \r\n export const findByIdWithRefreshToken = (id: string) => {\r\n-  return User.findById(id).select('+refreshToken');\r\n+  return User.findById(id).select(\"+refreshToken\");\r\n };\r\n \r\n+\r\n export const findByResetToken = (token: string) => {\r\n   return User.findOne({ resetPasswordToken: token }).select(\r\n-    '+resetPasswordToken +resetPasswordExpires +refreshToken',\r\n+    \"+resetPasswordToken +resetPasswordExpires +refreshToken\"\r\n   );\r\n };\r\n \r\n export const saveUser = (user: any) => {\r\n"
+                }
+            ],
+            "date": 1772814624972,
+            "name": "Commit-0",
+            "content": "import { User } from \"../models/user.model.js\";\r\n\r\n\r\nexport const findByEmail = (email: string) => {\r\n  return User.findOne({ email });\r\n};\r\n\r\nexport const findByPhone = (phone: string) => {\r\n  return User.findOne({ phone });\r\n};\r\n\r\nexport const createUser = (data: any) => {\r\n  return User.create(data);\r\n};\r\n\r\nexport const updateRefreshToken = (userId: string, token: string | null) => {\r\n  return User.findByIdAndUpdate(userId, {\r\n    refreshToken: token,\r\n  });\r\n};\r\n\r\nexport const findEmailWithPassword = (email: string) => {\r\n  return User.findOne({ email }).select('+password');\r\n};\r\n\r\nexport const findByIdWithRefreshToken = (id: string) => {\r\n  return User.findById(id).select('+refreshToken');\r\n};\r\n\r\nexport const findByResetToken = (token: string) => {\r\n  return User.findOne({ resetPasswordToken: token }).select(\r\n    '+resetPasswordToken +resetPasswordExpires +refreshToken',\r\n  );\r\n};\r\n\r\nexport const saveUser = (user: any) => {\r\n  return user.save();\r\n};\r\n"
+        }
+    ]
+}
