@@ -32,7 +32,7 @@ export const sellerActive = async (req: Request, res: Response, next: NextFuncti
     }
 
     next();
-  } catch (_error) {
+  } catch {
     return res.status(500).json({
       message: 'Server error',
     });
