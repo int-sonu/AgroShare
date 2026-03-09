@@ -10,7 +10,7 @@ export class CategoryController {
 
       const category = await this.service.createCategory({
         ...req.body,
-        image,
+        image: image ? `uploads/categories/${image}` : undefined,
       });
 
       return res.status(201).json({
@@ -63,7 +63,7 @@ export class CategoryController {
 
       const category = await this.service.updateCategory(req.params.id as string, {
         ...req.body,
-        ...(image && { image }),
+        ...(image && { image: `uploads/categories/${image}` }),
       });
 
       return res.json({

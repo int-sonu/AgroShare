@@ -3,11 +3,15 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 0,
+            "activePatchIndex": 1,
             "patches": [
                 {
                     "date": 1772797624946,
                     "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1772996339581,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,7 +1,7 @@\n-import Seller from \"../models/seller.model.js\";\r\n+import Seller, { ISeller } from \"../models/seller.model.js\";\r\n \r\n-export const createSeller = (data: any) => {\r\n+export const createSeller = (data: Partial<ISeller>) => {\r\n   return Seller.create(data);\r\n };\r\n \r\n export const findSellerByUserId = (userId: string) => {\r\n@@ -17,9 +17,9 @@\n };\r\n \r\n export const updateSellerByUserId = (\r\n   userId: string,\r\n-  data: any\r\n+  data: Partial<ISeller>\r\n ) => {\r\n   return Seller.findOneAndUpdate(\r\n     { userId },\r\n     data,\r\n@@ -31,16 +31,60 @@\n };\r\n \r\n export const updateSellerStatus = (\r\n   sellerId: string,\r\n-  status: \"pending\" | \"verified\" | \"rejected\"\r\n+  status: \"pending\" | \"approved\" | \"rejected\"\r\n ) => {\r\n   return Seller.findByIdAndUpdate(\r\n     sellerId,\r\n-    { status },\r\n+    { verificationStatus: status },\r\n     { new: true }\r\n   );\r\n };\r\n \r\n export const deleteSellerByUserId = (userId: string) => {\r\n   return Seller.findOneAndDelete({ userId });\r\n+};\r\n+\r\n+\r\n+/////////////////////////////////////////\r\n+// ADD THESE FUNCTIONS FOR BANK FLOW\r\n+/////////////////////////////////////////\r\n+\r\n+\r\n+export const addBankDetails = (\r\n+  userId: string,\r\n+  data: {\r\n+    bankName: string;\r\n+    accountNumber: string;\r\n+    ifscCode: string;\r\n+  }\r\n+) => {\r\n+  return Seller.findOneAndUpdate(\r\n+    { userId },\r\n+    {\r\n+      bankName: data.bankName,\r\n+      accountNumber: data.accountNumber,\r\n+      ifscCode: data.ifscCode,\r\n+\r\n+      bankAdded: true,\r\n+      profileStep: 3,\r\n+      isProfileComplete: true,\r\n+    },\r\n+    {\r\n+      new: true,\r\n+      runValidators: true,\r\n+    }\r\n+  );\r\n+};\r\n+\r\n+\r\n+export const activateSeller = (sellerId: string) => {\r\n+  return Seller.findByIdAndUpdate(\r\n+    sellerId,\r\n+    {\r\n+      isProfileComplete: true,\r\n+      profileStep: 4\r\n+    },\r\n+    { new: true }\r\n+  );\r\n };\n\\ No newline at end of file\n"
                 }
             ],
             "date": 1772797624946,

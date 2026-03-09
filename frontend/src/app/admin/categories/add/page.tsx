@@ -1,20 +1,24 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 
-interface AddCategoryProps {
-  refresh: () => void;
-  close: () => void;
-}
-
-export default function AddCategoryForm({ refresh, close }: AddCategoryProps) {
+export default function AddCategoryForm({
+  refresh,
+  close,
+}: {
+  refresh?: () => void;
+  close?: () => void;
+}) {
+  const router = useRouter();
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [status, setStatus] = useState('active');
   const [image, setImage] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     const formData = new FormData();
@@ -29,7 +33,7 @@ export default function AddCategoryForm({ refresh, close }: AddCategoryProps) {
     try {
       setLoading(true);
 
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/categories`, {
+      const res = await fetch('http://localhost:5000/categories', {
         method: 'POST',
         body: formData,
       });
@@ -38,22 +42,26 @@ export default function AddCategoryForm({ refresh, close }: AddCategoryProps) {
         throw new Error('Failed to create category');
       }
 
-      refresh();
-      close();
+      if (refresh) refresh();
+      if (close) {
+        close();
+      } else {
+        router.push('/admin/categories');
+      }
 
       setName('');
       setDescription('');
       setStatus('active');
       setImage(null);
-    } catch (error: unknown) {
-      console.error('Create category failed', error instanceof Error ? error.message : error);
+    } catch (error) {
+      console.error('Create category failed', error);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+    <div className="flex items-center justify-center min-h-screen bg-transparent overflow-y-auto no-scrollbar">
       <div className="w-full max-w-lg bg-white shadow-lg rounded-xl p-8">
         <h2 className="text-2xl font-semibold mb-6 text-black">Add Category</h2>
 
@@ -67,7 +75,7 @@ export default function AddCategoryForm({ refresh, close }: AddCategoryProps) {
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-black focus:outline-none focus:ring-2 focus:ring-green-500"
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-black placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-green-500"
             />
           </div>
 
@@ -79,7 +87,7 @@ export default function AddCategoryForm({ refresh, close }: AddCategoryProps) {
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               rows={4}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-black focus:outline-none focus:ring-2 focus:ring-green-500"
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-black placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-green-500"
             />
           </div>
 
@@ -89,10 +97,12 @@ export default function AddCategoryForm({ refresh, close }: AddCategoryProps) {
             <input
               type="file"
               accept="image/*"
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                setImage(e.target.files ? e.target.files[0] : null)
-              }
-              className="w-full border border-gray-300 rounded-lg px-3 py-2"
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                if (e.target.files && e.target.files.length > 0) {
+                  setImage(e.target.files[0]);
+                }
+              }}
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-black"
             />
           </div>
 
@@ -112,7 +122,7 @@ export default function AddCategoryForm({ refresh, close }: AddCategoryProps) {
           <div className="flex justify-end gap-3 pt-4">
             <button
               type="button"
-              onClick={close}
+              onClick={() => (close ? close() : router.back())}
               className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 text-black"
             >
               Cancel

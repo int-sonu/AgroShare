@@ -37,7 +37,23 @@ export default function CreateProfile() {
         });
 
         if (res.ok) {
-          router.replace('/seller/dashboard');
+          const data = await res.json();
+          const seller = data.data;
+
+          if (seller.verificationStatus === 'pending') {
+            router.replace('/seller/pending');
+            return;
+          }
+
+          if (seller.verificationStatus === 'approved' && !seller.bankAdded) {
+            router.replace('/seller/bank');
+            return;
+          }
+
+          if (seller.bankAdded) {
+            router.replace('/seller/dashboard');
+            return;
+          }
         }
       } catch {
         console.log('No profile yet');
@@ -83,7 +99,7 @@ export default function CreateProfile() {
         throw new Error(data.message || 'Failed to create profile');
       }
 
-      router.replace('/seller/dashboard');
+      router.replace('/seller/pending');
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Something went wrong');
     } finally {
@@ -130,6 +146,7 @@ export default function CreateProfile() {
             onChange={handleChange}
             className="w-full border rounded-md p-2"
           />
+
           <input
             name="district"
             placeholder="District"
@@ -137,6 +154,7 @@ export default function CreateProfile() {
             onChange={handleChange}
             className="w-full border rounded-md p-2"
           />
+
           <input
             name="city"
             placeholder="City"
@@ -144,6 +162,7 @@ export default function CreateProfile() {
             onChange={handleChange}
             className="w-full border rounded-md p-2"
           />
+
           <textarea
             name="address"
             placeholder="Full Address"
@@ -151,6 +170,7 @@ export default function CreateProfile() {
             onChange={handleChange}
             className="w-full border rounded-md p-2"
           />
+
           <input
             name="pincode"
             placeholder="Pincode"

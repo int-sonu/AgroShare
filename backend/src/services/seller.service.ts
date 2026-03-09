@@ -10,6 +10,7 @@ export const createProfile = async (userId: string, data: Partial<ISeller>) => {
   }
 
   const sellerData: Partial<ISeller> = { ...data };
+
   delete sellerData.verificationStatus;
   delete sellerData.accountNumber;
   delete sellerData.bankName;
@@ -19,6 +20,9 @@ export const createProfile = async (userId: string, data: Partial<ISeller>) => {
     ...sellerData,
     userId: new Types.ObjectId(userId) as unknown as Types.ObjectId,
     verificationStatus: 'pending',
+    profileStep: 1,
+    bankAdded: false,
+    isProfileComplete: false,
   });
 
   return seller;
@@ -36,6 +40,7 @@ export const getMyProfile = async (userId: string) => {
 
 export const updateProfile = async (userId: string, data: Partial<ISeller>) => {
   const updateData: Partial<ISeller> = { ...data };
+
   delete updateData.userId;
   delete updateData.verificationStatus;
   delete updateData.accountNumber;
@@ -68,9 +73,14 @@ export const updateBankDetails = async (
   if (seller.verificationStatus !== 'approved') {
     throw new Error('Seller not approved by admin');
   }
+
   seller.bankName = bankData.bankName;
   seller.accountNumber = bankData.accountNumber;
   seller.ifscCode = bankData.ifscCode;
+
+  seller.bankAdded = true;
+  seller.profileStep = 3;
+  seller.isProfileComplete = true;
 
   await seller.save();
 
@@ -86,6 +96,11 @@ export const verifySeller = async (sellerId: string, status: 'approved' | 'rejec
 
   if (!seller) {
     throw new Error('Seller not found');
+  }
+
+  if (status === 'approved') {
+    seller.profileStep = 2;
+    await seller.save();
   }
 
   return seller;

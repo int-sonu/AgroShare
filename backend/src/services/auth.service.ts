@@ -2,6 +2,7 @@ import crypto from 'crypto';
 import { JwtPayload } from 'jsonwebtoken';
 import { Types } from 'mongoose';
 import * as userRepository from '../repositories/user.repository.js';
+import { IUser } from '../models/user.model.js';
 import {
   generateAccessToken,
   generateRefreshToken,
@@ -31,7 +32,7 @@ export const register = async (data: SignupInput) => {
   const user = await userRepository.createUser({
     ...data,
     password: hashedPassword,
-  } as any);
+  } as Partial<IUser>);
 
   return {
     id: user.id,
@@ -65,7 +66,7 @@ export const login = async (data: LoginInput) => {
 
   await userRepository.updateRefreshToken(user._id.toString(), hashedRefreshToken);
 
-  let redirect = '/dashboard';
+  let redirect = '/';
 
   if (user.role === 'admin') {
     redirect = '/admin/dashboard';

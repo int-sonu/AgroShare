@@ -42,7 +42,7 @@ export default function ResetPasswordPage() {
         throw new Error(data.message || 'Invalid or expired token');
       }
 
-      setMessage('Password updated successfully 🎉');
+      setMessage('Password updated successfully ');
 
       setTimeout(() => {
         router.push('/auth/login');

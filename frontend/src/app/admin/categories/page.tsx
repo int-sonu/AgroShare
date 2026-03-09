@@ -1,8 +1,8 @@
 'use client';
-
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
+import { Layers, Settings, ShoppingCart } from 'lucide-react';
 
 interface Category {
   _id: string;
@@ -14,30 +14,32 @@ interface Category {
 
 export default function CategoriesPage() {
   const router = useRouter();
-
   const [categories, setCategories] = useState<Category[]>([]);
 
   const fetchCategories = useCallback(async () => {
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/categories`);
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+      const res = await fetch(`${apiUrl}/categories`);
+
+      if (!res.ok) {
+        throw new Error('Failed to fetch categories');
+      }
+
       const data = await res.json();
       setCategories(data.data || []);
-    } catch {
-      console.error('Failed to fetch categories');
+    } catch (error) {
+      console.error('Failed to fetch categories:', error);
     }
   }, []);
 
   useEffect(() => {
-    (async () => {
-      await fetchCategories();
-    })();
+    fetchCategories();
   }, [fetchCategories]);
 
   const deleteCategory = async (id: string) => {
     try {
-      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/categories/${id}`, {
-        method: 'DELETE',
-      });
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+      await fetch(`${apiUrl}/categories/${id}`, { method: 'DELETE' });
 
       fetchCategories();
     } catch {
@@ -49,11 +51,10 @@ export default function CategoriesPage() {
     const newStatus = currentStatus === 'active' ? 'inactive' : 'active';
 
     try {
-      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/categories/${id}/status`, {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+      await fetch(`${apiUrl}/categories/${id}/status`, {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status: newStatus }),
       });
 
@@ -64,81 +65,117 @@ export default function CategoriesPage() {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold text-gray-900">Categories</h1>
+    <div className="space-y-8 p-8 max-w-3xl mx-auto">
+      <div className="flex justify-between items-end">
+        <div>
+          <h1 className="text-xl font-black text-slate-900 tracking-tighter uppercase leading-none">
+            Categories <span className="text-primary">Inventory</span>
+          </h1>
+          <p className=" text-slate-900 text-sm mt-1 font-medium">
+            Manage your agricultural product categories and their visibility.
+          </p>
+        </div>
 
         <button
           onClick={() => router.push('/admin/categories/add')}
-          className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700"
+          className="bg-primary text-white px-5 py-2.5 rounded-xl text-[11px] font-black uppercase tracking-widest shadow-sm hover:bg-primary-dark transition-all flex items-center gap-2"
         >
-          + Add Category
+          <Layers size={16} strokeWidth={2.5} />
+          Add Category
         </button>
       </div>
 
-      <div className="bg-white rounded-lg shadow overflow-x-auto">
-        <table className="w-full text-sm">
-          <thead className="bg-gray-50 border-b">
-            <tr>
-              <th className="p-4 text-left text-black">Image</th>
-              <th className="p-4 text-left  text-black">Name</th>
-              <th className="p-4 text-left  text-black">Description</th>
-              <th className="p-4 text-left  text-black">Status</th>
-              <th className="p-4 text-left  text-black">Actions</th>
+      <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+        <table className="w-full text-left border-collapse">
+          <thead>
+            <tr className="bg-slate-50/50 border-b border-slate-100  text-slate-900 uppercase text-[9px] font-black tracking-[0.2em]">
+              <th className="p-5">Image</th>
+              <th className="p-5">Name</th>
+              <th className="p-5">Description</th>
+              <th className="p-5">Status</th>
+              <th className="p-5 text-right">Actions</th>
             </tr>
           </thead>
 
-          <tbody>
-            {categories.map((cat) => (
-              <tr key={cat._id} className="border-b hover:bg-gray-50">
-                <td className="p-4">
-                  <div className="relative w-12 h-12">
-                    <Image
-                      src={`${process.env.NEXT_PUBLIC_API_URL}/${cat.image}`}
-                      alt={cat.name}
-                      fill
-                      className="object-cover rounded"
-                    />
-                  </div>
-                </td>
+          <tbody className="divide-y divide-slate-100">
+            {categories.map((cat) => {
+              const apiUrl = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000').replace(
+                /\/$/,
+                '',
+              );
+              const imageUrl = cat.image ? `${apiUrl}/${cat.image.replace(/^\//, '')}` : '';
 
-                <td className="p-4 font-medium text-gray-900">{cat.name}</td>
+              return (
+                <tr key={cat._id} className="group hover:bg-slate-50/50 transition-colors">
+                  <td className="p-5">
+                    {cat.image ? (
+                      <div className="relative w-14 h-14 rounded-2xl overflow-hidden ring-1 ring-slate-100 shadow-sm border-2 border-white transition-transform group-hover:scale-105">
+                        <Image
+                          src={imageUrl}
+                          alt={cat.name}
+                          fill
+                          className="object-cover"
+                          unoptimized={true}
+                        />
+                      </div>
+                    ) : (
+                      <div className="w-14 h-14 bg-slate-100 flex items-center justify-center text-[10px]  text-slate-900 font-bold rounded-xl uppercase tracking-tighter">
+                        Empty
+                      </div>
+                    )}
+                  </td>
 
-                <td className="p-4 text-black">{cat.description}</td>
+                  <td className="p-5">
+                    <div className="font-bold text-slate-900">{cat.name}</div>
+                  </td>
 
-                <td className="p-4">
-                  <span
-                    className={`px-2 py-1 text-xs rounded ${
-                      cat.status === 'active'
-                        ? 'bg-green-100 text-green-700'
-                        : 'bg-red-100 text-red-700'
-                    }`}
-                  >
-                    {cat.status}
-                  </span>
-                </td>
+                  <td className="p-5">
+                    <p className="text-sm  text-slate-900 line-clamp-2 max-w-xs">
+                      {cat.description}
+                    </p>
+                  </td>
 
-                <td className="p-4 flex gap-2">
-                  <button
-                    onClick={() => toggleStatus(cat._id, cat.status)}
-                    className="px-3 py-1 text-xs bg-yellow-500 text-black rounded hover:bg-yellow-600 "
-                  >
-                    Status
-                  </button>
+                  <td className="p-5">
+                    <span
+                      className={`inline-flex items-center px-3 py-1 rounded-xl text-[9px] font-black uppercase tracking-widest border border-slate-50 ${
+                        cat.status === 'active'
+                          ? 'bg-primary/10 text-primary'
+                          : 'bg-rose-50 text-rose-700'
+                      }`}
+                    >
+                      {cat.status}
+                    </span>
+                  </td>
 
-                  <button className="px-3 py-1 text-xs bg-blue-600 text-blackrounded hover:bg-blue-700">
-                    Edit
-                  </button>
+                  <td className="p-5">
+                    <div className="flex justify-end gap-2">
+                      <button
+                        onClick={() => toggleStatus(cat._id, cat.status)}
+                        className="p-2   text-slate-900 hover:text-primary hover:bg-primary/5 rounded-lg transition-all"
+                        title="Toggle Status"
+                      >
+                        <Layers size={16} strokeWidth={2} />
+                      </button>
 
-                  <button
-                    onClick={() => deleteCategory(cat._id)}
-                    className="px-3 py-1 text-xs bg-red-600 text-white rounded hover:bg-red-700"
-                  >
-                    Delete
-                  </button>
-                </td>
-              </tr>
-            ))}
+                      <button
+                        className="p-2  text-slate-900 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all"
+                        title="Edit"
+                      >
+                        <Settings size={18} />
+                      </button>
+
+                      <button
+                        onClick={() => deleteCategory(cat._id)}
+                        className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-all"
+                        title="Delete"
+                      >
+                        <ShoppingCart size={18} />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>

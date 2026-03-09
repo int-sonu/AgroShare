@@ -3,11 +3,15 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 0,
+            "activePatchIndex": 1,
             "patches": [
                 {
                     "date": 1772794633284,
                     "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1772956595590,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -37,9 +37,8 @@\n       title: \"Total Orders\",\r\n       value: stats.totalOrders || 0,\r\n       icon: ShoppingCart,\r\n       color: \"sage\",\r\n-      trend: \"+24%\",\r\n     },\r\n   ];\r\n \r\n   return (\r\n"
                 }
             ],
             "date": 1772794633284,

@@ -3,11 +3,47 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 0,
+            "activePatchIndex": 9,
             "patches": [
                 {
                     "date": 1772797854567,
                     "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1773038507793,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -12,7 +12,7 @@\n \r\n router.put( \"/bank-details\", protect, authorize(\"seller\"), sellerController.updateSellerBankDetails);\r\n \r\n router.delete(\"/profile\",protect,authorize(\"seller\"),sellerController.deleteSellerProfile);\r\n+router.put(\"/bank\", authMiddleware, sellerController.updateSellerBankDetails);\r\n \r\n-\r\n export default router;\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1773038517173,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -12,7 +12,8 @@\n \r\n router.put( \"/bank-details\", protect, authorize(\"seller\"), sellerController.updateSellerBankDetails);\r\n \r\n router.delete(\"/profile\",protect,authorize(\"seller\"),sellerController.deleteSellerProfile);\r\n+\r\n router.put(\"/bank\", authMiddleware, sellerController.updateSellerBankDetails);\r\n \r\n export default router;\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1773039612031,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -3,17 +3,45 @@\n import * as sellerController from \"../controllers/seller.controller.js\";\r\n \r\n const router = express.Router();\r\n \r\n-router.post( \"/profile\", protect, authorize(\"seller\"), sellerController.createSellerProfile);\r\n+// create seller profile\r\n+router.post(\r\n+  \"/profile\",\r\n+  protect,\r\n+  authorize(\"seller\"),\r\n+  sellerController.createSellerProfile\r\n+);\r\n \r\n-router.get(\"/profile\",protect,authorize(\"seller\"),sellerController.getMySellerProfile);\r\n+// get my seller profile\r\n+router.get(\r\n+  \"/profile\",\r\n+  protect,\r\n+  authorize(\"seller\"),\r\n+  sellerController.getMySellerProfile\r\n+);\r\n \r\n-router.put(\"/profile\",protect,authorize(\"seller\"),sellerController.updateSellerProfile);\r\n+// update profile\r\n+router.put(\r\n+  \"/profile\",\r\n+  protect,\r\n+  authorize(\"seller\"),\r\n+  sellerController.updateSellerProfile\r\n+);\r\n \r\n-router.put( \"/bank-details\", protect, authorize(\"seller\"), sellerController.updateSellerBankDetails);\r\n+// add or update bank details\r\n+router.put(\r\n+  \"/bank\",\r\n+  protect,\r\n+  authorize(\"seller\"),\r\n+  sellerController.updateSellerBankDetails\r\n+);\r\n \r\n-router.delete(\"/profile\",protect,authorize(\"seller\"),sellerController.deleteSellerProfile);\r\n+// delete profile\r\n+router.delete(\r\n+  \"/profile\",\r\n+  protect,\r\n+  authorize(\"seller\"),\r\n+  sellerController.deleteSellerProfile\r\n+);\r\n \r\n-router.put(\"/bank\", authMiddleware, sellerController.updateSellerBankDetails);\r\n-\r\n export default router;\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1773039618946,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -3,9 +3,8 @@\n import * as sellerController from \"../controllers/seller.controller.js\";\r\n \r\n const router = express.Router();\r\n \r\n-// create seller profile\r\n router.post(\r\n   \"/profile\",\r\n   protect,\r\n   authorize(\"seller\"),\r\n"
+                },
+                {
+                    "date": 1773039628524,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -3,16 +3,11 @@\n import * as sellerController from \"../controllers/seller.controller.js\";\r\n \r\n const router = express.Router();\r\n \r\n-router.post(\r\n-  \"/profile\",\r\n-  protect,\r\n-  authorize(\"seller\"),\r\n-  sellerController.createSellerProfile\r\n+router.post( \"/profile\", protect,authorize(\"seller\"),sellerController.createSellerProfile\r\n );\r\n \r\n-// get my seller profile\r\n router.get(\r\n   \"/profile\",\r\n   protect,\r\n   authorize(\"seller\"),\r\n"
+                },
+                {
+                    "date": 1773039635095,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -3,16 +3,11 @@\n import * as sellerController from \"../controllers/seller.controller.js\";\r\n \r\n const router = express.Router();\r\n \r\n-router.post( \"/profile\", protect,authorize(\"seller\"),sellerController.createSellerProfile\r\n-);\r\n+router.post( \"/profile\", protect,authorize(\"seller\"),sellerController.createSellerProfile);\r\n \r\n-router.get(\r\n-  \"/profile\",\r\n-  protect,\r\n-  authorize(\"seller\"),\r\n-  sellerController.getMySellerProfile\r\n+router.get(\"/profile\",protect,authorize(\"seller\"),sellerController.getMySellerProfile\r\n );\r\n \r\n // update profile\r\n router.put(\r\n"
+                },
+                {
+                    "date": 1773039643161,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -5,17 +5,11 @@\n const router = express.Router();\r\n \r\n router.post( \"/profile\", protect,authorize(\"seller\"),sellerController.createSellerProfile);\r\n \r\n-router.get(\"/profile\",protect,authorize(\"seller\"),sellerController.getMySellerProfile\r\n-);\r\n+router.get(\"/profile\",protect,authorize(\"seller\"),sellerController.getMySellerProfile);\r\n \r\n-// update profile\r\n-router.put(\r\n-  \"/profile\",\r\n-  protect,\r\n-  authorize(\"seller\"),\r\n-  sellerController.updateSellerProfile\r\n+router.put(\"/profile\",protect,authorize(\"seller\"),sellerController.updateSellerProfile\r\n );\r\n \r\n // add or update bank details\r\n router.put(\r\n"
+                },
+                {
+                    "date": 1773039651716,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -7,17 +7,11 @@\n router.post( \"/profile\", protect,authorize(\"seller\"),sellerController.createSellerProfile);\r\n \r\n router.get(\"/profile\",protect,authorize(\"seller\"),sellerController.getMySellerProfile);\r\n \r\n-router.put(\"/profile\",protect,authorize(\"seller\"),sellerController.updateSellerProfile\r\n-);\r\n+router.put(\"/profile\",protect,authorize(\"seller\"),sellerController.updateSellerProfile);\r\n \r\n-// add or update bank details\r\n-router.put(\r\n-  \"/bank\",\r\n-  protect,\r\n-  authorize(\"seller\"),\r\n-  sellerController.updateSellerBankDetails\r\n+router.put(\"/bank\",protect,authorize(\"seller\"),sellerController.updateSellerBankDetails\r\n );\r\n \r\n // delete profile\r\n router.delete(\r\n"
+                },
+                {
+                    "date": 1773039660023,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -9,16 +9,10 @@\n router.get(\"/profile\",protect,authorize(\"seller\"),sellerController.getMySellerProfile);\r\n \r\n router.put(\"/profile\",protect,authorize(\"seller\"),sellerController.updateSellerProfile);\r\n \r\n-router.put(\"/bank\",protect,authorize(\"seller\"),sellerController.updateSellerBankDetails\r\n-);\r\n+router.put(\"/bank\",protect,authorize(\"seller\"),sellerController.updateSellerBankDetails);\r\n \r\n-// delete profile\r\n-router.delete(\r\n-  \"/profile\",\r\n-  protect,\r\n-  authorize(\"seller\"),\r\n-  sellerController.deleteSellerProfile\r\n+router.delete(\"/profile\",protect,authorize(\"seller\"),sellerController.deleteSellerProfile\r\n );\r\n \r\n export default router;\n\\ No newline at end of file\n"
                 }
             ],
             "date": 1772797854567,

@@ -52,10 +52,21 @@ export default function AdminDashboard() {
   if (loading) return <div className="p-10">Loading...</div>;
 
   return (
-    <div className="bg-gray-100 min-h-screen p-8">
-      <h1 className="text-2xl font-bold mb-6">Admin Dashboard</h1>
+    <div className="p-8 max-w-[1600px] mx-auto space-y-8">
+      <div>
+        <h1 className="text-xl font-black text-slate-900 tracking-tighter leading-none uppercase">
+          Admin <span className="text-primary">Dashboard</span>
+        </h1>
+        <p className=" text-slate-900 mt-1.5 text-[11px] font-bold uppercase tracking-widest max-w-lg leading-relaxed">
+          Monitor your platform&apos;s core growth metrics
+        </p>
+      </div>
 
-      {error && <div className="bg-red-100 text-red-600 p-3 rounded mb-4">{error}</div>}
+      {error && (
+        <div className="bg-rose-50 border border-rose-100 text-rose-600 p-4 rounded-xl flex items-center gap-3 animate-in fade-in">
+          <p className="font-bold uppercase tracking-tight text-[10px]">{error}</p>
+        </div>
+      )}
 
       {stats && <DashboardCards stats={stats} />}
     </div>

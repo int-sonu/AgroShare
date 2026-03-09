@@ -24,10 +24,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
+  const API = process.env.NEXT_PUBLIC_API_URL;
+
   useEffect(() => {
     const restoreSession = async () => {
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/refresh`, {
+        const storedUser = localStorage.getItem('user');
+
+        if (storedUser) {
+          setUser(JSON.parse(storedUser));
+        }
+
+        const res = await fetch(`${API}/auth/refresh`, {
           method: 'POST',
           credentials: 'include',
         });
@@ -39,9 +47,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
         const data = await res.json();
 
+        if (!data.accessToken) {
+          setLoading(false);
+          return;
+        }
+
         setAccessToken(data.accessToken);
 
-        const userRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/user`, {
+        const userRes = await fetch(`${API}/auth/user`, {
           headers: {
             Authorization: `Bearer ${data.accessToken}`,
           },
@@ -49,41 +62,59 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
         if (userRes.ok) {
           const userData = await userRes.json();
+
           setUser(userData.user);
+
+          localStorage.setItem('user', JSON.stringify(userData.user));
         }
       } catch {
-        setUser(null);
+        console.log('Session restore failed');
       } finally {
         setLoading(false);
       }
     };
 
     restoreSession();
-  }, []);
+  }, [API]);
 
   const login = (user: User, token: string) => {
     setUser(user);
     setAccessToken(token);
+
+    localStorage.setItem('user', JSON.stringify(user));
   };
 
   const logout = async () => {
     try {
-      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/logout`, {
+      await fetch(`${API}/auth/logout`, {
         method: 'POST',
         credentials: 'include',
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
       });
-    } catch {}
+    } catch {
+      console.log('Logout failed');
+    }
+
+    localStorage.removeItem('user');
 
     setUser(null);
     setAccessToken(null);
-    window.location.href = '/';
+
+    window.location.href = '/auth/login';
   };
 
   return (
-    <AuthContext.Provider value={{ user, accessToken, login, logout, loading }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        accessToken,
+        login,
+        logout,
+        loading,
+      }}
+    >
       {!loading && children}
     </AuthContext.Provider>
   );
@@ -91,8 +122,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
+
   if (!context) {
     throw new Error('useAuth must be used within AuthProvider');
   }
+
   return context;
 };
