@@ -1,7 +1,6 @@
-import { Category, ICategory } from "../models/category.model.js";
+import { Category, ICategory } from '../models/category.model.js';
 
 export class CategoryRepository {
-
   async create(data: Partial<ICategory>) {
     return await Category.create(data);
   }
@@ -22,4 +21,7 @@ export class CategoryRepository {
     return await Category.findByIdAndDelete(id);
   }
 
+  async findAllActive() {
+    return await Category.find({ status: 'active' });
+  }
 }

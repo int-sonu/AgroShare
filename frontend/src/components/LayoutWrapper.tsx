@@ -1,24 +1,21 @@
-"use client";
+'use client';
 
-import { usePathname } from "next/navigation";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/footer";
+import { usePathname } from 'next/navigation';
+import Navbar from '@/components/Navbar';
+import Footer from '@/components/footer';
 
-export default function LayoutWrapper({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function LayoutWrapper({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
 
-  const hideLayout =
-    pathname.startsWith("/admin") || pathname.startsWith("/seller");
+  const hideLayout = pathname.startsWith('/admin') || pathname.startsWith('/seller');
+
+  const hideFooter = pathname.startsWith('/auth/login') || pathname.startsWith('/auth/register');
 
   return (
     <>
       {!hideLayout && <Navbar />}
       <main className="flex-1">{children}</main>
-      {!hideLayout && <Footer />}
+      {!hideLayout && !hideFooter && <Footer />}
     </>
   );
 }

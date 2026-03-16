@@ -1,6 +1,6 @@
 'use client';
 
-import { Bell, Search, Mail, MessageCircle, User, Settings, LogOut } from 'lucide-react';
+import { Bell, Search, Mail, MessageCircle, User, LogOut } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import {
   DropdownMenu,
@@ -10,10 +10,10 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-
+import { useRouter } from 'next/navigation';
 export default function AdminNavbar() {
   const { user, logout } = useAuth();
-
+  const router = useRouter();
   return (
     <header className="h-16 bg-white/80 backdrop-blur-xl border-b border-slate-100 flex items-center justify-between px-8 sticky top-0 z-10 transition-all shadow-sm/5">
       <div className="flex items-center bg-slate-50/50 px-4 py-2 rounded-xl w-96 border border-slate-100 transition-all focus-within:ring-2 focus-within:ring-primary/10 focus-within:border-primary/30">
@@ -51,13 +51,15 @@ export default function AdminNavbar() {
           <DropdownMenuTrigger asChild>
             <div className="flex items-center gap-2.5 p-1 rounded-full transition-all cursor-pointer border border-transparent hover:border-slate-50 group">
               <div className="w-9 h-9 bg-primary/10 text-primary flex items-center justify-center rounded-xl font-black transition-transform group-hover:scale-105">
-                {user?.name?.charAt(0)}
+                {user?.name ? user.name.charAt(0).toUpperCase() : <User size={18} />}
               </div>
 
               <div className="hidden md:block">
-                <p className="text-[11px] font-black text-slate-900 leading-none">{user?.name}</p>
-                <p className="text-[9px] font-bold text-slate-400 tracking-tight mt-0.5">
-                  ADMINISTRATOR
+                <p className="text-[11px] font-black text-slate-900 leading-none">
+                  {user?.name || 'Admin'}
+                </p>
+                <p className="text-[9px] font-bold text-slate-400 tracking-tight mt-0.5 uppercase">
+                  Administrator
                 </p>
               </div>
             </div>
@@ -73,16 +75,14 @@ export default function AdminNavbar() {
               <p className="text-xs font-bold text-slate-900 mt-1">{user?.email}</p>
             </DropdownMenuLabel>
             <DropdownMenuSeparator className="bg-slate-50" />
-            <DropdownMenuItem className="flex items-center gap-2 px-3 py-2.5 rounded-xl text-slate-600 focus:bg-primary/5 focus:text-primary cursor-pointer transition-colors">
+            <DropdownMenuItem
+              onClick={() => router.push('/admin/profile')}
+              className="flex items-center gap-2 px-3 py-2.5 rounded-xl text-slate-600 focus:bg-primary/5 focus:text-primary cursor-pointer transition-colors"
+            >
               <User size={14} strokeWidth={2.5} />
               <span className="text-[11px] font-black uppercase tracking-tight">Profile View</span>
             </DropdownMenuItem>
-            <DropdownMenuItem className="flex items-center gap-2 px-3 py-2.5 rounded-xl text-slate-600 focus:bg-primary/5 focus:text-primary cursor-pointer transition-colors">
-              <Settings size={14} strokeWidth={2.5} />
-              <span className="text-[11px] font-black uppercase tracking-tight">
-                Account Settings
-              </span>
-            </DropdownMenuItem>
+
             <DropdownMenuSeparator className="bg-slate-50" />
             <DropdownMenuItem
               onClick={() => logout()}

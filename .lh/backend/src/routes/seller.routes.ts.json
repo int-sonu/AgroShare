@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 9,
+            "activePatchIndex": 27,
             "patches": [
                 {
                     "date": 1772797854567,
@@ -44,6 +44,78 @@
                 {
                     "date": 1773039660023,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -9,16 +9,10 @@\n router.get(\"/profile\",protect,authorize(\"seller\"),sellerController.getMySellerProfile);\r\n \r\n router.put(\"/profile\",protect,authorize(\"seller\"),sellerController.updateSellerProfile);\r\n \r\n-router.put(\"/bank\",protect,authorize(\"seller\"),sellerController.updateSellerBankDetails\r\n-);\r\n+router.put(\"/bank\",protect,authorize(\"seller\"),sellerController.updateSellerBankDetails);\r\n \r\n-// delete profile\r\n-router.delete(\r\n-  \"/profile\",\r\n-  protect,\r\n-  authorize(\"seller\"),\r\n-  sellerController.deleteSellerProfile\r\n+router.delete(\"/profile\",protect,authorize(\"seller\"),sellerController.deleteSellerProfile\r\n );\r\n \r\n export default router;\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1773332320096,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,18 +1,18 @@\n-import express from \"express\";\r\n-import { protect, authorize } from \"../middlewares/auth.middleware.js\";\r\n-import * as sellerController from \"../controllers/seller.controller.js\";\r\n-\r\n-const router = express.Router();\r\n-\r\n-router.post( \"/profile\", protect,authorize(\"seller\"),sellerController.createSellerProfile);\r\n-\r\n-router.get(\"/profile\",protect,authorize(\"seller\"),sellerController.getMySellerProfile);\r\n-\r\n-router.put(\"/profile\",protect,authorize(\"seller\"),sellerController.updateSellerProfile);\r\n-\r\n-router.put(\"/bank\",protect,authorize(\"seller\"),sellerController.updateSellerBankDetails);\r\n-\r\n-router.delete(\"/profile\",protect,authorize(\"seller\"),sellerController.deleteSellerProfile\r\n-);\r\n-\r\n-export default router;\n\\ No newline at end of file\n+import express from 'express';\n+import { protect, authorize } from '../middlewares/auth.middleware.js';\n+import * as sellerController from '../controllers/seller.controller.js';\n+\n+const router = express.Router();\n+\n+router.post('/profile', protect, authorize('seller'), sellerController.createSellerProfile);\n+\n+router.get('/profile', protect, authorize('seller'), sellerController.getMySellerProfile);\n+\n+router.put('/profile', protect, authorize('seller'), sellerController.updateSellerProfile);\n+\n+router.put('/bank', protect, authorize('seller'), sellerController.updateSellerBankDetails);\n+\n+router.delete('/profile', protect, authorize('seller'), sellerController.deleteSellerProfile);\n+\n+\n+export default router;\n"
+                },
+                {
+                    "date": 1773332327083,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -13,6 +13,8 @@\n router.put('/bank', protect, authorize('seller'), sellerController.updateSellerBankDetails);\n \n router.delete('/profile', protect, authorize('seller'), sellerController.deleteSellerProfile);\n \n+router.patch(\"/admin/block/:sellerId\", blockSeller;\n \n+router.patch(\"/admin/unblock/:sellerId\", unblockSeller);\n export default router;\n"
+                },
+                {
+                    "date": 1773332333781,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,7 +1,8 @@\n import express from 'express';\n import { protect, authorize } from '../middlewares/auth.middleware.js';\n import * as sellerController from '../controllers/seller.controller.js';\n+import { blockSeller } from '../repositories/seller.repository.js';\n \n const router = express.Router();\n \n router.post('/profile', protect, authorize('seller'), sellerController.createSellerProfile);\n@@ -13,8 +14,8 @@\n router.put('/bank', protect, authorize('seller'), sellerController.updateSellerBankDetails);\n \n router.delete('/profile', protect, authorize('seller'), sellerController.deleteSellerProfile);\n \n-router.patch(\"/admin/block/:sellerId\", blockSeller;\n+router.patch(\"/admin/block/:sellerId\", blockSeller);\n \n router.patch(\"/admin/unblock/:sellerId\", unblockSeller);\n export default router;\n"
+                },
+                {
+                    "date": 1773332383944,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,8 +1,8 @@\n import express from 'express';\n import { protect, authorize } from '../middlewares/auth.middleware.js';\n import * as sellerController from '../controllers/seller.controller.js';\n-import { blockSeller } from '../repositories/seller.repository.js';\n+import { blockSeller, unblockSeller } from '../repositories/seller.repository.js';\n \n const router = express.Router();\n \n router.post('/profile', protect, authorize('seller'), sellerController.createSellerProfile);\n"
+                },
+                {
+                    "date": 1773374905498,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,8 +1,7 @@\n import express from 'express';\n import { protect, authorize } from '../middlewares/auth.middleware.js';\n import * as sellerController from '../controllers/seller.controller.js';\n-import { blockSeller, unblockSeller } from '../repositories/seller.repository.js';\n \n const router = express.Router();\n \n router.post('/profile', protect, authorize('seller'), sellerController.createSellerProfile);\n@@ -14,8 +13,6 @@\n router.put('/bank', protect, authorize('seller'), sellerController.updateSellerBankDetails);\n \n router.delete('/profile', protect, authorize('seller'), sellerController.deleteSellerProfile);\n \n-router.patch(\"/admin/block/:sellerId\", blockSeller);\n \n-router.patch(\"/admin/unblock/:sellerId\", unblockSeller);\n export default router;\n"
+                },
+                {
+                    "date": 1773375083912,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -13,6 +13,6 @@\n router.put('/bank', protect, authorize('seller'), sellerController.updateSellerBankDetails);\n \n router.delete('/profile', protect, authorize('seller'), sellerController.deleteSellerProfile);\n \n-\n+router.patch(\"/block/:sellerId\", blockSeller);\n export default router;\n"
+                },
+                {
+                    "date": 1773375092790,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -13,6 +13,5 @@\n router.put('/bank', protect, authorize('seller'), sellerController.updateSellerBankDetails);\n \n router.delete('/profile', protect, authorize('seller'), sellerController.deleteSellerProfile);\n \n-router.patch(\"/block/:sellerId\", blockSeller);\n export default router;\n"
+                },
+                {
+                    "date": 1773375244774,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -13,5 +13,19 @@\n router.put('/bank', protect, authorize('seller'), sellerController.updateSellerBankDetails);\n \n router.delete('/profile', protect, authorize('seller'), sellerController.deleteSellerProfile);\n \n+\n+router.patch(\n+  '/admin/block/:sellerId',\n+  protect,\n+  adminAuth,\n+  sellerController.blockSeller\n+);\n+\n+router.patch(\n+  '/admin/unblock/:sellerId',\n+  protect,\n+  adminAuth,\n+  sellerController.unblockSeller\n+);\n export default router;\n"
+                },
+                {
+                    "date": 1773375250135,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -14,11 +14,9 @@\n \n router.delete('/profile', protect, authorize('seller'), sellerController.deleteSellerProfile);\n \n \n-router.patch(\n-  '/admin/block/:sellerId',\n-  protect,\n+router.patch('/admin/block/:sellerId',protect,\n   adminAuth,\n   sellerController.blockSeller\n );\n \n"
+                },
+                {
+                    "date": 1773375255653,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -14,12 +14,9 @@\n \n router.delete('/profile', protect, authorize('seller'), sellerController.deleteSellerProfile);\n \n \n-router.patch('/admin/block/:sellerId',protect,\n-  adminAuth,\n-  sellerController.blockSeller\n-);\n+router.patch('/admin/block/:sellerId',protect,adminAuth,sellerController.blockSeller);\n \n router.patch(\n   '/admin/unblock/:sellerId',\n   protect,\n"
+                },
+                {
+                    "date": 1773375261110,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -16,11 +16,8 @@\n \n \n router.patch('/admin/block/:sellerId',protect,adminAuth,sellerController.blockSeller);\n \n-router.patch(\n-  '/admin/unblock/:sellerId',\n-  protect,\n-  adminAuth,\n+router.patch( '/admin/unblock/:sellerId', protect, adminAuth,\n   sellerController.unblockSeller\n );\n export default router;\n"
+                },
+                {
+                    "date": 1773375273960,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -14,10 +14,8 @@\n \n router.delete('/profile', protect, authorize('seller'), sellerController.deleteSellerProfile);\n \n \n-router.patch('/admin/block/:sellerId',protect,adminAuth,sellerController.blockSeller);\n+router.patch('/admin/block/:sellerId',protect,adminAut,sellerController.blockSeller);\n \n-router.patch( '/admin/unblock/:sellerId', protect, adminAuth,\n-  sellerController.unblockSeller\n-);\n+router.patch( '/admin/unblock/:sellerId', protect, adminAuth, sellerController.unblockSeller);\n export default router;\n"
+                },
+                {
+                    "date": 1773375279056,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -14,8 +14,8 @@\n \n router.delete('/profile', protect, authorize('seller'), sellerController.deleteSellerProfile);\n \n \n-router.patch('/admin/block/:sellerId',protect,adminAut,sellerController.blockSeller);\n+router.patch('/admin/block/:sellerId',protect,adminAuth,sellerController.blockSeller);\n \n router.patch( '/admin/unblock/:sellerId', protect, adminAuth, sellerController.unblockSeller);\n export default router;\n"
+                },
+                {
+                    "date": 1773375332034,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,7 +1,8 @@\n import express from 'express';\n import { protect, authorize } from '../middlewares/auth.middleware.js';\n import * as sellerController from '../controllers/seller.controller.js';\n+import { adminAuth } from '../middlewares/adminAuth.js';\n \n const router = express.Router();\n \n router.post('/profile', protect, authorize('seller'), sellerController.createSellerProfile);\n@@ -13,9 +14,8 @@\n router.put('/bank', protect, authorize('seller'), sellerController.updateSellerBankDetails);\n \n router.delete('/profile', protect, authorize('seller'), sellerController.deleteSellerProfile);\n \n-\n router.patch('/admin/block/:sellerId',protect,adminAuth,sellerController.blockSeller);\n \n router.patch( '/admin/unblock/:sellerId', protect, adminAuth, sellerController.unblockSeller);\n export default router;\n"
+                },
+                {
+                    "date": 1773375337807,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -17,5 +17,7 @@\n \n router.patch('/admin/block/:sellerId',protect,adminAuth,sellerController.blockSeller);\n \n router.patch( '/admin/unblock/:sellerId', protect, adminAuth, sellerController.unblockSeller);\n+\n+\n export default router;\n"
+                },
+                {
+                    "date": 1773382756861,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -14,10 +14,19 @@\n router.put('/bank', protect, authorize('seller'), sellerController.updateSellerBankDetails);\n \n router.delete('/profile', protect, authorize('seller'), sellerController.deleteSellerProfile);\n \n-router.patch('/admin/block/:sellerId',protect,adminAuth,sellerController.blockSeller);\n+router.patch(\n+  '/admin/block/:sellerId',\n+  protect,\n+  authorize('admin'),\n+  sellerController.blockSeller\n+);\n \n-router.patch( '/admin/unblock/:sellerId', protect, adminAuth, sellerController.unblockSeller);\n+router.patch(\n+  '/admin/unblock/:sellerId',\n+  protect,\n+  authorize('admin'),\n+  sellerController.unblockSeller\n+);\n \n-\n export default router;\n"
+                },
+                {
+                    "date": 1773385602043,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -14,13 +14,9 @@\n router.put('/bank', protect, authorize('seller'), sellerController.updateSellerBankDetails);\n \n router.delete('/profile', protect, authorize('seller'), sellerController.deleteSellerProfile);\n \n-router.patch(\n-  '/admin/block/:sellerId',\n-  protect,\n-  authorize('admin'),\n-  sellerController.blockSeller\n+router.patch( '/admin/block/:sellerId', protect, authorize('admin'), sellerController.blockSeller\n );\n \n router.patch(\n   '/admin/unblock/:sellerId',\n"
+                },
+                {
+                    "date": 1773385609330,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -14,15 +14,10 @@\n router.put('/bank', protect, authorize('seller'), sellerController.updateSellerBankDetails);\n \n router.delete('/profile', protect, authorize('seller'), sellerController.deleteSellerProfile);\n \n-router.patch( '/admin/block/:sellerId', protect, authorize('admin'), sellerController.blockSeller\n-);\n+router.patch( '/admin/block/:sellerId', protect, authorize('admin'), sellerController.blockSeller);\n \n-router.patch(\n-  '/admin/unblock/:sellerId',\n-  protect,\n-  authorize('admin'),\n-  sellerController.unblockSeller\n+router.patch('/admin/unblock/:sellerId',protect,authorize('admin'),sellerController.unblockSeller\n );\n \n export default router;\n"
                 }
             ],
             "date": 1772797854567,

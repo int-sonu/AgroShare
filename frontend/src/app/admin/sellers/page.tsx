@@ -33,6 +33,8 @@ interface Seller {
   district: string;
   city: string;
   createdAt: string;
+  isBlocked: boolean;
+
   userId: {
     name: string;
     email: string;
@@ -96,6 +98,53 @@ export default function SellersPage() {
       fetchSellers();
     } catch (err: unknown) {
       alert(err instanceof Error ? err.message : 'An unknown error occurred');
+    }
+  };
+  const blockSeller = async (id: string) => {
+    try {
+      const reason = prompt('Enter reason for blocking this seller:');
+
+      if (!reason) return;
+
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/seller/admin/block/${id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${accessToken}`,
+        },
+        body: JSON.stringify({ reason }),
+      });
+
+      const result = await res.json();
+
+      if (!res.ok) {
+        throw new Error(result.message || 'Block failed');
+      }
+
+      fetchSellers();
+    } catch (err: unknown) {
+      alert(err instanceof Error ? err.message : 'Block failed');
+    }
+  };
+
+  const unblockSeller = async (id: string) => {
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/seller/admin/unblock/${id}`, {
+        method: 'PATCH',
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+
+      const result = await res.json();
+
+      if (!res.ok) {
+        throw new Error(result.message || 'Unblock failed');
+      }
+
+      fetchSellers();
+    } catch (err: unknown) {
+      alert(err instanceof Error ? err.message : 'Unblock failed');
     }
   };
 
@@ -260,6 +309,23 @@ export default function SellersPage() {
                           <X size={14} strokeWidth={3} />
                         </button>
                       </div>
+                    )}
+                    {seller.isBlocked ? (
+                      <button
+                        onClick={() => unblockSeller(seller._id)}
+                        className="w-7 h-7 flex items-center justify-center bg-green-600 text-white rounded-md"
+                        title="Unblock Seller"
+                      >
+                        <Check size={14} />
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => blockSeller(seller._id)}
+                        className="w-7 h-7 flex items-center justify-center bg-red-600 text-white rounded-md"
+                        title="Block Seller"
+                      >
+                        <ShieldCheck size={14} />
+                      </button>
                     )}
                   </div>
                 </TableCell>

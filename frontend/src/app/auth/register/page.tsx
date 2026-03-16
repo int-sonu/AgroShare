@@ -15,16 +15,83 @@ export default function RegisterPage() {
     role: 'customer',
   });
 
+  const [errors, setErrors] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    password: '',
+  });
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
+  const validateField = (name: string, value: string) => {
+    let message = '';
+
+    if (name === 'name') {
+      if (!value.trim()) message = 'Name is required';
+      else if (value.length > 30) message = 'Maximum 30 characters allowed';
+      else if (value.trim() !== value) message = 'No leading or trailing spaces';
+      else if (!/^[A-Za-z]+(?: [A-Za-z]+)*$/.test(value))
+        message = 'Only letters allowed and no multiple spaces';
+      else if (value[0] !== value[0].toUpperCase()) message = 'First letter must be capital';
+    }
+
+    if (name === 'email') {
+      if (!value.trim()) message = 'Email is required';
+      else if (value.length > 254) message = 'Email cannot exceed 254 characters';
+      else if (value.includes(' ')) message = 'Email cannot contain spaces';
+      else if (value.trim() !== value) message = 'No leading or trailing spaces';
+      else if (value !== value.toLowerCase()) message = 'Email must be lowercase';
+      else if (!/^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/.test(value))
+        message = 'Invalid email format';
+    }
+
+    if (name === 'phone') {
+      if (!value) message = 'Phone number is required';
+      else if (value.includes(' ')) message = 'Phone cannot contain spaces';
+      else if (!/^[0-9]+$/.test(value)) message = 'Only numbers allowed';
+      else if (!/^[6-9]\d{9}$/.test(value))
+        message = 'Phone must be 10 digits starting with 6,7,8,9';
+    }
+
+    if (name === 'password') {
+      if (!value) message = 'Password is required';
+      else if (value.length < 8) message = 'Minimum 8 characters required';
+      else if (value.length > 64) message = 'Maximum 64 characters allowed';
+      else if (value.includes(' ')) message = 'Password cannot contain spaces';
+      else if (!/[A-Z]/.test(value)) message = 'Must contain one uppercase letter';
+      else if (!/[a-z]/.test(value)) message = 'Must contain one lowercase letter';
+      else if (!/[0-9]/.test(value)) message = 'Must contain one number';
+      else if (!/[@$!%*?&]/.test(value))
+        message = 'Must contain one special character (@ $ ! % * ? &)';
+    }
+
+    setErrors((prev) => ({
+      ...prev,
+      [name]: message,
+    }));
+  };
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+
+    setForm((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+
+    validateField(name, value);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+
+    if (Object.values(errors).some((err) => err !== '')) {
+      setError('Please fill the form  before submitting');
+      return;
+    }
 
     if (!form.name || !form.email || !form.phone || !form.password) {
       setError('All fields are required');
@@ -55,7 +122,7 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
+    <div className="h-[calc(100vh-115px)] flex items-center justify-center bg-gray-100 px-4">
       <div className="w-full max-w-5xl bg-white rounded-2xl shadow-xl overflow-hidden flex">
         <div className="hidden md:flex w-1/2 items-center justify-center bg-white p-6">
           <Image
@@ -88,39 +155,51 @@ export default function RegisterPage() {
           )}
 
           <form onSubmit={handleSubmit} className="space-y-3">
-            <input
-              name="name"
-              placeholder="Full Name"
-              className="w-full border border-gray-300 rounded-md px-4 py-2.5 text-sm text-gray-900 placeholder:text-gray-500 focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none"
-              onChange={handleChange}
-            />
+            <div>
+              <input
+                name="name"
+                placeholder="Full Name"
+                className="w-full border border-gray-300 rounded-md px-4 py-2.5 text-sm"
+                onChange={handleChange}
+              />
+              {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
+            </div>
 
-            <input
-              name="email"
-              type="email"
-              placeholder="Email Address"
-              className="w-full border border-gray-300 rounded-md px-4 py-2.5 text-sm text-gray-900 placeholder:text-gray-500 focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none"
-              onChange={handleChange}
-            />
+            <div>
+              <input
+                name="email"
+                type="email"
+                placeholder="Email Address"
+                className="w-full border border-gray-300 rounded-md px-4 py-2.5 text-sm"
+                onChange={handleChange}
+              />
+              {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
+            </div>
 
-            <input
-              name="phone"
-              placeholder="Phone Number"
-              className="w-full border border-gray-300 rounded-md px-4 py-2.5 text-sm text-gray-900 placeholder:text-gray-500 focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none"
-              onChange={handleChange}
-            />
+            <div>
+              <input
+                name="phone"
+                placeholder="Phone Number"
+                className="w-full border border-gray-300 rounded-md px-4 py-2.5 text-sm"
+                onChange={handleChange}
+              />
+              {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone}</p>}
+            </div>
 
-            <input
-              name="password"
-              type="password"
-              placeholder="Password"
-              className="w-full border border-gray-300 rounded-md px-4 py-2.5 text-sm text-gray-900 placeholder:text-gray-500 focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none"
-              onChange={handleChange}
-            />
+            <div>
+              <input
+                name="password"
+                type="password"
+                placeholder="Password"
+                className="w-full border border-gray-300 rounded-md px-4 py-2.5 text-sm"
+                onChange={handleChange}
+              />
+              {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password}</p>}
+            </div>
 
             <select
               name="role"
-              className="w-full border border-gray-300 rounded-md px-4 py-2.5 text-sm text-black focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none"
+              className="w-full border border-gray-300 rounded-md px-4 py-2.5 text-sm text-black"
               onChange={handleChange}
             >
               <option value="customer">Customer</option>

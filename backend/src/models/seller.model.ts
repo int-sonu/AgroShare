@@ -28,6 +28,10 @@ export interface ISeller extends Document {
 
   profileStep: number;
 
+  isBlocked: boolean;
+  blockReason?: string;
+  blockedAt?: Date;
+
   createdAt: Date;
   updatedAt: Date;
 
@@ -82,6 +86,20 @@ const sellerSchema = new Schema<ISeller>(
     },
 
     verificationNote: String,
+
+    isBlocked: {
+      type: Boolean,
+      default: false,
+    },
+
+    blockReason: {
+      type: String,
+      trim: true,
+    },
+
+    blockedAt: {
+      type: Date,
+    },
 
     bankName: { type: String, trim: true },
 

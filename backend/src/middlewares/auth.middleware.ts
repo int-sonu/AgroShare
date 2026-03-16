@@ -6,7 +6,7 @@ export const protect = (req: Request, res: Response, next: NextFunction) => {
   try {
     const authHeader = req.headers.authorization;
 
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    if (!authHeader?.startsWith('Bearer ')) {
       return res.status(401).json({
         success: false,
         message: 'Not authorized',
@@ -15,7 +15,10 @@ export const protect = (req: Request, res: Response, next: NextFunction) => {
 
     const token = authHeader.split(' ')[1];
 
-    const decoded = verifyAccessToken(token) as JwtPayload & { userId: string; role: string };
+    const decoded = verifyAccessToken(token) as JwtPayload & {
+      userId: string;
+      role: string;
+    };
 
     req.user = decoded;
 

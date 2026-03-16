@@ -32,7 +32,21 @@ export class CategoryService {
     return await this.repository.update(id, data);
   }
 
+  async updateCategoryStatus(id: string, status: 'active' | 'inactive') {
+    const category = await this.repository.update(id, { status });
+
+    if (!category) {
+      throw new Error('Category not found');
+    }
+
+    return category;
+  }
+
   async deleteCategory(id: string) {
     return await this.repository.delete(id);
+  }
+
+  async getActiveCategories() {
+    return await this.repository.findAllActive();
   }
 }

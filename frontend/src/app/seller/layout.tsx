@@ -12,13 +12,15 @@ export default function SellerLayout({ children }: { children: React.ReactNode }
   const shouldHideLayout = hideLayoutRoutes.includes(pathname);
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen bg-gray-50">
       {!shouldHideLayout && <SellerNavbar />}
 
-      <div className="flex flex-1">
+      <div className="flex">
         {!shouldHideLayout && <SellerSidebar />}
 
-        <main className="flex-1 p-6 bg-gray-50">{children}</main>
+        <main className={`flex-1 p-8 ${!shouldHideLayout ? 'ml-64 mt-[72px]' : ''}`}>
+          <div className="max-w-7xl mx-auto w-full">{children}</div>
+        </main>
       </div>
     </div>
   );

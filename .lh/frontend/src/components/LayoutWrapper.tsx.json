@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 4,
+            "activePatchIndex": 6,
             "patches": [
                 {
                     "date": 1772789023441,
@@ -24,6 +24,14 @@
                 {
                     "date": 1772791707563,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,8 +1,8 @@\n \"use client\";\r\n \r\n import { usePathname } from \"next/navigation\";\r\n-import navbar from \"@/components/navbar\";\r\n+import Navbar from \"@/components/navbar\";\r\n import Footer from \"@/components/footer\";\r\n \r\n export default function LayoutWrapper({\r\n   children,\r\n"
+                },
+                {
+                    "date": 1773301078175,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,8 +1,8 @@\n \"use client\";\r\n \r\n import { usePathname } from \"next/navigation\";\r\n-import Navbar from \"@/components/navbar\";\r\n+import Navbar from \"@/components/Navbar\";\r\n import Footer from \"@/components/footer\";\r\n \r\n export default function LayoutWrapper({\r\n   children,\r\n@@ -10,15 +10,20 @@\n   children: React.ReactNode;\r\n }) {\r\n   const pathname = usePathname();\r\n \r\n+  // hide navbar + footer for admin and seller\r\n   const hideLayout =\r\n     pathname.startsWith(\"/admin\") || pathname.startsWith(\"/seller\");\r\n \r\n+  // hide only footer for login and register\r\n+  const hideFooter =\r\n+    pathname.startsWith(\"/auth/login\") || pathname.startsWith(\"/auth/register\");\r\n+\r\n   return (\r\n     <>\r\n       {!hideLayout && <Navbar />}\r\n       <main className=\"flex-1\">{children}</main>\r\n-      {!hideLayout && <Footer />}\r\n+      {!hideLayout && !hideFooter && <Footer />}\r\n     </>\r\n   );\r\n }\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1773301083274,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -10,13 +10,11 @@\n   children: React.ReactNode;\r\n }) {\r\n   const pathname = usePathname();\r\n \r\n-  // hide navbar + footer for admin and seller\r\n   const hideLayout =\r\n     pathname.startsWith(\"/admin\") || pathname.startsWith(\"/seller\");\r\n \r\n-  // hide only footer for login and register\r\n   const hideFooter =\r\n     pathname.startsWith(\"/auth/login\") || pathname.startsWith(\"/auth/register\");\r\n \r\n   return (\r\n"
                 }
             ],
             "date": 1772789023441,

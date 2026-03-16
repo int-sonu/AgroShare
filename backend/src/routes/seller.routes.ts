@@ -14,4 +14,13 @@ router.put('/bank', protect, authorize('seller'), sellerController.updateSellerB
 
 router.delete('/profile', protect, authorize('seller'), sellerController.deleteSellerProfile);
 
+router.patch('/admin/block/:sellerId', protect, authorize('admin'), sellerController.blockSeller);
+
+router.patch(
+  '/admin/unblock/:sellerId',
+  protect,
+  authorize('admin'),
+  sellerController.unblockSeller,
+);
+
 export default router;

@@ -8,9 +8,11 @@ import authRoutes from './routes/auth.routes.js';
 import categoryRoutes from './routes/category.routes.js';
 import adminRoutes from './routes/admin.routes.js';
 import sellerRoutes from './routes/seller.routes.js';
+import machineRoutes from './routes/machine.routes.js';
 
 import logger, { morganStream } from './config/logger.js';
 import cookieParser from 'cookie-parser';
+import { rateLimiter } from './middlewares/rateLimit.js';
 const app = express();
 
 const __filename = fileURLToPath(import.meta.url);
@@ -29,12 +31,14 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(morgan('dev', { stream: morganStream }));
 
+app.use(rateLimiter);
+
 app.use('/auth', authRoutes);
 app.use('/categories', categoryRoutes);
 app.use('/seller', sellerRoutes);
 app.use('/admin', adminRoutes);
+app.use('/machines', machineRoutes);
 app.use('/uploads', express.static(uploadsPath));
-
 app.get('/health', (_req, res) => {
   logger.info('Health check endpoint hit');
   res.status(200).json({ status: 'Backend is running' });

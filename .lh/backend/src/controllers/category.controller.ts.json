@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 20,
+            "activePatchIndex": 21,
             "patches": [
                 {
                     "date": 1772797511633,
@@ -88,6 +88,10 @@
                 {
                     "date": 1773037590944,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -144,8 +144,11 @@\n   }\n };\n \n \n+//////////////////////////////////////////////////////\n+// ADMIN CONTROLLER (IMPORTANT FOR YOUR FLOW)\n+//////////////////////////////////////////////////////\n \n export const verifySellerByAdmin = async (req: Request, res: Response) => {\n   try {\n \n"
+                },
+                {
+                    "date": 1773391121577,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -146,5 +146,6 @@\n       });\n \n     }\n   };\n+  \n }\n\\ No newline at end of file\n"
                 }
             ],
             "date": 1772797511633,

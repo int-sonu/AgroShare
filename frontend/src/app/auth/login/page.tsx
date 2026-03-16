@@ -14,16 +14,62 @@ export default function LoginPage() {
     password: '',
   });
 
+  const [errors, setErrors] = useState({
+    email: '',
+    password: '',
+  });
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
+  const validateField = (name: string, value: string) => {
+    let message = '';
+
+    if (name === 'email') {
+      if (!value) message = 'Email is required';
+      else if (value.length > 254) message = 'Email cannot exceed 254 characters';
+      else if (value.includes(' ')) message = 'Email cannot contain spaces';
+      else if (value !== value.toLowerCase()) message = 'Email must be lowercase';
+      else if (!/^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/.test(value))
+        message = 'Invalid email format';
+    }
+
+    if (name === 'password') {
+      if (!value) message = 'Password is required';
+      else if (value.includes(' ')) message = 'Password cannot contain spaces';
+      else if (value.length < 8) message = 'Password must be at least 8 characters';
+    }
+
+    setErrors((prev) => ({
+      ...prev,
+      [name]: message,
+    }));
+  };
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+
+    setForm((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+
+    validateField(name, value);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+
+    if (Object.values(errors).some((err) => err !== '')) {
+      setError('Please fix the errors before submitting');
+      return;
+    }
+
+    if (!form.email || !form.password) {
+      setError('All fields are required');
+      return;
+    }
 
     try {
       setLoading(true);
@@ -54,7 +100,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-[calc(100vh-80px)] flex items-center justify-center bg-gray-100 px-4">
+    <div className="h-[calc(100vh-115px)] flex items-center justify-center bg-gray-100 px-4">
       <div className="w-full max-w-5xl bg-white rounded-2xl shadow-xl overflow-hidden flex">
         <div className="w-2/5 hidden md:flex items-center justify-center bg-white p-6">
           <div className="relative w-full h-96">
@@ -68,23 +114,29 @@ export default function LoginPage() {
           {error && <div className="bg-red-100 text-red-600 text-sm p-2 rounded mb-4">{error}</div>}
 
           <form onSubmit={handleSubmit} className="space-y-4">
-            <input
-              type="email"
-              name="email"
-              placeholder="Enter your email"
-              className="w-full border border-gray-300 rounded-md px-4 py-3 text-sm text-gray-900 placeholder:text-gray-500 focus:ring-2 focus:ring-blue-500 outline-none"
-              onChange={handleChange}
-              required
-            />
+            <div>
+              <input
+                type="email"
+                name="email"
+                placeholder="Enter your email"
+                className="w-full border border-gray-300 rounded-md px-4 py-3 text-sm text-gray-900 placeholder:text-gray-500 focus:ring-2 focus:ring-blue-500 outline-none"
+                onChange={handleChange}
+              />
 
-            <input
-              type="password"
-              name="password"
-              placeholder="Enter your password"
-              className="w-full border border-gray-300 rounded-md px-4 py-3 text-sm text-gray-900 placeholder:text-gray-500 focus:ring-2 focus:ring-blue-500 outline-none"
-              onChange={handleChange}
-              required
-            />
+              {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
+            </div>
+
+            <div>
+              <input
+                type="password"
+                name="password"
+                placeholder="Enter your password"
+                className="w-full border border-gray-300 rounded-md px-4 py-3 text-sm text-gray-900 placeholder:text-gray-500 focus:ring-2 focus:ring-blue-500 outline-none"
+                onChange={handleChange}
+              />
+
+              {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password}</p>}
+            </div>
 
             <div className="text-right">
               <span

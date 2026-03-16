@@ -85,7 +85,6 @@ export default function UsersPage() {
 
   return (
     <div className="p-8 max-w-[1600px] mx-auto space-y-8">
-      {/* Header Section */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>
           <h1 className="text-xl font-black text-slate-900 tracking-tighter leading-none uppercase">
@@ -120,7 +119,6 @@ export default function UsersPage() {
         </div>
       )}
 
-      {/* Table Section */}
       <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
         <Table>
           <TableHeader>
@@ -225,7 +223,6 @@ export default function UsersPage() {
           </TableBody>
         </Table>
 
-        {/* Global Network Pagination */}
         <div className="bg-slate-50/30 px-6 py-4 flex items-center justify-between border-t border-slate-100"></div>
       </div>
     </div>

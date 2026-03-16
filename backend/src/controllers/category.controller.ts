@@ -78,6 +78,27 @@ export class CategoryController {
     }
   };
 
+  updateCategoryStatus = async (req: Request, res: Response) => {
+    try {
+      const { status } = req.body;
+
+      const category = await this.service.updateCategoryStatus(
+        req.params.id as string,
+        status as 'active' | 'inactive',
+      );
+
+      return res.json({
+        success: true,
+        data: category,
+      });
+    } catch (error: unknown) {
+      return res.status(500).json({
+        success: false,
+        message: error instanceof Error ? error.message : 'Status update failed',
+      });
+    }
+  };
+
   deleteCategory = async (req: Request, res: Response) => {
     try {
       await this.service.deleteCategory(req.params.id as string);
@@ -90,6 +111,21 @@ export class CategoryController {
       return res.status(500).json({
         success: false,
         message: error instanceof Error ? error.message : 'Delete failed',
+      });
+    }
+  };
+  getActiveCategories = async (req: Request, res: Response) => {
+    try {
+      const categories = await this.service.getActiveCategories();
+
+      return res.json({
+        success: true,
+        data: categories,
+      });
+    } catch {
+      return res.status(500).json({
+        success: false,
+        message: 'Failed to fetch categories',
       });
     }
   };

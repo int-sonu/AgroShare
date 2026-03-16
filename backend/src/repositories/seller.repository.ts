@@ -70,3 +70,27 @@ export const activateSeller = (sellerId: string) => {
     { new: true },
   );
 };
+
+export const blockSeller = (sellerId: string, reason: string) => {
+  return Seller.findByIdAndUpdate(
+    sellerId,
+    {
+      isBlocked: true,
+      blockReason: reason,
+      blockedAt: new Date(),
+    },
+    { new: true },
+  );
+};
+
+export const unblockSeller = (sellerId: string) => {
+  return Seller.findByIdAndUpdate(
+    sellerId,
+    {
+      isBlocked: false,
+      blockReason: null,
+      blockedAt: null,
+    },
+    { new: true },
+  );
+};

@@ -3,11 +3,43 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 0,
+            "activePatchIndex": 8,
             "patches": [
                 {
                     "date": 1772814282639,
                     "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1773298368398,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,18 +1,17 @@\n import { Router } from 'express';\r\n import * as authController from '../controllers/auth.controller.js';\r\n import { protect } from '../middlewares/auth.middleware.js';\r\n+import { rateLimiter } from '../middlewares/rateLimit.js';\r\n \r\n const router = Router();\r\n \r\n-router.post('/register', authController.register);\r\n+router.post('/register', rateLimiter, authController.register);\r\n+router.post('/login', rateLimiter, authController.login);\r\n+router.post('/forgot-password', rateLimiter, authController.forgotPassword);\r\n+\r\n router.get(\"/user\", protect, authController.getUser);\r\n-router.post('/login', authController.login);\r\n router.post('/refresh', authController.refresh);\r\n-router.post('/forgot-password', authController.forgotPassword);\r\n router.put('/reset-password/:token', authController.resetPassword);\r\n router.post('/logout', protect, authController.logout);\r\n-export default router;\r\n \r\n-\r\n-\r\n-\r\n+export default router;\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1773305858684,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -4,9 +4,9 @@\n import { rateLimiter } from '../middlewares/rateLimit.js';\r\n \r\n const router = Router();\r\n \r\n-router.post('/register', rateLimiter, authController.register);\r\n+router.post('/register', validaterateLimiter, authController.register);\r\n router.post('/login', rateLimiter, authController.login);\r\n router.post('/forgot-password', rateLimiter, authController.forgotPassword);\r\n \r\n router.get(\"/user\", protect, authController.getUser);\r\n"
+                },
+                {
+                    "date": 1773305874469,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -4,9 +4,9 @@\n import { rateLimiter } from '../middlewares/rateLimit.js';\r\n \r\n const router = Router();\r\n \r\n-router.post('/register', validaterateLimiter, authController.register);\r\n+router.post('/register', validate(registerSchemarateLimiter, authController.register);\r\n router.post('/login', rateLimiter, authController.login);\r\n router.post('/forgot-password', rateLimiter, authController.forgotPassword);\r\n \r\n router.get(\"/user\", protect, authController.getUser);\r\n"
+                },
+                {
+                    "date": 1773305879728,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -4,9 +4,9 @@\n import { rateLimiter } from '../middlewares/rateLimit.js';\r\n \r\n const router = Router();\r\n \r\n-router.post('/register', validate(registerSchemarateLimiter, authController.register);\r\n+router.post('/register', validate(registerSchema) rateLimiter, authController.register);\r\n router.post('/login', rateLimiter, authController.login);\r\n router.post('/forgot-password', rateLimiter, authController.forgotPassword);\r\n \r\n router.get(\"/user\", protect, authController.getUser);\r\n"
+                },
+                {
+                    "date": 1773305894981,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -4,9 +4,9 @@\n import { rateLimiter } from '../middlewares/rateLimit.js';\r\n \r\n const router = Router();\r\n \r\n-router.post('/register', validate(registerSchema) rateLimiter, authController.register);\r\n+router.post('/register', validate(registerSchema),rateLimiter, authController.register);\r\n router.post('/login', rateLimiter, authController.login);\r\n router.post('/forgot-password', rateLimiter, authController.forgotPassword);\r\n \r\n router.get(\"/user\", protect, authController.getUser);\r\n"
+                },
+                {
+                    "date": 1773305907600,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -4,9 +4,9 @@\n import { rateLimiter } from '../middlewares/rateLimit.js';\r\n \r\n const router = Router();\r\n \r\n-router.post('/register', validate(registerSchema),rateLimiter, authController.register);\r\n+router.post('/register', rateLimiter, authController.register);\r\n router.post('/login', rateLimiter, authController.login);\r\n router.post('/forgot-password', rateLimiter, authController.forgotPassword);\r\n \r\n router.get(\"/user\", protect, authController.getUser);\r\n"
+                },
+                {
+                    "date": 1773305930758,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,8 +1,10 @@\n import { Router } from 'express';\r\n import * as authController from '../controllers/auth.controller.js';\r\n import { protect } from '../middlewares/auth.middleware.js';\r\n import { rateLimiter } from '../middlewares/rateLimit.js';\r\n+import { registerSchema } from \"../validators/user.schema.js\";\r\n+import { validate } from \"../middlewares/validate.js\";\r\n \r\n const router = Router();\r\n \r\n router.post('/register', rateLimiter, authController.register);\r\n"
+                },
+                {
+                    "date": 1773305936722,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -6,9 +6,9 @@\n import { validate } from \"../middlewares/validate.js\";\r\n \r\n const router = Router();\r\n \r\n-router.post('/register', validate rateLimiter, authController.register);\r\n+router.post('/register', validate() rateLimiter, authController.register);\r\n router.post('/login', rateLimiter, authController.login);\r\n router.post('/forgot-password', rateLimiter, authController.forgotPassword);\r\n \r\n router.get(\"/user\", protect, authController.getUser);\r\n"
                 }
             ],
             "date": 1772814282639,

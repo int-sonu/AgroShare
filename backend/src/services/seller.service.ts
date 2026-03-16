@@ -27,7 +27,6 @@ export const createProfile = async (userId: string, data: Partial<ISeller>) => {
 
   return seller;
 };
-
 export const getMyProfile = async (userId: string) => {
   const seller = await sellerRepo.findSellerByUserId(userId);
 
@@ -35,10 +34,24 @@ export const getMyProfile = async (userId: string) => {
     throw new Error('Seller profile not found');
   }
 
+  if (seller.isBlocked) {
+    throw new Error(`Your seller account has been blocked by admin. Reason: ${seller.blockReason}`);
+  }
+
   return seller;
 };
 
 export const updateProfile = async (userId: string, data: Partial<ISeller>) => {
+  const seller = await sellerRepo.findSellerByUserId(userId);
+
+  if (!seller) {
+    throw new Error('Seller not found');
+  }
+
+  if (seller.isBlocked) {
+    throw new Error('Your seller account has been blocked');
+  }
+
   const updateData: Partial<ISeller> = { ...data };
 
   delete updateData.userId;
@@ -47,13 +60,9 @@ export const updateProfile = async (userId: string, data: Partial<ISeller>) => {
   delete updateData.ifscCode;
   delete updateData.bankName;
 
-  const seller = await sellerRepo.updateSellerByUserId(userId, updateData);
+  const updatedSeller = await sellerRepo.updateSellerByUserId(userId, updateData);
 
-  if (!seller) {
-    throw new Error('Seller not found');
-  }
-
-  return seller;
+  return updatedSeller;
 };
 
 export const updateBankDetails = async (
@@ -68,6 +77,10 @@ export const updateBankDetails = async (
 
   if (!seller) {
     throw new Error('Seller not found');
+  }
+
+  if (seller.isBlocked) {
+    throw new Error('Your seller account has been blocked');
   }
 
   if (seller.verificationStatus !== 'approved') {
@@ -114,4 +127,24 @@ export const deleteProfile = async (userId: string) => {
   }
 
   return { message: 'Seller profile deleted successfully' };
+};
+
+export const blockSeller = async (sellerId: string, reason: string) => {
+  const seller = await sellerRepo.blockSeller(sellerId, reason);
+
+  if (!seller) {
+    throw new Error('Seller not found');
+  }
+
+  return seller;
+};
+
+export const unblockSeller = async (sellerId: string) => {
+  const seller = await sellerRepo.unblockSeller(sellerId);
+
+  if (!seller) {
+    throw new Error('Seller not found');
+  }
+
+  return seller;
 };

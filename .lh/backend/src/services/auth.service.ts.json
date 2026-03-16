@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 10,
+            "activePatchIndex": 13,
             "patches": [
                 {
                     "date": 1772797894640,
@@ -48,6 +48,18 @@
                 {
                     "date": 1773042479462,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,9 +1,9 @@\n import crypto from 'crypto';\n import { JwtPayload } from 'jsonwebtoken';\n import { Types } from 'mongoose';\n import * as userRepository from '../repositories/user.repository.js';\n-import {generateAccessToken,generateRefreshToken,verifyRefreshToken,generateResetTokenverifyResetToken,\n+import {generateAccessToken,generateRefreshToken,verifyRefreshToken,generateResetToken verifyResetToken,\n } from '../utils/jwt.js';\n import { hashPassword, comparePassword } from '../utils/hash.js';\n import { sendResetEmail } from './email.service.js';\n import Seller from '../models/seller.model.js';\n"
+                },
+                {
+                    "date": 1773384705899,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,9 +1,15 @@\n import crypto from 'crypto';\n import { JwtPayload } from 'jsonwebtoken';\n import { Types } from 'mongoose';\n import * as userRepository from '../repositories/user.repository.js';\n-import {generateAccessToken,generateRefreshToken,verifyRefreshToken,generateResetToken verifyResetToken,\n+import { IUser } from '../models/user.model.js';\n+import {\n+  generateAccessToken,\n+  generateRefreshToken,\n+  verifyRefreshToken,\n+  generateResetToken,\n+  verifyResetToken,\n } from '../utils/jwt.js';\n import { hashPassword, comparePassword } from '../utils/hash.js';\n import { sendResetEmail } from './email.service.js';\n import Seller from '../models/seller.model.js';\n@@ -25,9 +31,9 @@\n \n   const user = await userRepository.createUser({\n     ...data,\n     password: hashedPassword,\n-  } as any);\n+  } as Partial<IUser>);\n \n   return {\n     id: user.id,\n     name: user.name,\n@@ -160,4 +166,5 @@\n   await userRepository.saveUser(user);\n \n   return { message: 'Password updated successfully' };\n };\n+\n"
+                },
+                {
+                    "date": 1773385531191,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -69,13 +69,23 @@\n   let redirect = '/';\n \n   if (user.role === 'admin') {\n     redirect = '/admin/dashboard';\n+\n   } else if (user.role === 'seller') {\n     const seller = await Seller.findOne({ userId: user._id });\n \n+    // 🚨 CHECK IF SELLER IS BLOCKED\n+    if (seller?.isBlocked) {\n+      throw new Error(\n+        `Your seller account has been blocked by admin. Reason: ${seller.blockReason}`\n+      );\n+    }\n+\n     redirect =\n-      !seller || !seller.isProfileComplete ? '/seller/complete-profile' : '/seller/dashboard';\n+      !seller || !seller.isProfileComplete\n+        ? '/seller/complete-profile'\n+        : '/seller/dashboard';\n   }\n \n   return {\n     accessToken,\n"
+                },
+                {
+                    "date": 1773385581037,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -73,9 +73,8 @@\n \n   } else if (user.role === 'seller') {\n     const seller = await Seller.findOne({ userId: user._id });\n \n-    // 🚨 CHECK IF SELLER IS BLOCKED\n     if (seller?.isBlocked) {\n       throw new Error(\n         `Your seller account has been blocked by admin. Reason: ${seller.blockReason}`\n       );\n"
                 }
             ],
             "date": 1772797894640,

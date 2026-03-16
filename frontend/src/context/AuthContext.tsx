@@ -30,9 +30,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const restoreSession = async () => {
       try {
         const storedUser = localStorage.getItem('user');
+        const storedToken = localStorage.getItem('accessToken');
 
         if (storedUser) {
           setUser(JSON.parse(storedUser));
+        }
+
+        if (storedToken) {
+          setAccessToken(storedToken);
         }
 
         const res = await fetch(`${API}/auth/refresh`, {
@@ -53,6 +58,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         }
 
         setAccessToken(data.accessToken);
+        localStorage.setItem('accessToken', data.accessToken);
 
         const userRes = await fetch(`${API}/auth/user`, {
           headers: {
@@ -82,6 +88,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setAccessToken(token);
 
     localStorage.setItem('user', JSON.stringify(user));
+    localStorage.setItem('accessToken', token);
   };
 
   const logout = async () => {
@@ -98,6 +105,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
 
     localStorage.removeItem('user');
+    localStorage.removeItem('accessToken');
 
     setUser(null);
     setAccessToken(null);

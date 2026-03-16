@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 
 export default function AddCategoryForm({
   refresh,
@@ -11,18 +12,75 @@ export default function AddCategoryForm({
   close?: () => void;
 }) {
   const router = useRouter();
+
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [status, setStatus] = useState('active');
   const [image, setImage] = useState<File | null>(null);
+  const [preview, setPreview] = useState<string | null>(null);
+
+  const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
+
+  const validateName = (value: string) => {
+    let error = '';
+    const trimmed = value.trim();
+
+    if (!trimmed) {
+      error = 'Category name is required';
+    } else if (trimmed.length < 2 || trimmed.length > 50) {
+      error = 'Name must be between 2 and 50 characters';
+    } else if (!/^[A-Za-z ]+$/.test(trimmed)) {
+      error = 'Only letters and spaces allowed';
+    } else if (/\s{2,}/.test(trimmed)) {
+      error = 'Multiple spaces are not allowed';
+    }
+
+    setErrors((prev: Record<string, string>) => ({ ...prev, name: error }));
+  };
+
+  const validateImage = (file: File) => {
+    let error = '';
+
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/avif'];
+
+    if (!allowedTypes.includes(file.type)) {
+      error = 'Only JPG, PNG, WEBP, AVIF images allowed';
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      error = 'Image must be under 5MB';
+    }
+
+    setErrors((prev: Record<string, string>) => ({ ...prev, image: error }));
+  };
+
+  const handleNameChange = (value: string) => {
+    setName(value);
+    validateName(value);
+  };
+
+  const handleImageChange = (file: File) => {
+    validateImage(file);
+
+    setImage(file);
+
+    const imageUrl = URL.createObjectURL(file);
+    setPreview(imageUrl);
+  };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
+    validateName(name);
+
+    if (errors.name || errors.image) return;
+
+    const formattedName = name.trim().charAt(0).toUpperCase() + name.trim().slice(1);
+
     const formData = new FormData();
-    formData.append('name', name);
-    formData.append('description', description);
+    formData.append('name', formattedName);
+    formData.append('description', description.trim());
     formData.append('status', status);
 
     if (image) {
@@ -42,16 +100,15 @@ export default function AddCategoryForm({
       }
 
       if (refresh) refresh();
-      if (close) {
-        close();
-      } else {
-        router.push('/admin/categories');
-      }
+      if (close) close();
+      else router.push('/admin/categories');
 
       setName('');
       setDescription('');
       setStatus('active');
       setImage(null);
+      setPreview(null);
+      setErrors({});
     } catch (error) {
       console.error('Create category failed', error);
     } finally {
@@ -60,7 +117,7 @@ export default function AddCategoryForm({
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-transparent overflow-y-auto no-scrollbar">
+    <div className="flex items-center justify-center min-h-screen bg-transparent">
       <div className="w-full max-w-lg bg-white shadow-lg rounded-xl p-8">
         <h2 className="text-2xl font-semibold mb-6 text-black">Add Category</h2>
 
@@ -72,10 +129,11 @@ export default function AddCategoryForm({
               type="text"
               placeholder="Enter category name"
               value={name}
-              onChange={(e) => setName(e.target.value)}
-              required
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-black placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-green-500"
+              onChange={(e) => handleNameChange(e.target.value)}
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-black"
             />
+
+            {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name}</p>}
           </div>
 
           <div>
@@ -86,7 +144,7 @@ export default function AddCategoryForm({
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               rows={4}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-black placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-green-500"
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-black"
             />
           </div>
 
@@ -95,14 +153,30 @@ export default function AddCategoryForm({
 
             <input
               type="file"
-              accept="image/*"
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+              accept="image/jpeg,image/png,image/webp,image/avif"
+              onChange={(e) => {
                 if (e.target.files && e.target.files.length > 0) {
-                  setImage(e.target.files[0]);
+                  handleImageChange(e.target.files[0]);
                 }
               }}
               className="w-full border border-gray-300 rounded-lg px-3 py-2 text-black"
             />
+
+            {errors.image && <p className="text-red-500 text-sm mt-1">{errors.image}</p>}
+
+            {preview && (
+              <div className="mt-3">
+                <p className="text-sm text-gray-600 mb-2">Preview</p>
+
+                <Image
+                  src={preview}
+                  alt="Category Preview"
+                  width={160}
+                  height={160}
+                  className="w-40 h-40 object-cover rounded-lg border"
+                />
+              </div>
+            )}
           </div>
 
           <div>
@@ -111,7 +185,7 @@ export default function AddCategoryForm({
             <select
               value={status}
               onChange={(e) => setStatus(e.target.value)}
-              className="w-full border text-black border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+              className="w-full border text-black border-gray-300 rounded-lg px-3 py-2"
             >
               <option value="active">Active</option>
               <option value="inactive">Inactive</option>
@@ -122,7 +196,7 @@ export default function AddCategoryForm({
             <button
               type="button"
               onClick={() => (close ? close() : router.back())}
-              className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 text-black"
+              className="px-4 py-2 border border-gray-300 rounded-lg text-black"
             >
               Cancel
             </button>

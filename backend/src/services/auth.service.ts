@@ -73,6 +73,10 @@ export const login = async (data: LoginInput) => {
   } else if (user.role === 'seller') {
     const seller = await Seller.findOne({ userId: user._id });
 
+    if (seller?.isBlocked) {
+      throw new Error(`Your  account has been blocked by admin. Reason: ${seller.blockReason}`);
+    }
+
     redirect =
       !seller || !seller.isProfileComplete ? '/seller/complete-profile' : '/seller/dashboard';
   }
