@@ -41,6 +41,13 @@ export default function Home() {
   };
 
   useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrent((prev) => (prev + 1) % images.length);
+    }, 5000);
+    return () => clearInterval(timer);
+  }, [images.length]);
+
+  useEffect(() => {
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/health`)
       .then((res) => res.json())
       .then((data) => console.log('API Connected:', data))
