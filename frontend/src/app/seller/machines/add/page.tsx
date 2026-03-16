@@ -4,7 +4,7 @@ import { useState } from 'react';
 import MachineDetailsStep from '@/components/machine/MachineDetailsStep';
 import PricingStep from '@/components/machine/PricingStep';
 import LocationStep from '@/components/machine/LocationStep';
-import ImagesStep from '@/components/machine/MachineImagesStep';
+import ImagesStep from '@/components/machine/ImagesStep';
 import OperatorStep from '@/components/machine/OperatorStep';
 import TransportStep from '@/components/machine/TransportStep';
 import ReviewStep from '@/components/machine/ReviewStep';
