@@ -46,7 +46,11 @@ type Product = {
     state?: string;
     address?: string;
   };
-  specifications?: Record<string, unknown>;
+  specifications?: {
+    power?: string | number;
+    fuelType?: string;
+    [key: string]: unknown;
+  };
   operatorAvailable?: boolean;
   transportAvailable?: boolean;
   condition?: string;

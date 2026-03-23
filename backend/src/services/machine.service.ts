@@ -88,25 +88,19 @@ export const updateMachine = async (id: string, data: Partial<IMachine>) => {
   Object.assign(machine, otherData);
 
   if (pricing) {
-    machine.pricing = {
-      ...(machine.pricing &&
-      typeof (machine.pricing as { toObject?: () => Record<string, unknown> }).toObject ===
-        'function'
-        ? (machine.pricing as { toObject: () => Record<string, unknown> }).toObject()
-        : {}),
-      ...pricing,
-    } as IMachine['pricing'];
+    const currentPricing =
+      machine.pricing && typeof (machine.pricing as any).toObject === 'function'
+        ? (machine.pricing as any).toObject()
+        : machine.pricing || {};
+    machine.pricing = { ...currentPricing, ...pricing } as Record<string, unknown> as any;
   }
 
   if (location) {
-    const existingLocation =
-      machine.location && 'toObject' in machine.location
-        ? (machine.location as { toObject: () => Record<string, unknown> }).toObject()
-        : {};
-    const newLocation = {
-      ...existingLocation,
-      ...location,
-    };
+    const currentLoc =
+      machine.location && typeof (machine.location as any).toObject === 'function'
+        ? (machine.location as any).toObject()
+        : machine.location || {};
+    const newLocation = { ...currentLoc, ...location };
 
     if (
       newLocation.coordinates &&
@@ -117,28 +111,23 @@ export const updateMachine = async (id: string, data: Partial<IMachine>) => {
     } else {
       newLocation.type = undefined;
     }
-
-    machine.location = newLocation;
+    machine.location = newLocation as Record<string, unknown> as any;
   }
 
-  machine.operator = {
-    ...(machine.operator &&
-    typeof (machine.operator as { toObject?: () => Record<string, unknown> }).toObject ===
-      'function'
-      ? (machine.operator as { toObject: () => Record<string, unknown> }).toObject()
-      : {}),
-    ...operator,
-  } as IMachine['operator'];
+  if (operator) {
+    const currentOp =
+      machine.operator && typeof (machine.operator as any).toObject === 'function'
+        ? (machine.operator as any).toObject()
+        : machine.operator || {};
+    machine.operator = { ...currentOp, ...operator } as Record<string, unknown> as any;
+  }
 
   if (transport) {
-    machine.transport = {
-      ...(machine.transport &&
-      typeof (machine.transport as { toObject?: () => Record<string, unknown> }).toObject ===
-        'function'
-        ? (machine.transport as { toObject: () => Record<string, unknown> }).toObject()
-        : {}),
-      ...transport,
-    } as IMachine['transport'];
+    const currentTrans =
+      machine.transport && typeof (machine.transport as any).toObject === 'function'
+        ? (machine.transport as any).toObject()
+        : machine.transport || {};
+    machine.transport = { ...currentTrans, ...transport } as Record<string, unknown> as any;
   }
 
   await machine.save();
