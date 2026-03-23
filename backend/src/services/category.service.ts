@@ -11,6 +11,10 @@ export class CategoryService {
       throw new Error('Category already exists');
     }
 
+    if (!data.slug && data.name) {
+      data.slug = data.name.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '');
+    }
+
     return await this.repository.create(data);
   }
 
@@ -29,6 +33,9 @@ export class CategoryService {
   }
 
   async updateCategory(id: string, data: Partial<ICategory>) {
+    if (data.name && !data.slug) {
+      data.slug = data.name.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '');
+    }
     return await this.repository.update(id, data);
   }
 
@@ -44,6 +51,17 @@ export class CategoryService {
 
   async deleteCategory(id: string) {
     return await this.repository.delete(id);
+  }
+
+  async getCategoryBySlug(slug: string) {
+    let category = await this.repository.findBySlug(slug);
+    
+    if (!category && /^[0-9a-fA-F]{24}$/.test(slug)) {
+      category = await this.repository.findById(slug);
+    }
+
+    if (!category) throw new Error('Category not found');
+    return category;
   }
 
   async getActiveCategories() {

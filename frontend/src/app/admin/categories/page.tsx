@@ -8,6 +8,7 @@ import { Layers, Pencil, Trash2, Eye, EyeOff } from 'lucide-react';
 interface Category {
   _id: string;
   name: string;
+  slug: string;
   image: string;
   description: string;
   status: 'active' | 'inactive';
@@ -94,7 +95,7 @@ export default function CategoriesPage() {
           <thead>
             <tr className="bg-slate-50 border-b border-slate-100 text-slate-900 uppercase text-[9px] font-black tracking-[0.2em]">
               <th className="p-5 w-[90px]">Image</th>
-              <th className="p-5">Name</th>
+              <th className="p-5">Name / Slug</th>
               <th className="p-5">Description</th>
               <th className="p-5 w-[100px]">Status</th>
               <th className="p-5 text-right w-[130px]">Actions</th>
@@ -125,7 +126,10 @@ export default function CategoriesPage() {
                     )}
                   </td>
 
-                  <td className="p-5 font-bold text-slate-900">{cat.name}</td>
+                  <td className="p-5">
+                    <div className="font-bold text-slate-900">{cat.name}</div>
+                    <div className="text-[10px] text-gray-400 font-mono mt-0.5">/{cat.slug || 'no-slug'}</div>
+                  </td>
 
                   <td className="p-5 text-sm text-slate-700">{cat.description}</td>
 
@@ -147,15 +151,27 @@ export default function CategoriesPage() {
                         type="button"
                         onClick={(e) => {
                           e.stopPropagation();
+                          window.open(`/category/${cat.slug || cat._id}`, '_blank');
+                        }}
+                        className="p-2 rounded-lg hover:bg-green-50"
+                        title="View Public Page"
+                      >
+                        <Eye size={16} className="text-green-600" />
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
                           toggleStatus(cat._id, cat.status);
                         }}
                         className="p-2 rounded-lg hover:bg-gray-100"
                         title="Toggle Status"
                       >
                         {cat.status === 'active' ? (
-                          <Eye size={16} className="text-green-600" />
+                          <Layers size={16} className="text-green-600" />
                         ) : (
-                          <EyeOff size={16} className="text-gray-400" />
+                          <Layers size={16} className="text-gray-400" />
                         )}
                       </button>
 

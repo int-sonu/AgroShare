@@ -1,42 +1,33 @@
-import type { Metadata } from 'next';
-import { Geist, Geist_Mono, Outfit } from 'next/font/google';
-import './globals.css';
-import { AuthProvider } from '@/context/AuthContext';
-import LayoutWrapper from '@/components/LayoutWrapper';
-const geistSans = Geist({
-  variable: '--font-geist-sans',
-  subsets: ['latin'],
-});
+import type { Metadata } from "next";
+import { Plus_Jakarta_Sans } from "next/font/google";
+import "./globals.css";
+import Navbar from "@/components/Navbar";
+import { AuthProvider } from "@/context/AuthContext";
+import { Toaster } from "react-hot-toast";
 
-const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
-  subsets: ['latin'],
-});
-
-const outfit = Outfit({
-  variable: '--font-outfit',
-  subsets: ['latin'],
+const jakarta = Plus_Jakarta_Sans({
+  subsets: ["latin"],
+  variable: "--font-jakarta",
+  weight: ["400", "500", "600", "700", "800"],
 });
 
 export const metadata: Metadata = {
-  title: 'AgroShare',
-  description: 'Agriculture Machine Renting Platform',
+  title: "AgroShare - Rent Farming Equipment",
+  description: "Modern agricultural equipment rental platform",
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <head>
-        <style>{`
-          *::-webkit-scrollbar { display: none !important; width: 0 !important; height: 0 !important; }
-          * { -ms-overflow-style: none !important; scrollbar-width: none !important; }
-        `}</style>
-      </head>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} ${outfit.variable} antialiased`}
-      >
+      <body className={`${jakarta.variable} antialiased font-sans`}>
         <AuthProvider>
-          <LayoutWrapper>{children}</LayoutWrapper>
+          <Navbar />
+          {children}
+          <Toaster position="bottom-right" />
         </AuthProvider>
       </body>
     </html>

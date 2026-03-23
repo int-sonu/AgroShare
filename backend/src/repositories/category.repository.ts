@@ -24,4 +24,8 @@ export class CategoryRepository {
   async findAllActive() {
     return await Category.find({ status: 'active' });
   }
+
+  async findBySlug(slug: string) {
+    return await Category.findOne({ slug });
+  }
 }

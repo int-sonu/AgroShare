@@ -13,6 +13,7 @@ export default function EditCategoryPage() {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
   const [name, setName] = useState('');
+  const [slug, setSlug] = useState('');
   const [description, setDescription] = useState('');
   const [image, setImage] = useState<File | null>(null);
   const [preview, setPreview] = useState<string>('');
@@ -35,6 +36,7 @@ export default function EditCategoryPage() {
           const category = data.data;
 
           setName(category.name || '');
+          setSlug(category.slug || '');
           setDescription(category.description || '');
 
           if (category.image) {
@@ -54,6 +56,7 @@ export default function EditCategoryPage() {
 
     const formData = new FormData();
     formData.append('name', name);
+    formData.append('slug', slug);
     formData.append('description', description);
 
     if (image) {
@@ -97,6 +100,19 @@ export default function EditCategoryPage() {
               className="w-full border rounded-lg px-3 py-2"
               required
             />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-1">Slug (URL Name)</label>
+
+            <input
+              type="text"
+              value={slug}
+              onChange={(e) => setSlug(e.target.value)}
+              className="w-full border rounded-lg px-3 py-2 bg-gray-50"
+              placeholder="category-slug"
+            />
+            <p className="text-[10px] text-gray-500 mt-1 uppercase font-bold tracking-tight">Used for SEO friendly URLs</p>
           </div>
 
           <div>

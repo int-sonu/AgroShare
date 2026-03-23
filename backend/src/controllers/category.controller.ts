@@ -129,4 +129,19 @@ export class CategoryController {
       });
     }
   };
+
+  getCategoryBySlug = async (req: Request, res: Response) => {
+    try {
+      const category = await this.service.getCategoryBySlug(req.params.slug as string);
+      return res.json({
+        success: true,
+        data: category,
+      });
+    } catch (error: unknown) {
+      return res.status(404).json({
+        success: false,
+        message: error instanceof Error ? error.message : 'Category not found',
+      });
+    }
+  };
 }

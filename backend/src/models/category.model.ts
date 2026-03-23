@@ -2,6 +2,7 @@ import mongoose, { Schema, Document } from "mongoose";
 
 export interface ICategory extends Document {
   name: string;
+  slug: string;
   image: string;
   description?: string;
   status: "active" | "inactive";
@@ -16,6 +17,14 @@ const categorySchema = new Schema<ICategory>(
       required: true,
       trim: true,
       unique: true,
+    },
+
+    slug: {
+      type: String,
+      required: true,
+      unique: true,
+      trim: true,
+      lowercase: true,
     },
 
     image: {

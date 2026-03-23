@@ -70,6 +70,24 @@ export const getMachineById: RequestHandler<IdParams> = async (req, res) => {
   }
 };
 
+export const getMachineBySlug: RequestHandler<{ slug: string }> = async (req, res) => {
+  try {
+    const { slug } = req.params;
+    const machine = await machineService.getMachineBySlug(slug);
+
+    res.json({
+      success: true,
+      data: machine,
+    });
+  } catch (err: unknown) {
+    const error = err as Error;
+    res.status(404).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
 export const updateMachine: RequestHandler<IdParams> = async (req, res) => {
   try {
     const { id } = req.params;
@@ -154,6 +172,7 @@ export const uploadMachineImages: RequestHandler<IdParams> = async (req, res) =>
 
     const machine = await machineService.updateMachine(id, {
       images: imageUrls,
+      wizardStep: 4,
     });
 
     res.json({
@@ -161,12 +180,46 @@ export const uploadMachineImages: RequestHandler<IdParams> = async (req, res) =>
       data: machine,
     });
   } catch (err: unknown) {
-    const error = err as Error;
+    const error = err as any;
     console.error('Image upload error:', error);
 
-    res.status(500).json({
+    res.status(error.http_code || 500).json({
       success: false,
       message: error.message || 'Image upload failed',
+    });
+  }
+};
+
+export const getMachinesByCategory: RequestHandler<{ categoryId: string }> = async (req, res) => {
+  try {
+    const { categoryId } = req.params;
+    const machines = await machineService.getMachinesByCategory(categoryId);
+
+    res.json({
+      success: true,
+      data: machines,
+    });
+  } catch (err: unknown) {
+    const error = err as Error;
+    res.status(404).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+export const getUniqueLocations: RequestHandler = async (_req, res) => {
+  try {
+    const locations = await machineService.getUniqueLocations();
+    res.json({
+      success: true,
+      data: locations,
+    });
+  } catch (err: unknown) {
+    console.error('Fetch locations error:', err);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch locations',
     });
   }
 };

@@ -5,11 +5,19 @@ export const createMachine = async (data: Partial<IMachine>) => {
 };
 
 export const getAllMachines = async () => {
-  return Machine.find().populate('category');
+  const machines = await Machine.find().populate({
+    path: 'category',
+    match: { status: { $ne: 'inactive' } }
+  });
+  return machines.filter((machine) => machine.category !== null);
 };
 
 export const getMachineById = async (id: string) => {
-  return Machine.findById(id).populate('category');
+  return Machine.findById(id).populate('category').populate('seller', 'name email phone');
+};
+
+export const getMachineBySlug = async (slug: string) => {
+  return Machine.findOne({ slug }).populate('category').populate('seller', 'name email phone');
 };
 
 export const updateMachine = async (id: string, data: Partial<IMachine>) => {
@@ -22,4 +30,28 @@ export const deleteMachine = async (id: string) => {
 
 export const getMachinesBySeller = async (sellerId: string) => {
   return Machine.find({ seller: sellerId }).populate('category');
+};
+
+export const getMachinesByCategory = async (categoryId: string) => {
+  return Machine.find({ category: categoryId })
+    .populate('category')
+    .populate('seller', 'name email phone');
+};
+
+export const getUniqueLocations = async () => {
+  return Machine.aggregate([
+    {
+      $group: {
+        _id: { district: '$location.district', state: '$location.state' },
+      },
+    },
+    {
+      $project: {
+        _id: 0,
+        district: '$_id.district',
+        state: '$_id.state',
+      },
+    },
+    { $sort: { state: 1, district: 1 } },
+  ]);
 };

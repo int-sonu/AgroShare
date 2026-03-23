@@ -14,6 +14,7 @@ export default function AddCategoryForm({
   const router = useRouter();
 
   const [name, setName] = useState('');
+  const [slug, setSlug] = useState('');
   const [description, setDescription] = useState('');
   const [status, setStatus] = useState('active');
   const [image, setImage] = useState<File | null>(null);
@@ -41,7 +42,6 @@ export default function AddCategoryForm({
 
   const validateImage = (file: File) => {
     let error = '';
-
     const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/avif'];
 
     if (!allowedTypes.includes(file.type)) {
@@ -55,31 +55,33 @@ export default function AddCategoryForm({
     setErrors((prev: Record<string, string>) => ({ ...prev, image: error }));
   };
 
+  const generateSlug = (value: string) => {
+    return value.toLowerCase().trim().replace(/ /g, '-').replace(/[^\w-]+/g, '');
+  };
+
   const handleNameChange = (value: string) => {
     setName(value);
+    setSlug(generateSlug(value));
     validateName(value);
   };
 
   const handleImageChange = (file: File) => {
     validateImage(file);
-
     setImage(file);
-
     const imageUrl = URL.createObjectURL(file);
     setPreview(imageUrl);
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
     validateName(name);
-
     if (errors.name || errors.image) return;
 
     const formattedName = name.trim().charAt(0).toUpperCase() + name.trim().slice(1);
 
     const formData = new FormData();
     formData.append('name', formattedName);
+    formData.append('slug', slug.trim() || generateSlug(name));
     formData.append('description', description.trim());
     formData.append('status', status);
 
@@ -89,8 +91,9 @@ export default function AddCategoryForm({
 
     try {
       setLoading(true);
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
-      const res = await fetch('http://localhost:5000/categories', {
+      const res = await fetch(`${apiUrl}/categories`, {
         method: 'POST',
         body: formData,
       });
@@ -134,6 +137,19 @@ export default function AddCategoryForm({
             />
 
             {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name}</p>}
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-black mb-1">Slug (URL Name)</label>
+
+            <input
+              type="text"
+              placeholder="category-slug"
+              value={slug}
+              onChange={(e) => setSlug(e.target.value)}
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-black bg-gray-50"
+            />
+            <p className="text-[10px] text-gray-500 mt-1 uppercase font-bold tracking-tight">Used for SEO friendly URLs</p>
           </div>
 
           <div>

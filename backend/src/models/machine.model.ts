@@ -4,6 +4,8 @@ export interface IMachine extends Document {
   seller: mongoose.Types.ObjectId;
 
   machineName: string;
+  slug: string; 
+
   category: mongoose.Types.ObjectId;
 
   brandModel?: string;
@@ -65,6 +67,13 @@ const machineSchema = new Schema<IMachine>(
       required: true,
     },
 
+    slug: {
+      type: String,
+      required: true,
+      unique: true,
+      index: true,
+    },
+
     category: {
       type: Schema.Types.ObjectId,
       ref: 'Category',
@@ -94,11 +103,8 @@ const machineSchema = new Schema<IMachine>(
         type: String,
         enum: ['Per Hour', 'Per Day', 'Per Acre'],
       },
-
       rentalPrice: Number,
-
       minimumRentalDuration: Number,
-
       securityDeposit: Number,
     },
 
@@ -131,9 +137,7 @@ const machineSchema = new Schema<IMachine>(
         type: Boolean,
         default: false,
       },
-
       operatorName: String,
-
       operatorPhone: String,
     },
 
@@ -142,7 +146,6 @@ const machineSchema = new Schema<IMachine>(
         type: Boolean,
         default: false,
       },
-
       transportCost: Number,
     },
 
@@ -159,6 +162,31 @@ const machineSchema = new Schema<IMachine>(
   { timestamps: true },
 );
 
+
 machineSchema.index({ 'location.coordinates': '2dsphere' });
+
+
+machineSchema.pre('validate', async function () {
+  if (!this.machineName) return;
+
+  const Machine =
+    mongoose.models.Machine || mongoose.model<IMachine>('Machine');
+
+  const baseSlug = this.machineName
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9\s-]/g, '')
+    .replace(/\s+/g, '-');
+
+  let slug = baseSlug;
+  let count = 1;
+
+  while (await Machine.findOne({ slug, _id: { $ne: this._id } })) {
+    slug = `${baseSlug}-${count++}`;
+  }
+
+  this.slug = slug;
+});
+
 
 export default mongoose.model<IMachine>('Machine', machineSchema);

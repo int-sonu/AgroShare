@@ -62,6 +62,16 @@ export const getMachineById = async (id: string) => {
   return machine;
 };
 
+export const getMachineBySlug = async (slug: string) => {
+  const machine = await machineRepo.getMachineBySlug(slug);
+
+  if (!machine) {
+    throw new Error('Machine not found');
+  }
+
+  return machine;
+};
+
 export const updateMachine = async (id: string, data: Partial<IMachine>) => {
   if (!mongoose.Types.ObjectId.isValid(id)) {
     throw new Error('Invalid machine ID');
@@ -78,11 +88,7 @@ export const updateMachine = async (id: string, data: Partial<IMachine>) => {
   Object.assign(machine, otherData);
 
   if (pricing) {
-    machine.pricing = {
-      ...(machine.pricing && typeof (machine.pricing as any).toObject === 'function'
-        ? (machine.pricing as any).toObject()
-        : {}),
-      ...pricing,
+    machine.pricing = {...(machine.pricing && typeof (machine.pricing as any).toObject === 'function' ? (machine.pricing as any).toObject()  : {}),...pricing,
     } as any;
   }
 
@@ -150,4 +156,16 @@ export const getSellerMachines = async (sellerId: string) => {
   }
 
   return machineRepo.getMachinesBySeller(sellerId);
+};
+
+export const getMachinesByCategory = async (categoryId: string) => {
+  if (!mongoose.Types.ObjectId.isValid(categoryId)) {
+    throw new Error('Invalid category ID');
+  }
+
+  return machineRepo.getMachinesByCategory(categoryId);
+};
+
+export const getUniqueLocations = async () => {
+  return machineRepo.getUniqueLocations();
 };
