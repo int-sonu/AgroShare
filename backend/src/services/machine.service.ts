@@ -88,14 +88,20 @@ export const updateMachine = async (id: string, data: Partial<IMachine>) => {
   Object.assign(machine, otherData);
 
   if (pricing) {
-    machine.pricing = {...(machine.pricing && typeof (machine.pricing as any).toObject === 'function' ? (machine.pricing as any).toObject()  : {}),...pricing,
-    } as any;
+    machine.pricing = {
+      ...(machine.pricing &&
+      typeof (machine.pricing as { toObject?: () => Record<string, unknown> }).toObject ===
+        'function'
+        ? (machine.pricing as { toObject: () => Record<string, unknown> }).toObject()
+        : {}),
+      ...pricing,
+    } as IMachine['pricing'];
   }
 
   if (location) {
     const existingLocation =
       machine.location && 'toObject' in machine.location
-        ? (machine.location as any).toObject()
+        ? (machine.location as { toObject: () => Record<string, unknown> }).toObject()
         : {};
     const newLocation = {
       ...existingLocation,
@@ -116,19 +122,23 @@ export const updateMachine = async (id: string, data: Partial<IMachine>) => {
   }
 
   machine.operator = {
-    ...(machine.operator && typeof (machine.operator as any).toObject === 'function'
-      ? (machine.operator as any).toObject()
+    ...(machine.operator &&
+    typeof (machine.operator as { toObject?: () => Record<string, unknown> }).toObject ===
+      'function'
+      ? (machine.operator as { toObject: () => Record<string, unknown> }).toObject()
       : {}),
     ...operator,
-  } as any;
+  } as IMachine['operator'];
 
   if (transport) {
     machine.transport = {
-      ...(machine.transport && typeof (machine.transport as any).toObject === 'function'
-        ? (machine.transport as any).toObject()
+      ...(machine.transport &&
+      typeof (machine.transport as { toObject?: () => Record<string, unknown> }).toObject ===
+        'function'
+        ? (machine.transport as { toObject: () => Record<string, unknown> }).toObject()
         : {}),
       ...transport,
-    } as any;
+    } as IMachine['transport'];
   }
 
   await machine.save();
