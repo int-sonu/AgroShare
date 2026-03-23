@@ -250,7 +250,7 @@ export default function Home() {
                     </div>
 
                     <div className="flex items-center gap-1 text-gray-500 text-xs mb-5">
-                      <span>📍</span>
+                      <span></span>
                       <span className="line-clamp-1">
                         {machine.location?.village || machine.location?.district || 'Location N/A'}
                       </span>
