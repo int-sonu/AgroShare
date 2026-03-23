@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { Layers, Pencil, Trash2, Eye, EyeOff } from 'lucide-react';
+import { Layers, Pencil, Trash2, Eye } from 'lucide-react';
 
 interface Category {
   _id: string;
@@ -128,7 +128,9 @@ export default function CategoriesPage() {
 
                   <td className="p-5">
                     <div className="font-bold text-slate-900">{cat.name}</div>
-                    <div className="text-[10px] text-gray-400 font-mono mt-0.5">/{cat.slug || 'no-slug'}</div>
+                    <div className="text-[10px] text-gray-400 font-mono mt-0.5">
+                      /{cat.slug || 'no-slug'}
+                    </div>
                   </td>
 
                   <td className="p-5 text-sm text-slate-700">{cat.description}</td>

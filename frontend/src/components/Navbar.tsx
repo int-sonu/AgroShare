@@ -29,15 +29,17 @@ export default function Navbar() {
 
   useEffect(() => {
     const saved = localStorage.getItem('selectedLocation');
-    if (saved) setSelectedLocation(saved);
+    if (saved && saved !== selectedLocation) {
+      setTimeout(() => setSelectedLocation(saved), 0);
+    }
 
     const fetchCategories = async () => {
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/categories/active`, { 
-          cache: "no-store" 
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/categories/active`, {
+          cache: 'no-store',
         });
         const data = await res.json();
-        
+
         if (Array.isArray(data)) {
           setCategories(data);
         } else if (Array.isArray(data.data)) {
@@ -46,18 +48,18 @@ export default function Navbar() {
           setCategories(data.categories);
         }
       } catch (error) {
-        console.error("Failed to fetch categories for navbar:", error);
+        console.error('Failed to fetch categories for navbar:', error);
       }
     };
 
     fetchCategories();
-  }, []);
+  }, [selectedLocation]);
 
   const handleLocationSelect = (location: string) => {
     setSelectedLocation(location);
     localStorage.setItem('selectedLocation', location);
     setIsLocationModalOpen(false);
-    
+
     window.dispatchEvent(new CustomEvent('locationChanged', { detail: location }));
   };
 
@@ -83,7 +85,7 @@ export default function Navbar() {
             </Link>
 
             <div className="hidden md:flex flex-1 max-w-2xl mx-6 lg:mx-10 h-11 bg-white rounded-full border border-gray-200 shadow-sm overflow-hidden focus-within:ring-2 focus-within:ring-green-100 focus-within:border-green-400 transition-all">
-              <div 
+              <div
                 onClick={() => setIsLocationModalOpen(true)}
                 className="flex items-center gap-1.5 px-4 border-r border-gray-100 cursor-pointer hover:bg-gray-50 transition-colors"
               >
@@ -123,7 +125,9 @@ export default function Navbar() {
                 </div>
               ) : (
                 <div className="flex items-center gap-3">
-                  <span className="text-[13px] font-black text-gray-800 hidden sm:block">Hi, {user?.name?.split(' ')[0] || 'User'}</span>
+                  <span className="text-[13px] font-black text-gray-800 hidden sm:block">
+                    Hi, {user?.name?.split(' ')[0] || 'User'}
+                  </span>
                   <Button
                     onClick={logout}
                     variant="outline"
@@ -142,7 +146,9 @@ export default function Navbar() {
                   </Badge>
                 </div>
                 <div className="hidden lg:block text-xs">
-                  <p className="text-gray-400 font-bold uppercase text-[9px] tracking-widest leading-none mb-0.5">My Cart</p>
+                  <p className="text-gray-400 font-bold uppercase text-[9px] tracking-widest leading-none mb-0.5">
+                    My Cart
+                  </p>
                   <p className="font-black text-green-600">₹89,250</p>
                 </div>
               </div>
@@ -156,42 +162,44 @@ export default function Navbar() {
               HOME
             </Link>
 
-            <div 
+            <div
               className="relative group flex items-center h-full"
               onMouseEnter={() => setIsCategoriesHovered(true)}
               onMouseLeave={() => setIsCategoriesHovered(false)}
             >
               <div className="flex items-center gap-1 cursor-pointer text-gray-800 hover:text-green-600 transition">
-                <Link href="/category">
-                  CATEGORIES
-                </Link>
-                <ChevronDown className={`w-3 h-3 transition-transform duration-200 ${isCategoriesHovered ? 'rotate-180' : ''}`} />
+                <Link href="/category">CATEGORIES</Link>
+                <ChevronDown
+                  className={`w-3 h-3 transition-transform duration-200 ${isCategoriesHovered ? 'rotate-180' : ''}`}
+                />
               </div>
 
-              <div 
+              <div
                 className={`absolute top-full left-1/2 -translate-x-1/2 w-64 bg-white rounded-2xl shadow-xl border border-gray-100 py-3 px-2 transition-all duration-300 origin-top z-50 ${
-                  isCategoriesHovered ? 'opacity-100 scale-100 visible translate-y-0' : 'opacity-0 scale-95 invisible -translate-y-2'
+                  isCategoriesHovered
+                    ? 'opacity-100 scale-100 visible translate-y-0'
+                    : 'opacity-0 scale-95 invisible -translate-y-2'
                 }`}
               >
-                 {categories.length > 0 ? (
-                   <div className="grid grid-cols-1 gap-1">
-                     {categories.map((cat) => (
-                       <Link 
-                         key={cat._id} 
-                         href={`/category/${cat.slug || cat._id}`}
-                         className="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-[12px] font-bold text-gray-700 hover:bg-green-50 hover:text-green-700 transition-all group/item"
-                       >
-                         <span>{cat.name}</span>
-                         <ChevronDown className="w-3 h-3 -rotate-90 opacity-0 group-hover/item:opacity-100 transition-all -translate-x-2 group-hover/item:translate-x-0" />
-                       </Link>
-                     ))}
-                   </div>
-                 ) : (
-                   <div className="px-4 py-8 text-[11px] text-gray-400 font-bold text-center uppercase tracking-widest flex flex-col items-center gap-2">
-                     <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-ping"></div>
-                     Loading Categories...
-                   </div>
-                 )}
+                {categories.length > 0 ? (
+                  <div className="grid grid-cols-1 gap-1">
+                    {categories.map((cat) => (
+                      <Link
+                        key={cat._id}
+                        href={`/category/${cat.slug || cat._id}`}
+                        className="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-[12px] font-bold text-gray-700 hover:bg-green-50 hover:text-green-700 transition-all group/item"
+                      >
+                        <span>{cat.name}</span>
+                        <ChevronDown className="w-3 h-3 -rotate-90 opacity-0 group-hover/item:opacity-100 transition-all -translate-x-2 group-hover/item:translate-x-0" />
+                      </Link>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="px-4 py-8 text-[11px] text-gray-400 font-bold text-center uppercase tracking-widest flex flex-col items-center gap-2">
+                    <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-ping"></div>
+                    Loading Categories...
+                  </div>
+                )}
               </div>
             </div>
 
@@ -206,7 +214,7 @@ export default function Navbar() {
         </div>
       </nav>
 
-      <LocationModal 
+      <LocationModal
         isOpen={isLocationModalOpen}
         onClose={() => setIsLocationModalOpen(false)}
         onSelect={handleLocationSelect}

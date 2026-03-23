@@ -11,8 +11,6 @@ import {
   ChevronRight,
   MapPin,
   CheckCircle2,
-  Check,
-  Truck,
   RotateCcw,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -48,7 +46,7 @@ type Product = {
     state?: string;
     address?: string;
   };
-  specifications?: any;
+  specifications?: Record<string, unknown>;
   operatorAvailable?: boolean;
   transportAvailable?: boolean;
   condition?: string;
@@ -58,12 +56,13 @@ export default function Home() {
   const [current, setCurrent] = useState(0);
   const [categories, setCategories] = useState<Category[]>([]);
   const [allProducts, setAllProducts] = useState<Product[]>([]);
-  const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [productsLoading, setProductsLoading] = useState(true);
   const [selectedLocation, setSelectedLocation] = useState('Select City');
 
-  const getImageUrl = (image: any) => {
+  const getImageUrl = (
+    image: string | { url?: string; secure_url?: string } | null | undefined,
+  ) => {
     if (!image) return '/images/category-placeholder.png';
     const url = typeof image === 'string' ? image : image?.url || image?.secure_url;
     if (!url) return '/images/category-placeholder.png';
@@ -75,15 +74,21 @@ export default function Home() {
 
   useEffect(() => {
     const saved = localStorage.getItem('selectedLocation');
-    if (saved) setSelectedLocation(saved);
+    if (saved && saved !== selectedLocation) {
+      setTimeout(() => setSelectedLocation(saved), 0);
+    }
 
-    const handleLocationChange = (e: any) => {
-      setSelectedLocation(e.detail);
+    const handleLocationChange = (e: Event) => {
+      const customEvent = e as CustomEvent<string>;
+      if (customEvent.detail && customEvent.detail !== selectedLocation) {
+        setSelectedLocation(customEvent.detail);
+      }
     };
 
-    window.addEventListener('locationChanged', handleLocationChange);
-    return () => window.removeEventListener('locationChanged', handleLocationChange);
-  }, []);
+    window.addEventListener('locationChanged', handleLocationChange as EventListener);
+    return () =>
+      window.removeEventListener('locationChanged', handleLocationChange as EventListener);
+  }, [selectedLocation]);
 
   useEffect(() => {
     const loadCategories = async () => {
@@ -110,7 +115,7 @@ export default function Home() {
           cache: 'no-store',
         });
         const data = await res.json();
-        const productsList = Array.isArray(data.data) ? data.data : (Array.isArray(data) ? data : []);
+        const productsList = Array.isArray(data.data) ? data.data : Array.isArray(data) ? data : [];
         setAllProducts(productsList);
         setProductsLoading(false);
       } catch (error) {
@@ -121,17 +126,13 @@ export default function Home() {
     loadProducts();
   }, []);
 
-  useEffect(() => {
-    if (selectedLocation === 'Select City') {
-      setFilteredProducts(allProducts.slice(0, 8));
-    } else {
-      const filtered = allProducts.filter((p) => {
-        const locString = `${p.location?.district}, ${p.location?.state}`;
-        return locString.toLowerCase().includes(selectedLocation.toLowerCase());
-      });
-      setFilteredProducts(filtered);
-    }
-  }, [allProducts, selectedLocation]);
+  const filteredProducts =
+    selectedLocation === 'Select City'
+      ? allProducts.slice(0, 8)
+      : allProducts.filter((p) => {
+          const locString = `${p.location?.district}, ${p.location?.state}`;
+          return locString.toLowerCase().includes(selectedLocation.toLowerCase());
+        });
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -146,8 +147,9 @@ export default function Home() {
         {BANNER_IMAGES.map((img, index) => (
           <div
             key={index}
-            className={`absolute inset-0 transition-opacity duration-1000 ${index === current ? 'opacity-100' : 'opacity-0'
-              }`}
+            className={`absolute inset-0 transition-opacity duration-1000 ${
+              index === current ? 'opacity-100' : 'opacity-0'
+            }`}
           >
             <Image
               src={img}
@@ -169,7 +171,8 @@ export default function Home() {
           </h1>
 
           <p className="text-base md:text-[14px] max-w-lg text-gray-200 mb-10 font-bold leading-6">
-            A trusted digital marketplace connecting sellers of advanced agricultural equipment <br className="hidden md:block" /> with farmers across the region.
+            A trusted digital marketplace connecting sellers of advanced agricultural equipment{' '}
+            <br className="hidden md:block" /> with farmers across the region.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4">
@@ -202,10 +205,14 @@ export default function Home() {
           {loading ? (
             <div className="flex flex-col items-center gap-3 py-8">
               <div className="w-8 h-8 border-4 border-green-100 border-t-green-600 rounded-full animate-spin"></div>
-              <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">Fetching Categories...</p>
+              <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">
+                Fetching Categories...
+              </p>
             </div>
           ) : categories.length === 0 ? (
-            <p className="text-center text-gray-400 font-bold uppercase tracking-widest text-xs">No categories found</p>
+            <p className="text-center text-gray-400 font-bold uppercase tracking-widest text-xs">
+              No categories found
+            </p>
           ) : (
             <div className="flex flex-wrap gap-6 md:gap-10 justify-center pb-8">
               {categories.map((category) => (
@@ -222,7 +229,7 @@ export default function Home() {
                         fill
                         unoptimized
                         className="object-contain brightness-0 invert opacity-100 transition-transform duration-500 group-hover:scale-110"
-                        style={{ filter: "brightness(0) invert(1)" }}
+                        style={{ filter: 'brightness(0) invert(1)' }}
                       />
                     </div>
                   </div>
@@ -240,7 +247,9 @@ export default function Home() {
       <section className="pt-10 pb-16 bg-gray-50 relative overflow-hidden">
         <div className="container mx-auto px-6 relative z-10 font-sans">
           <div className="text-center mb-8">
-            <h2 className="text-2xl md:text-3xl font-black text-gray-900 tracking-tighter mb-1">How AgroShare Works</h2>
+            <h2 className="text-2xl md:text-3xl font-black text-gray-900 tracking-tighter mb-1">
+              How AgroShare Works
+            </h2>
             <p className="text-gray-500 max-w-xl mx-auto font-black uppercase text-[9px] tracking-widest leading-relaxed opacity-60">
               Three simple steps to access modern agricultural machinery.
             </p>
@@ -251,7 +260,9 @@ export default function Home() {
               <div className="w-14 h-14 bg-green-100/50 rounded-2xl flex items-center justify-center mb-6 text-green-600">
                 <Search className="w-7 h-7" />
               </div>
-              <h3 className="text-base font-black text-gray-900 mb-2 tracking-tight">Browse & Discover</h3>
+              <h3 className="text-base font-black text-gray-900 mb-2 tracking-tight">
+                Browse & Discover
+              </h3>
               <p className="text-gray-500 text-[12px] font-medium leading-relaxed px-4">
                 Explore a wide range of machines tailored to your farming needs.
               </p>
@@ -261,7 +272,9 @@ export default function Home() {
               <div className="w-14 h-14 bg-green-600 rounded-2xl flex items-center justify-center mb-6 text-white shadow-lg shadow-green-600/20">
                 <CalendarCheck className="w-7 h-7" />
               </div>
-              <h3 className="text-base font-black text-gray-900 mb-2 tracking-tight">Book with Ease</h3>
+              <h3 className="text-base font-black text-gray-900 mb-2 tracking-tight">
+                Book with Ease
+              </h3>
               <p className="text-gray-500 text-[12px] font-medium leading-relaxed px-4">
                 Select your duration and book securely through our platform.
               </p>
@@ -271,7 +284,9 @@ export default function Home() {
               <div className="w-14 h-14 bg-green-100/50 rounded-2xl flex items-center justify-center mb-6 text-green-600">
                 <Sprout className="w-7 h-7" />
               </div>
-              <h3 className="text-base font-black text-gray-900 mb-2 tracking-tight">Grow Your Yield</h3>
+              <h3 className="text-base font-black text-gray-900 mb-2 tracking-tight">
+                Grow Your Yield
+              </h3>
               <p className="text-gray-500 text-[12px] font-medium leading-relaxed px-4">
                 Get the equipment delivered and focus on farming efficiently.
               </p>
@@ -289,10 +304,13 @@ export default function Home() {
                 LATEST INVENTORY
               </Badge>
               <h2 className="text-3xl md:text-4xl font-black text-slate-900 tracking-tight leading-none mb-3">
-                {selectedLocation !== 'Select City' ? `Machinery in ${selectedLocation.split(',')[0]}` : 'Featured Equipment'}
+                {selectedLocation !== 'Select City'
+                  ? `Machinery in ${selectedLocation.split(',')[0]}`
+                  : 'Featured Equipment'}
               </h2>
               <p className="text-slate-400 font-bold text-sm tracking-tight max-w-md">
-                Explore high-performance agricultural machinery available for immediate rent in your region.
+                Explore high-performance agricultural machinery available for immediate rent in your
+                region.
               </p>
             </div>
             <Link href="/category">
@@ -304,7 +322,7 @@ export default function Home() {
               </Button>
             </Link>
           </div>
- 
+
           <div className="bg-slate-50/50 rounded-[3rem] p-6 md:p-8 border border-slate-100 shadow-inner">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {productsLoading ? (
@@ -319,15 +337,19 @@ export default function Home() {
                   <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mb-6 shadow-inner">
                     <MapPin className="w-7 h-7 text-slate-200" />
                   </div>
-                  <h3 className="text-xl font-black text-slate-900 mb-2 tracking-tighter">No Equipment Nearby</h3>
+                  <h3 className="text-xl font-black text-slate-900 mb-2 tracking-tighter">
+                    No Equipment Nearby
+                  </h3>
                   <p className="text-slate-400 font-bold max-w-sm mb-8 uppercase text-[9px] tracking-widest leading-relaxed">
-                    We couldn't find any listings nearby. Try expanding your search.
+                    We couldn&apos;t find any listings nearby. Try expanding your search.
                   </p>
                   <Button
                     onClick={() => {
                       localStorage.removeItem('selectedLocation');
                       setSelectedLocation('Select City');
-                      window.dispatchEvent(new CustomEvent('locationChanged', { detail: 'Select City' }));
+                      window.dispatchEvent(
+                        new CustomEvent('locationChanged', { detail: 'Select City' }),
+                      );
                     }}
                     className="bg-slate-900 hover:bg-green-600 text-white rounded-xl h-12 px-10 font-black uppercase text-[9px] tracking-widest shadow-2xl shadow-slate-900/20 transition-all active:scale-95"
                   >
@@ -340,7 +362,10 @@ export default function Home() {
                     key={product._id}
                     className="group flex flex-col h-full bg-white border border-slate-200/60 rounded-[2rem] shadow-sm hover:shadow-2xl hover:shadow-slate-200 transition-all duration-700 overflow-hidden"
                   >
-                    <Link href={`/products/${product.slug}`} className="relative block aspect-[4/3] bg-slate-100 shrink-0 overflow-hidden">
+                    <Link
+                      href={`/products/${product.slug}`}
+                      className="relative block aspect-[4/3] bg-slate-100 shrink-0 overflow-hidden"
+                    >
                       <div className="absolute inset-0 transition-transform duration-1000 group-hover:scale-110 ease-out">
                         <AutoImageSlider
                           images={product.images || []}
@@ -355,16 +380,18 @@ export default function Home() {
                         </Badge>
                       </div>
                     </Link>
- 
+
                     <CardContent className="p-5 flex flex-col flex-grow bg-white">
                       <Link href={`/products/${product.slug}`} className="block mb-4">
                         <div className="flex items-center justify-between mb-2 text-[9px] font-black text-green-600 uppercase tracking-[0.2em]">
-                          <span className="bg-green-50 px-2 py-0.5 rounded-lg">{product.condition || 'NEW'}</span>
+                          <span className="bg-green-50 px-2 py-0.5 rounded-lg">
+                            {product.condition || 'NEW'}
+                          </span>
                         </div>
                         <h3 className="font-black text-slate-900 text-[15px] mb-3 line-clamp-2 group-hover:text-green-600 transition-colors tracking-tighter leading-tight">
                           {product.machineName}
                         </h3>
- 
+
                         <div className="space-y-2">
                           <div className="flex items-center gap-2.5 text-[13px] font-bold text-slate-600">
                             <div className="w-7 h-7 rounded-lg bg-slate-50 flex items-center justify-center text-green-600">
@@ -379,12 +406,15 @@ export default function Home() {
                               <CheckCircle2 className="w-3.5 h-3.5" />
                             </div>
                             <span className="truncate uppercase tracking-wider font-black text-[9px]">
-                              {product.specifications?.power ? `${product.specifications.power} HP` : '45 HP'} • {product.specifications?.fuelType || 'Diesel'}
+                              {product.specifications?.power
+                                ? `${product.specifications.power} HP`
+                                : '45 HP'}{' '}
+                              • {product.specifications?.fuelType || 'Diesel'}
                             </span>
                           </div>
                         </div>
                       </Link>
- 
+
                       <div className="mt-auto flex items-center justify-between pt-4 border-t border-slate-50">
                         <div>
                           <p className="text-[9px] text-slate-400 font-black uppercase tracking-widest mb-0.5 leading-none">
@@ -399,7 +429,7 @@ export default function Home() {
                             </span>
                           </div>
                         </div>
- 
+
                         <Link href={`/products/${product.slug}`}>
                           <div className="h-10 w-10 flex items-center justify-center rounded-xl bg-slate-900 text-white group-hover:bg-green-600 shadow-xl shadow-slate-900/10 group-hover:shadow-green-600/20 transition-all duration-500 active:scale-90">
                             <ArrowRight className="w-4 h-4" />
@@ -408,7 +438,8 @@ export default function Home() {
                       </div>
                     </CardContent>
                   </Card>
-                )))}
+                ))
+              )}
             </div>
           </div>
         </div>

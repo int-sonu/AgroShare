@@ -180,7 +180,7 @@ export const uploadMachineImages: RequestHandler<IdParams> = async (req, res) =>
       data: machine,
     });
   } catch (err: unknown) {
-    const error = err as any;
+    const error = err as Error & { http_code?: number };
     console.error('Image upload error:', error);
 
     res.status(error.http_code || 500).json({
