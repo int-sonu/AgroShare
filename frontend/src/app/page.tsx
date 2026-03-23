@@ -28,7 +28,7 @@ interface Machine {
 }
 
 export default function Home() {
-  const [current] = useState(0);
+  const [current, setCurrent] = useState(0);
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
 
