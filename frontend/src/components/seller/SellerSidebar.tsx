@@ -19,7 +19,7 @@ export default function SellerSidebar() {
   const menu = [
     { name: 'Dashboard', path: '/seller/dashboard', icon: LayoutDashboard },
     { name: 'Products', path: '/seller/products', icon: Package },
-    { name: 'Orders', path: '/seller/orders', icon: ShoppingCart },
+    { name: 'Bookings', path: '/seller/bookings', icon: ShoppingCart },
     { name: 'Rentals', path: '/seller/rentals', icon: Tractor },
     { name: 'Earnings', path: '/seller/earnings', icon: DollarSign },
     { name: 'Reviews', path: '/seller/reviews', icon: Star },

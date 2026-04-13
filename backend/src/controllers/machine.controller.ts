@@ -223,3 +223,35 @@ export const getUniqueLocations: RequestHandler = async (_req, res) => {
     });
   }
 };
+
+export const checkAvailability: RequestHandler = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { startDate, endDate, quantity } = req.query;
+
+    if (!startDate || !endDate || !quantity) {
+      return res.status(400).json({
+        success: false,
+        message: 'startDate, endDate, and quantity are required',
+      });
+    }
+
+    const availability = await machineService.checkAvailability(
+      id,
+      startDate as string,
+      endDate as string,
+      Number(quantity)
+    );
+
+    res.json({
+      success: true,
+      data: availability,
+    });
+  } catch (err: unknown) {
+    const error = err as Error;
+    res.status(500).json({
+      success: false,
+      message: error.message || 'Availability check failed',
+    });
+  }
+};

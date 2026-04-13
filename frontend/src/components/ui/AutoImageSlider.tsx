@@ -1,15 +1,22 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import Image from 'next/image';
+import { AppImage } from './AppImage';
 
 interface AutoImageSliderProps {
-  images: string[];
-  getImageUrl: (image: string | { url?: string; secure_url?: string } | null | undefined) => string;
+  images: (string | { url?: string; secure_url?: string } | null | undefined)[];
   className?: string;
+  imageClassName?: string;
 }
 
-export function AutoImageSlider({ images, getImageUrl, className }: AutoImageSliderProps) {
+/**
+ * Auto-switching image slider using the centralized AppImage logic.
+ */
+export function AutoImageSlider({ 
+  images, 
+  className = "relative w-full h-full",
+  imageClassName = "object-cover"
+}: AutoImageSliderProps) {
   const [current, setCurrent] = useState(0);
 
   useEffect(() => {
@@ -25,11 +32,11 @@ export function AutoImageSlider({ images, getImageUrl, className }: AutoImageSli
   if (!images || images.length === 0) {
     return (
       <div className={className}>
-        <Image
-          src="/images/category-placeholder.png"
+        <AppImage
+          src={null}
           alt="Placeholder"
           fill
-          className="object-contain opacity-50"
+          className={imageClassName}
           unoptimized
         />
       </div>
@@ -37,7 +44,7 @@ export function AutoImageSlider({ images, getImageUrl, className }: AutoImageSli
   }
 
   return (
-    <div className={`relative ${className}`}>
+    <div className={className}>
       {images.map((img, index) => (
         <div
           key={index}
@@ -45,11 +52,11 @@ export function AutoImageSlider({ images, getImageUrl, className }: AutoImageSli
             index === current ? 'opacity-100' : 'opacity-0'
           }`}
         >
-          <Image
-            src={getImageUrl(img)}
+          <AppImage
+            src={img}
             alt={`Machine Image ${index + 1}`}
             fill
-            className="object-contain"
+            className={imageClassName}
             unoptimized
           />
         </div>

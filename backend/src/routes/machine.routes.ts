@@ -5,6 +5,7 @@ import { uploadMachineImages } from '../middlewares/upload.js';
 import {createMachine,getAllMachines,getMachineById,getMachineBySlug,updateMachine,deleteMachine,getSellerMachines,uploadMachineImages as uploadMachineImagesController,
   getMachinesByCategory,
   getUniqueLocations,
+  checkAvailability
 } from '../controllers/machine.controller.js';
 
 const router = express.Router();
@@ -14,6 +15,7 @@ router.post('/', protect, authorize('seller'), createMachine);
 router.get('/', getAllMachines);
 
 router.get('/seller', protect, authorize('seller'), getSellerMachines);
+router.get('/seller', protect, authorize('seller'), getSellerMachines);
 
 router.get('/slug/:slug', getMachineBySlug);
 
@@ -22,6 +24,7 @@ router.get('/:id', getMachineById);
 router.get('/category/:categoryId', getMachinesByCategory);
 
 router.get('/locations', getUniqueLocations);
+router.get('/:id/availability', checkAvailability);
 
 router.put('/:id', protect, authorize('seller'), updateMachine);
 

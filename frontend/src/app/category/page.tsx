@@ -1,10 +1,11 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import Link from 'next/link';
-import Image from 'next/image';
-import { ArrowRight } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import Image from "next/image";
+import { ArrowRight, Layers, LayoutGrid } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 
 type Category = {
   _id: string;
@@ -18,9 +19,7 @@ export default function AllCategoriesPage() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const getImageUrl = (
-    image: string | { url?: string; secure_url?: string } | null | undefined,
-  ) => {
+  const getImageUrl = (image: any) => {
     if (!image) return '/images/category-placeholder.png';
     const url = typeof image === 'string' ? image : image?.url || image?.secure_url;
     if (!url) return '/images/category-placeholder.png';
@@ -39,7 +38,7 @@ export default function AllCategoriesPage() {
           setCategories(data.data);
         }
       } catch (error) {
-        console.error('Failed to fetch categories:', error);
+        console.error("Failed to fetch categories:", error);
       } finally {
         setLoading(false);
       }
@@ -51,9 +50,7 @@ export default function AllCategoriesPage() {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
         <div className="w-10 h-10 border-4 border-green-100 border-t-green-600 rounded-full animate-spin"></div>
-        <p className="text-[11px] font-black uppercase tracking-widest text-gray-400">
-          Loading Categories...
-        </p>
+        <p className="text-[11px] font-black uppercase tracking-widest text-gray-400">Loading Categories...</p>
       </div>
     );
   }
@@ -77,33 +74,32 @@ export default function AllCategoriesPage() {
       <div className="container max-w-7xl mx-auto px-6">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
           {categories.map((category) => (
-            <Link
-              key={category._id}
+            <Link 
+              key={category._id} 
               href={`/category/${category.slug || category._id}`}
               className="group"
             >
               <div className="bg-gray-50 rounded-[2.5rem] p-8 h-full border-2 border-transparent hover:border-green-100 hover:bg-white hover:shadow-2xl hover:shadow-green-900/10 transition-all duration-500 flex flex-col items-center text-center">
                 <div className="relative w-24 h-24 bg-[#1a5d3b] rounded-full flex items-center justify-center mb-6 shadow-lg group-hover:scale-110 transition-transform duration-500">
-                  <div className="relative w-12 h-12 z-10">
-                    <Image
-                      src={getImageUrl(category.image)}
-                      alt={category.name}
-                      fill
-                      unoptimized
-                      className="object-contain brightness-0 invert"
-                    />
-                  </div>
+                   <div className="relative w-12 h-12 z-10">
+                      <Image
+                        src={getImageUrl(category.image)}
+                        alt={category.name}
+                        fill
+                        unoptimized
+                        className="object-contain brightness-0 invert"
+                      />
+                    </div>
                 </div>
-
+                
                 <h3 className="text-xl font-black text-gray-900 mb-3 tracking-tight group-hover:text-green-600 transition-colors">
                   {category.name}
                 </h3>
-
+                
                 <p className="text-gray-400 font-bold text-[12px] leading-relaxed mb-6 line-clamp-2 uppercase tracking-tight">
-                  {category.description ||
-                    `High-performance ${category.name} equipment available for rent.`}
+                  {category.description || `High-performance ${category.name} equipment available for rent.`}
                 </p>
-
+                
                 <div className="mt-auto flex items-center gap-2 text-green-600 font-black text-[10px] uppercase tracking-widest group-hover:gap-4 transition-all">
                   Explore Now <ArrowRight className="w-3.5 h-3.5" />
                 </div>

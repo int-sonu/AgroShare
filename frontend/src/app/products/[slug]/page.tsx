@@ -44,6 +44,8 @@ type MachineData = {
   seller?: { name?: string; phone?: string; email?: string };
   description?: string;
   images?: (string | { url?: string; secure_url?: string })[];
+  stock?: number;
+  quantity?: number;
 };
 
 export default function MachineDetailPage() {
@@ -53,10 +55,10 @@ export default function MachineDetailPage() {
   const [machine, setMachine] = useState<MachineData | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeImage, setActiveImage] = useState(0);
+  const [selectedQuantity, setSelectedQuantity] = useState(1);
 
-  const getImageUrl = (
-    image: string | { url?: string; secure_url?: string } | null | undefined,
-  ) => {
+
+  const getImageUrl = (image: any) => {
     if (!image) return '/images/category-placeholder.png';
     const url = typeof image === 'string' ? image : image?.url || image?.secure_url;
     if (!url) return '/images/category-placeholder.png';
@@ -69,7 +71,10 @@ export default function MachineDetailPage() {
   useEffect(() => {
     const fetchMachine = async () => {
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/machines/slug/${slug}`);
+ const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/machines/slug/${slug}`,
+          { cache: 'no-store' }
+        );        
         const data = await res.json();
         setMachine(data.data);
       } catch (error) {
@@ -117,11 +122,10 @@ export default function MachineDetailPage() {
                 <button
                   key={idx}
                   onClick={() => setActiveImage(idx)}
-                  className={`relative w-14 h-14 md:w-16 md:h-16 rounded-md overflow-hidden border-2 transition-all shrink-0 bg-white ${
-                    activeImage === idx
+                  className={`relative w-14 h-14 md:w-16 md:h-16 rounded-md overflow-hidden border-2 transition-all shrink-0 bg-white ${activeImage === idx
                       ? 'border-green-600 shadow-sm'
                       : 'border-gray-100 hover:border-gray-200'
-                  }`}
+                    }`}
                 >
                   <Image
                     src={getImageUrl(img)}
@@ -180,10 +184,13 @@ export default function MachineDetailPage() {
                   </span>
                 )}
               </div>
+              <div className="flex items-center gap-2 mt-2">
+
+              </div>
             </div>
 
-            <div className="bg-gradient-to-r from-green-50 to-emerald-50 p-2.5 rounded-xl border border-green-100 flex justify-between items-center transition-all">
-              <div>
+            <div className="bg-gradient-to-r from-green-50 to-emerald-50 p-2.5 rounded-xl border border-green-100 flex flex-wrap justify-between items-center gap-4 transition-all relative overflow-hidden">
+              <div className="min-w-[100px]">
                 <p className="text-[9px] font-bold text-green-700/60 uppercase tracking-widest mb-0">
                   Daily Price
                 </p>
@@ -196,18 +203,22 @@ export default function MachineDetailPage() {
                   </span>
                 </div>
               </div>
-              <div className="h-8 w-px bg-green-200/50"></div>
-              {machine.pricing?.minimumRentalDuration && (
-                <div className="text-right">
-                  <p className="text-[9px] font-bold text-green-700/60 uppercase tracking-widest mb-0">
-                    Min Booking
-                  </p>
-                  <p className="text-[11px] font-black text-green-700">
-                    {machine.pricing.minimumRentalDuration}{' '}
-                    {machine.pricing.priceType?.split(' ')[1] || 'Unit'}
-                  </p>
-                </div>
-              )}
+
+              <div className="flex gap-4 items-center">
+                {machine.pricing?.minimumRentalDuration && (
+                  <div className="text-right pr-4 border-r border-green-200/50">
+                    <p className="text-[9px] font-bold text-green-700/60 uppercase tracking-widest mb-0">
+                      Min Booking
+                    </p>
+                    <p className="text-[11px] font-black text-green-700">
+                      {machine.pricing.minimumRentalDuration}{' '}
+                      {machine.pricing.priceType?.split(' ')[1] || 'Unit'}
+                    </p>
+                  </div>
+                )}
+
+
+              </div>
             </div>
 
             <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
@@ -240,7 +251,7 @@ export default function MachineDetailPage() {
               />
               <DetailItem
                 icon={<Truck className="w-3 h-3" />}
-                label="Logistics"
+                label="Transportation"
                 value={
                   machine.transport?.transportAvailable
                     ? isLoggedIn
@@ -268,16 +279,16 @@ export default function MachineDetailPage() {
                   </div>
                   {machine.operator?.operatorIncluded ? (
                     <div className="space-y-0.5">
-                      <p className="text-[11px] text-gray-700 font-bold">
+                      <p className="text-sm text-gray-700 font-bold">
                         {machine.operator.operatorName || 'Assigned Driver'}
                       </p>
-                      <p className="text-[10px] text-gray-600 font-medium flex items-center gap-1">
-                        <Phone className="w-2.5 h-2.5 text-green-600" />{' '}
+                      <p className="text-sm text-gray-600 font-medium flex items-center gap-1">
+                        <Phone className="w-3 h-3 text-green-600" />{' '}
                         {machine.operator.operatorPhone || 'N/A'}
                       </p>
                     </div>
                   ) : (
-                    <p className="text-[10px] text-gray-400 italic font-medium pt-0.5">
+                    <p className="text-sm text-gray-400 italic font-medium pt-0.5">
                       Self-operate only
                     </p>
                   )}
@@ -300,16 +311,16 @@ export default function MachineDetailPage() {
                     </span>
                   </div>
                   <div className="space-y-0.5">
-                    <p className="text-[11px] text-gray-700 font-bold">
+                    <p className="text-sm text-gray-700 font-bold">
                       {machine.seller?.name || 'Authorized Seller'}
                     </p>
                     <div className="flex flex-col gap-0.5">
-                      <p className="text-[10px] text-gray-600 font-medium flex items-center gap-1">
-                        <Phone className="w-2.5 h-2.5 text-green-600" />{' '}
+                      <p className="text-sm text-gray-600 font-medium flex items-center gap-1">
+                        <Phone className="w-3 h-3 text-green-600" />{' '}
                         {machine.seller?.phone || 'N/A'}
                       </p>
-                      <p className="text-[10px] text-gray-600 font-medium flex items-center gap-1">
-                        <Mail className="w-2.5 h-2.5 text-green-600" />{' '}
+                      <p className="text-sm text-gray-600 font-medium flex items-center gap-1">
+                        <Mail className="w-3 h-3 text-green-600" />{' '}
                         {machine.seller?.email || 'N/A'}
                       </p>
                     </div>
@@ -334,11 +345,34 @@ export default function MachineDetailPage() {
                 <Info className="w-3.5 h-3.5 text-green-600" />
                 <h3 className="uppercase tracking-wide text-[11px]">Description</h3>
               </div>
-              <p className="text-gray-600 text-[11px] leading-snug line-clamp-2 hover:line-clamp-none transition-all duration-300">
+              <p className="text-gray-600 text-sm leading-relaxed line-clamp-2 hover:line-clamp-none transition-all duration-300">
                 {machine.description ||
                   'Top-tier machinery for all your professional agricultural needs. Well-maintained and recently serviced for peak performance.'}
               </p>
             </div>
+
+            {(machine.quantity ?? 1) > 0 && (
+              <div className="flex items-center justify-between p-3 bg-gray-50 rounded-xl border border-gray-100 mb-4">
+                <div className="flex flex-col">
+                  <span className="text-sm font-black text-gray-500 uppercase tracking-widest">Select Quantity</span>
+                </div>
+                <div className="flex items-center gap-4 bg-white px-3 py-1.5 rounded-lg border border-gray-200">
+                  <button
+                    onClick={() => setSelectedQuantity(Math.max(1, selectedQuantity - 1))}
+                    className="w-6 h-6 flex items-center justify-center font-bold text-lg hover:text-green-600 transition-colors"
+                  >
+                    -
+                  </button>
+                  <span className="w-4 text-center font-black text-sm">{selectedQuantity}</span>
+                  <button
+                    onClick={() => setSelectedQuantity(Math.min(machine.quantity || 1, selectedQuantity + 1))}
+                    className="w-6 h-6 flex items-center justify-center font-bold text-lg hover:text-green-600 transition-colors"
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+            )}
 
             <div className="flex gap-2.5 pt-1 mt-auto">
               <Button
@@ -355,7 +389,7 @@ export default function MachineDetailPage() {
               </Button>
               <Button
                 variant="outline"
-                onClick={() => (isLoggedIn ? null : router.push('/auth/login'))}
+                onClick={() => (isLoggedIn ? router.push(`/products/${slug}/book?qty=${selectedQuantity}`) : router.push('/auth/login'))}
                 className="flex-1 h-10 rounded-lg border-2 border-gray-100 font-black text-xs hover:bg-gray-50 active:scale-98 transition-all uppercase tracking-wider text-gray-700"
               >
                 {isLoggedIn ? 'Request Booking' : 'Login to Book'}

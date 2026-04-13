@@ -7,16 +7,17 @@ type TransportStepProps = {
   machineId: string;
   nextStep: () => void;
   prevStep: () => void;
+  initialData?: any;
 };
 
-export default function TransportStep({ machineId, nextStep, prevStep }: TransportStepProps) {
-  const { accessToken: ctxToken } = useAuth();
+export default function TransportStep({ machineId, nextStep, prevStep, initialData }: TransportStepProps) {
+  const { accessToken: token } = useAuth();
 
   const accessToken =
-    ctxToken || (typeof window !== 'undefined' ? localStorage.getItem('accessToken') : null);
+    token || (typeof window !== 'undefined' ? localStorage.getItem('accessToken') : null);
 
-  const [transportAvailable, setTransportAvailable] = useState(false);
-  const [transportCost, setTransportCost] = useState('');
+  const [transportAvailable, setTransportAvailable] = useState(initialData?.transport?.transportAvailable ?? false);
+  const [transportCost, setTransportCost] = useState(String(initialData?.transport?.transportCost || ''));
 
   const handleSubmit = async () => {
     await fetch(`${process.env.NEXT_PUBLIC_API_URL}/machines/${machineId}`, {

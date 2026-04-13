@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Search, ShoppingCart, ChevronDown, MapPin } from 'lucide-react';
+import { Search, Package, ChevronDown, MapPin } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
@@ -138,20 +138,20 @@ export default function Navbar() {
                 </div>
               )}
 
-              <div className="relative flex items-center gap-2 cursor-pointer group">
+              <Link 
+                href="/myorders"
+                className="relative flex items-center gap-2 cursor-pointer group"
+              >
                 <div className="relative p-1">
-                  <ShoppingCart className="h-6 w-6 text-gray-700 group-hover:text-green-600 transition" />
-                  <Badge className="absolute -top-1 -right-1 bg-green-600 text-white text-[9px] min-w-[16px] h-4 p-0 flex items-center justify-center rounded-full border-2 border-white">
-                    2
-                  </Badge>
+                  <Package className="h-6 w-6 text-gray-700 group-hover:text-green-600 transition" />
                 </div>
                 <div className="hidden lg:block text-xs">
                   <p className="text-gray-400 font-bold uppercase text-[9px] tracking-widest leading-none mb-0.5">
-                    My Cart
+                    My Orders
                   </p>
-                  <p className="font-black text-green-600">₹89,250</p>
+                  <p className="font-black text-green-600">Track All</p>
                 </div>
-              </div>
+              </Link>
             </div>
           </div>
         </div>

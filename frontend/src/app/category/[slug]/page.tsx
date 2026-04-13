@@ -3,9 +3,11 @@
 import { useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { CheckCircle2, RotateCcw, ChevronDown, Heart, Plus } from 'lucide-react';
+import { CheckCircle2, RotateCcw, ChevronDown, Heart, Plus, Search, SlidersHorizontal } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { AutoImageSlider } from '@/components/ui/AutoImageSlider';
+import { ProductCard } from '@/components/products/ProductCard';
+import { cn } from '@/lib/utils';
 
 type Product = {
   _id: string;
@@ -33,13 +35,18 @@ export default function CategoryProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const [category, setCategory] = useState<{ name: string; _id: string } | null>(null);
+  const [allCategories, setAllCategories] = useState<{ name: string; slug: string; _id: string }[]>([]);
   const [loading, setLoading] = useState(true);
 
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 1000000]);
   const [selectedCondition, setSelectedCondition] = useState<string>('all');
   const [selectedLocation, setSelectedLocation] = useState<string>('all');
   const [selectedPriceType, setSelectedPriceType] = useState<string>('all');
-  const [sortBy] = useState<string>('newest');
+  const [sortBy, setSortBy] = useState<string>('newest');
+  
+  const [searchQuery, setSearchQuery] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 6;
 
   const getImageUrl = (
     image: string | { url?: string; secure_url?: string } | null | undefined,
@@ -63,11 +70,18 @@ export default function CategoryProductsPage() {
         if (catData.success) {
           setCategory(catData.data);
 
-          const prodRes = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL}/machines/category/${catData.data._id}`,
-          );
-          const prodData = await prodRes.json();
+          const [prodRes, allCatsRes] = await Promise.all([
+            fetch(`${process.env.NEXT_PUBLIC_API_URL}/machines/category/${catData.data._id}`),
+            fetch(`${process.env.NEXT_PUBLIC_API_URL}/categories/active`)
+          ]);
+
+          const [prodData, allCatsData] = await Promise.all([
+            prodRes.json(),
+            allCatsRes.json()
+          ]);
+
           setProducts(prodData.data || []);
+          setAllCategories(allCatsData.data || []);
         }
       } catch (error) {
         console.error('Failed to fetch category data:', error);
@@ -82,32 +96,49 @@ export default function CategoryProductsPage() {
   useEffect(() => {
     let result = [...products];
 
+    // Search Query
+    if (searchQuery) {
+      result = result.filter((p) => 
+        p.machineName.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    }
+
+    // Condition
     if (selectedCondition !== 'all') {
       result = result.filter(
         (p) => (p.condition || 'Used').toLowerCase() === selectedCondition.toLowerCase(),
       );
     }
 
+    // Location
     if (selectedLocation !== 'all') {
       result = result.filter((p) => p.location?.district === selectedLocation);
     }
 
+    // Rental Type
     if (selectedPriceType !== 'all') {
       result = result.filter((p) => p.pricing?.priceType === selectedPriceType);
     }
 
+    // Price Range
     result = result.filter(
       (p) => p.pricing?.rentalPrice >= priceRange[0] && p.pricing?.rentalPrice <= priceRange[1],
     );
 
-    if (sortBy === 'price-low') {
-      result.sort((a, b) => (a.pricing?.rentalPrice || 0) - (b.pricing?.rentalPrice || 0));
-    } else if (sortBy === 'price-high') {
-      result.sort((a, b) => (b.pricing?.rentalPrice || 0) - (a.pricing?.rentalPrice || 0));
+    // Sorting
+    if (sortBy === 'price_low') {
+      result.sort((a, b) => a.pricing.rentalPrice - b.pricing.rentalPrice);
+    } else if (sortBy === 'price_high') {
+      result.sort((a, b) => b.pricing.rentalPrice - a.pricing.rentalPrice);
+    } else if (sortBy === 'newest') {
+      // Assuming newest is by ID or creation if available, or just alphabetical if not
+      result.sort((a, b) => (b._id > a._id ? 1 : -1));
     }
 
     setFilteredProducts(result);
-  }, [products, priceRange, selectedCondition, selectedLocation, selectedPriceType, sortBy]);
+    setCurrentPage(1); // Reset to first page on filter change
+  }, [products, priceRange, selectedCondition, selectedLocation, selectedPriceType, sortBy, searchQuery]);
+
 
   if (loading) {
     return (
@@ -140,22 +171,38 @@ export default function CategoryProductsPage() {
         <div className="flex flex-col lg:flex-row gap-8 items-start">
           <aside className="w-full lg:w-[260px] shrink-0 sticky top-8">
             <div className="bg-white p-2">
-              <h2 className="text-sm font-black text-slate-900 mb-6">Categories</h2>
+              <h2 className="text-sm font-black text-slate-900 mb-6 uppercase tracking-tighter">Categories</h2>
 
               <div className="space-y-4 mb-10 text-xs font-medium text-slate-500">
-                <div className="flex justify-between items-center cursor-pointer hover:text-slate-900 transition-colors">
-                  <span className="text-slate-900 font-bold">{category.name}</span>{' '}
-                  <ChevronDown className="w-3.5 h-3.5" />
-                </div>
-                <div className="flex justify-between items-center cursor-pointer hover:text-slate-900 transition-colors">
-                  <span>Other Agricultural</span> <ChevronDown className="w-3.5 h-3.5" />
-                </div>
-                <div className="flex justify-between items-center text-slate-400 text-[10px] uppercase font-bold tracking-widest cursor-pointer mt-4 pt-2">
+                {allCategories
+                  .sort((a, b) => {
+                    const order = ["Transportation", "Land Preparation", "Planting Seeding", "Crop Care", "Harvesting"];
+                    const indexA = order.indexOf(a.name);
+                    const indexB = order.indexOf(b.name);
+                    if (indexA !== -1 && indexB !== -1) return indexA - indexB;
+                    if (indexA !== -1) return -1;
+                    if (indexB !== -1) return 1;
+                    return a.name.localeCompare(b.name);
+                  })
+                  .map((cat) => (
+                    <Link
+                      key={cat._id}
+                      href={`/category/${cat.slug || cat._id}`}
+                      className={cn(
+                        "flex justify-between items-center cursor-pointer hover:text-slate-900 transition-colors py-1",
+                        (cat.slug === slug || cat._id === slug) ? "text-slate-900 font-bold" : ""
+                      )}
+                    >
+                      <span className="capitalize">{cat.name.toLowerCase()}</span>
+                      <ChevronDown className={cn("w-3 h-3 opacity-50", (cat.slug === slug || cat._id === slug) ? "rotate-180 opacity-100 text-slate-900" : "")} />
+                    </Link>
+                  ))}
+                <Link href="/category" className="flex justify-between items-center text-slate-400 text-[10px] uppercase font-bold tracking-widest cursor-pointer mt-6 pt-4 border-t border-slate-50 hover:text-slate-900 transition-colors">
                   Show all
-                </div>
+                </Link>
               </div>
 
-              <h2 className="text-sm font-black text-slate-900 mb-6">Filters</h2>
+              <h2 className="text-sm font-black text-slate-900 mb-6 uppercase tracking-tighter">Filters</h2>
 
               <div className="mb-8">
                 <h3 className="text-xs font-bold text-slate-800 mb-4">Condition</h3>
@@ -200,14 +247,8 @@ export default function CategoryProductsPage() {
               </div>
 
               <div className="mb-8">
-                <h3 className="text-xs font-bold text-slate-800 mb-4">Price</h3>
-                <div className="h-1 bg-slate-200 rounded-full mb-4 relative mx-1">
-                  <div className="absolute left-[10%] right-[30%] h-full bg-slate-900 rounded-full"></div>
-                  <div className="absolute left-[10%] w-3.5 h-3.5 bg-slate-900 rounded-full top-1/2 -translate-y-1/2 -translate-x-1/2 border-[2.5px] border-white shadow-sm cursor-grab"></div>
-                  <div className="absolute right-[30%] w-3.5 h-3.5 bg-slate-900 rounded-full top-1/2 -translate-y-1/2 translate-x-1/2 border-[2.5px] border-white shadow-sm cursor-grab"></div>
-                </div>
-
-                <div className="flex items-center justify-between gap-3 px-1">
+                <h3 className="text-xs font-bold text-slate-800 mb-4">Price Range</h3>
+                <div className="flex items-center justify-between gap-3 px-1 mt-4">
                   <div className="flex items-center gap-1">
                     <span className="text-slate-400 text-[10px] font-semibold">₹</span>
                     <input
@@ -215,9 +256,10 @@ export default function CategoryProductsPage() {
                       placeholder="Min"
                       value={priceRange[0] || ''}
                       onChange={(e) => setPriceRange([Number(e.target.value) || 0, priceRange[1]])}
-                      className="w-14 bg-transparent text-[10px] font-bold text-slate-900 outline-none placeholder:text-slate-300"
+                      className="w-16 bg-transparent text-[10px] font-bold text-slate-900 outline-none placeholder:text-slate-300"
                     />
                   </div>
+                  <div className="text-slate-300">-</div>
                   <div className="flex items-center gap-1">
                     <span className="text-slate-400 text-[10px] font-semibold">₹</span>
                     <input
@@ -227,7 +269,7 @@ export default function CategoryProductsPage() {
                       onChange={(e) =>
                         setPriceRange([priceRange[0], Number(e.target.value) || 1000000])
                       }
-                      className="w-14 bg-transparent text-[10px] font-bold text-slate-900 outline-none placeholder:text-slate-300 text-right"
+                      className="w-16 bg-transparent text-[10px] font-bold text-slate-900 outline-none placeholder:text-slate-300 text-right"
                     />
                   </div>
                 </div>
@@ -239,16 +281,45 @@ export default function CategoryProductsPage() {
                   setSelectedLocation('all');
                   setSelectedPriceType('all');
                   setPriceRange([0, 1000000]);
+                  setSearchQuery('');
+                  setSortBy('newest');
                 }}
-                className="w-full bg-slate-900 text-white rounded-[14px] py-4 text-xs font-bold mt-2 hover:bg-slate-800 transition-all shadow-[0_8px_20px_-8px_rgba(0,0,0,0.5)] active:scale-[0.98]"
+                className="w-full bg-slate-100 text-slate-900 rounded-[14px] py-4 text-xs font-bold mt-4 hover:bg-slate-200 transition-all active:scale-[0.98] uppercase tracking-widest"
               >
-                Reset & Apply
+                Reset All Filters
               </button>
             </div>
           </aside>
 
           <main className="flex-1 w-full pl-0 lg:pl-10">
-            <div className="flex items-center justify-between mb-8 pt-2"></div>
+            {/* Search & Sort Bar */}
+            <div className="flex flex-col md:flex-row items-center justify-between gap-4 mb-10 pb-6 border-b border-slate-50">
+              <div className="relative w-full md:w-96">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                <input
+                  type="text"
+                  placeholder="Search equipment..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full bg-slate-50 border-none rounded-2xl py-3.5 pl-11 pr-4 text-sm font-medium placeholder:text-slate-400 focus:ring-2 focus:ring-green-500/20 outline-none transition-all"
+                />
+              </div>
+
+              <div className="flex items-center gap-3 w-full md:w-auto">
+                <div className="flex items-center gap-2 bg-slate-50 rounded-2xl px-4 py-3 min-w-[160px]">
+                  <SlidersHorizontal className="w-3.5 h-3.5 text-slate-400" />
+                  <select
+                    value={sortBy}
+                    onChange={(e) => setSortBy(e.target.value)}
+                    className="bg-transparent border-none text-[13px] font-bold text-slate-700 outline-none cursor-pointer w-full"
+                  >
+                    <option value="newest">Newest First</option>
+                    <option value="price_low">Price: Low to High</option>
+                    <option value="price_high">Price: High to Low</option>
+                  </select>
+                </div>
+              </div>
+            </div>
 
             {filteredProducts.length === 0 ? (
               <div className="py-32 px-10 flex flex-col items-center text-center bg-slate-50/50 rounded-3xl">
@@ -259,61 +330,61 @@ export default function CategoryProductsPage() {
                   No equipment found
                 </h3>
                 <p className="text-slate-500 text-sm max-w-sm mb-8">
-                  We couldn&apos;t find any machines matching your current criteria.
+                   Try adjusting your filters to find what you're looking for.
                 </p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-8 gap-y-12">
-                {filteredProducts.map((product) => (
-                  <div
-                    key={product._id}
-                    className="group flex flex-col items-center relative isolation-auto"
-                  >
-                    <div className="w-full rounded-[32px] p-4 relative mb-4 transition-all duration-300 group-hover:bg-slate-50">
-                      <div className="absolute top-6 left-6 right-6 flex justify-between items-start z-10 pointer-events-none">
-                        <span className="bg-[#f07167] text-white text-[9px] font-black px-2.5 py-1.5 rounded-full shadow-sm shadow-[#f07167]/30">
-                          {product.condition || 'NEW'}
-                        </span>
-                        <div className="bg-white/90 backdrop-blur-sm p-1.5 rounded-full shadow-sm text-slate-400">
-                          <Heart className="w-4 h-4" />
-                        </div>
-                      </div>
+              <>
+                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-8 gap-y-12 mb-20">
+                  {filteredProducts
+                    .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
+                    .map((product: Product) => (
+                      <ProductCard 
+                        key={product._id} 
+                        product={product as any} 
+                        getImageUrl={getImageUrl} 
+                      />
+                    ))}
+                </div>
 
-                      <Link
-                        href={`/products/${product.slug}`}
-                        className="block relative aspect-square w-full rounded-2xl overflow-hidden bg-[#f4f6f8] mix-blend-multiply"
-                      >
-                        <div className="absolute inset-0 transition-transform duration-700 group-hover:scale-105 ease-out flex pt-6 pb-2 px-4 items-center justify-center">
-                          <AutoImageSlider
-                            images={product.images || []}
-                            getImageUrl={getImageUrl}
-                            className="h-full w-full object-contain drop-shadow-sm mix-blend-multiply"
-                          />
-                        </div>
-                      </Link>
-                    </div>
-
-                    <div className="flex flex-col items-center text-center px-4 -mt-2 mb-6 w-full">
-                      <Link href={`/products/${product.slug}`} className="block group/link">
-                        <h3 className="font-semibold text-slate-500 text-xs mb-1.5 group-hover/link:text-slate-900 transition-colors capitalize">
-                          {product.machineName.toLowerCase()}
-                        </h3>
-                        <div className="text-slate-900 font-extrabold text-sm tracking-tight">
-                          ₹{product.pricing?.rentalPrice?.toLocaleString()} /{' '}
-                          {product.pricing?.priceType === 'Hr' ? 'Hr' : 'Day'}
-                        </div>
-                      </Link>
-                    </div>
-
-                    <Link
-                      href={`/products/${product.slug}`}
-                      className="absolute -bottom-5 w-[38px] h-[38px] bg-[#f07167] rounded-full flex items-center justify-center text-white shadow-lg shadow-[#f07167]/40 group-hover:-translate-y-1 transition-all duration-300 z-20"
+                {/* Pagination */}
+                {filteredProducts.length > itemsPerPage && (
+                  <div className="flex items-center justify-center gap-2 mt-12">
+                    <button
+                      onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                      disabled={currentPage === 1}
+                      className="p-3 rounded-2xl bg-slate-50 text-slate-900 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-slate-100 transition-all font-bold text-xs uppercase tracking-widest px-6"
                     >
-                      <Plus className="w-4 h-4 stroke-[3]" />
-                    </Link>
+                      Prev
+                    </button>
+                    
+                    <div className="flex items-center gap-2">
+                      {Array.from({ length: Math.ceil(filteredProducts.length / itemsPerPage) }).map((_, i) => (
+                        <button
+                          key={i}
+                          onClick={() => setCurrentPage(i + 1)}
+                          className={cn(
+                            "w-11 h-11 rounded-2xl text-xs font-black transition-all",
+                            currentPage === i + 1 
+                              ? "bg-slate-900 text-white shadow-xl shadow-slate-900/20" 
+                              : "bg-slate-50 text-slate-400 hover:bg-slate-100"
+                          )}
+                        >
+                          {i + 1}
+                        </button>
+                      ))}
+                    </div>
+
+                    <button
+                      onClick={() => setCurrentPage(prev => Math.min(prev + 1, Math.ceil(filteredProducts.length / itemsPerPage)))}
+                      disabled={currentPage === Math.ceil(filteredProducts.length / itemsPerPage)}
+                      className="p-3 rounded-2xl bg-slate-50 text-slate-900 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-slate-100 transition-all font-bold text-xs uppercase tracking-widest px-6"
+                    >
+                      Next
+                    </button>
                   </div>
-                ))}
-              </div>
+                )}
+              </>
             )}
           </main>
         </div>

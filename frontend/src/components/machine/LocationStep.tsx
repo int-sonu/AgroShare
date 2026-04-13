@@ -7,25 +7,26 @@ type LocationStepProps = {
   machineId: string;
   nextStep: () => void;
   prevStep: () => void;
+  initialData?: any;
 };
 
-export default function LocationStep({ machineId, nextStep, prevStep }: LocationStepProps) {
-  const { accessToken: ctxToken } = useAuth();
+export default function LocationStep({ machineId, nextStep, prevStep, initialData }: LocationStepProps) {
+  const { accessToken: token } = useAuth();
 
   const accessToken =
-    ctxToken || (typeof window !== 'undefined' ? localStorage.getItem('accessToken') : null);
+    token || (typeof window !== 'undefined' ? localStorage.getItem('accessToken') : null);
 
-  const [address, setAddress] = useState('');
-  const [village, setVillage] = useState('');
-  const [district, setDistrict] = useState('');
-  const [state, setState] = useState('');
-  const [pincode, setPincode] = useState('');
+  const [address, setAddress] = useState(initialData?.location?.address || '');
+  const [village, setVillage] = useState(initialData?.location?.village || '');
+  const [district, setDistrict] = useState(initialData?.location?.district || '');
+  const [state, setState] = useState(initialData?.location?.state || '');
+  const [pincode, setPincode] = useState(initialData?.location?.pincode || '');
 
-  const [latitude, setLatitude] = useState<number | null>(null);
-  const [longitude, setLongitude] = useState<number | null>(null);
+  const existingCoords = initialData?.location?.coordinates;
+  const [latitude, setLatitude] = useState<number | null>(existingCoords ? existingCoords[1] : null);
+  const [longitude, setLongitude] = useState<number | null>(existingCoords ? existingCoords[0] : null);
   const [isGeocoding, setIsGeocoding] = useState(false);
 
-  // Get coordinates from Village, District, State
   const findOnMap = async () => {
     if (!village && !district) {
       alert('Please enter Village and District first');
@@ -44,9 +45,7 @@ export default function LocationStep({ machineId, nextStep, prevStep }: Location
         setLatitude(parseFloat(data[0].lat));
         setLongitude(parseFloat(data[0].lon));
       } else {
-        alert(
-          "Could not find coordinates for this location. Please check Village/District or use 'Current Location'.",
-        );
+        alert("Could not find coordinates. Please check Village/District or use 'Current Location'.");
       }
     } catch (error) {
       console.error('Geocoding failed', error);
@@ -56,7 +55,6 @@ export default function LocationStep({ machineId, nextStep, prevStep }: Location
     }
   };
 
-  // Get browser location
   const getCurrentLocation = () => {
     if (!navigator.geolocation) {
       alert('Geolocation not supported');
@@ -95,7 +93,6 @@ export default function LocationStep({ machineId, nextStep, prevStep }: Location
             district,
             state,
             pincode,
-
             type: 'Point',
             coordinates: latitude && longitude ? [longitude, latitude] : undefined,
           },
@@ -141,46 +138,16 @@ export default function LocationStep({ machineId, nextStep, prevStep }: Location
         Provide address or use buttons above for exact mapping
       </p>
 
-      <input
-        value={address}
-        placeholder="Specific Address / Landmark (Optional)"
-        className="w-full p-2 border rounded-md"
-        onChange={(e) => setAddress(e.target.value)}
-      />
-
-      <input
-        value={village}
-        placeholder="Town / Village"
-        className="w-full p-2 border rounded-md"
-        onChange={(e) => setVillage(e.target.value)}
-      />
-
-      <input
-        value={district}
-        placeholder="District"
-        className="w-full p-2 border rounded-md"
-        onChange={(e) => setDistrict(e.target.value)}
-      />
-
-      <input
-        value={state}
-        placeholder="State"
-        className="w-full p-2 border rounded-md"
-        onChange={(e) => setState(e.target.value)}
-      />
-
-      <input
-        value={pincode}
-        placeholder="Pincode"
-        className="w-full p-2 border rounded-md"
-        onChange={(e) => setPincode(e.target.value)}
-      />
+      <input value={address} placeholder="Specific Address / Landmark (Optional)" className="w-full p-2 border rounded-md" onChange={(e) => setAddress(e.target.value)} />
+      <input value={village} placeholder="Town / Village" className="w-full p-2 border rounded-md" onChange={(e) => setVillage(e.target.value)} />
+      <input value={district} placeholder="District" className="w-full p-2 border rounded-md" onChange={(e) => setDistrict(e.target.value)} />
+      <input value={state} placeholder="State" className="w-full p-2 border rounded-md" onChange={(e) => setState(e.target.value)} />
+      <input value={pincode} placeholder="Pincode" className="w-full p-2 border rounded-md" onChange={(e) => setPincode(e.target.value)} />
 
       <div className="flex gap-3">
         <button className="px-4 py-2 border rounded-md" onClick={prevStep}>
           Back
         </button>
-
         <button
           className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700"
           onClick={handleSubmit}

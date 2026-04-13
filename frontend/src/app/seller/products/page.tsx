@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 
 import {
@@ -15,8 +16,12 @@ import {
 
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
 
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Edit, Trash2, Eye, MapPin, Phone, Mail, ShieldCheck, Gauge, Fuel, Calendar, Lock, Info } from 'lucide-react';
+
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 
 interface Machine {
   _id: string;
@@ -51,17 +56,112 @@ interface Machine {
   };
   isPublished: boolean;
   images: string[];
+  stock: number;
+  quantity: number;
 }
 
 export default function ProductsPage() {
   const { accessToken } = useAuth();
+  const router = useRouter();
   const [machines, setMachines] = useState<Machine[]>([]);
   const [selectedMachine, setSelectedMachine] = useState<Machine | null>(null);
   const [search, setSearch] = useState('');
+  const [updatingStock, setUpdatingStock] = useState(false);
+  const [editStockValue, setEditStockValue] = useState<number>(1);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [editingMachine, setEditingMachine] = useState<Machine | null>(null);
+  const [editForm, setEditForm] = useState({
+    machineName: '',
+    rentalPrice: 0,
+    stock: 0
+  });
+
+  useEffect(() => {
+    if (editingMachine) {
+      setEditForm({
+        machineName: editingMachine.machineName,
+        rentalPrice: editingMachine.pricing?.rentalPrice || 0,
+        stock: editingMachine.stock || 1
+      });
+    }
+  }, [editingMachine]);
+
+  const handleDelete = async (id: string) => {
+    if (!window.confirm('Are you sure you want to delete this machine?')) return;
+
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/machines/${id}`, {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+
+      if (res.ok) {
+        setMachines(prev => prev.filter(m => m._id !== id));
+      } else {
+        const error = await res.json();
+        alert(error.message || 'Failed to delete machine');
+      }
+    } catch (error) {
+      console.error('Delete error:', error);
+      alert('An error occurred while deleting');
+    }
+  };
+
+  const handleToggleStatus = async (id: string, currentStatus: boolean) => {
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/machines/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${accessToken}`,
+        },
+        body: JSON.stringify({ isPublished: !currentStatus }),
+      });
+
+      if (res.ok) {
+        setMachines(prev => prev.map(m => m._id === id ? { ...m, isPublished: !currentStatus } : m));
+      }
+    } catch (error) {
+      console.error('Status toggle error:', error);
+    }
+  };
+
+  const handleQuickEdit = async () => {
+    if (!editingMachine) return;
+
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/machines/${editingMachine._id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${accessToken}`,
+        },
+        body: JSON.stringify({
+          machineName: editForm.machineName,
+          pricing: {
+            ...(editingMachine.pricing || {}),
+            rentalPrice: editForm.rentalPrice
+          },
+          stock: editForm.stock,
+          quantity: editForm.stock // Reset quantity to stock on quick edit
+        }),
+      });
+
+      if (res.ok) {
+        const updated = await res.json();
+        setMachines(prev => prev.map(m => m._id === editingMachine._id ? updated.data : m));
+        setIsEditDialogOpen(false);
+      }
+    } catch (error) {
+      console.error('Quick edit error:', error);
+    }
+  };
 
   useEffect(() => {
     const fetchMachines = async () => {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/machines/seller/my`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/machines/seller`, {
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
@@ -154,24 +254,44 @@ export default function ProductsPage() {
                 </TableCell>
 
                 <TableCell>
-                  <span
-                    className={`px-3 py-1 text-xs rounded-full font-medium ${
-                      machine.isPublished
-                        ? 'bg-green-100 text-green-700'
-                        : 'bg-gray-100 text-gray-600'
-                    }`}
+                  <Badge
+                    className={`cursor-pointer ${machine.isPublished
+                      ? 'bg-green-100 text-green-700 hover:bg-green-200 border-green-200 shadow-sm'
+                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200 border-gray-200'
+                      } text-[10px] font-bold uppercase py-1 px-3 transition-all rounded-full`}
+                    onClick={() => handleToggleStatus(machine._id, machine.isPublished)}
                   >
-                    {machine.isPublished ? 'Published' : 'Draft'}
-                  </span>
+                    {machine.isPublished ? 'Active' : 'Draft'}
+                  </Badge>
                 </TableCell>
 
                 <TableCell className="text-right pr-6">
-                  <button
-                    onClick={() => setSelectedMachine(machine)}
-                    className="text-gray-500 hover:text-black"
-                  >
-                    ⋯
-                  </button>
+                  <div className="flex justify-end gap-2.5">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-9 w-9 p-0 text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-lg border border-transparent hover:border-blue-100 transition-all"
+                      onClick={() => router.push(`/seller/machines/edit/${machine._id}`)}
+                    >
+                      <Edit className="w-4 h-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-9 w-9 p-0 text-rose-600 hover:text-rose-700 hover:bg-rose-50 rounded-lg border border-transparent hover:border-rose-100 transition-all"
+                      onClick={() => handleDelete(machine._id)}
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-9 w-9 p-0 text-gray-500 hover:text-gray-900 border border-gray-100 hover:border-gray-300 rounded-lg transition-all"
+                      onClick={() => setSelectedMachine(machine)}
+                    >
+                      <Eye className="w-4 h-4" />
+                    </Button>
+                  </div>
                 </TableCell>
               </TableRow>
             ))}
@@ -288,8 +408,114 @@ export default function ProductsPage() {
               <p>
                 <b>Transport Cost:</b> ₹{selectedMachine.transport?.transportCost || '-'}
               </p>
+
+              <hr className="my-2" />
+
+              <div className="space-y-4 pt-2">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="font-bold text-gray-900 text-sm">Stock Management</p>
+                    <p className="text-[9px] text-gray-500 uppercase tracking-widest">Total units owned by you</p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="number"
+                      value={editStockValue}
+                      onChange={(e) => setEditStockValue(parseInt(e.target.value) || 0)}
+                      className="w-16 border rounded-lg px-2 py-1 text-center font-bold text-sm"
+                      min="1"
+                    />
+                    <Button
+                      size="sm"
+                      disabled={updatingStock}
+                      className="bg-slate-900 hover:bg-green-600 text-white rounded-lg px-3 h-8 font-bold text-[9px] uppercase tracking-widest transition-all disabled:opacity-50"
+                      onClick={async () => {
+                        if (editStockValue < 1) return;
+                        setUpdatingStock(true);
+
+                        try {
+                          const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/machines/${selectedMachine._id}`, {
+                            method: 'PUT',
+                            headers: {
+                              'Content-Type': 'application/json',
+                              Authorization: `Bearer ${accessToken}`,
+                            },
+                            body: JSON.stringify({
+                              stock: editStockValue,
+                              quantity: editStockValue // Refill/Sync quantity on stock change
+                            }),
+                          });
+
+                          if (res.ok) {
+                            window.location.reload();
+                          }
+                        } catch (error) {
+                          console.error('Update stock error:', error);
+                        } finally {
+                          setUpdatingStock(false);
+                        }
+                      }}
+                    >
+                      {updatingStock ? '...' : 'Update'}
+                    </Button>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between bg-gray-50 p-2.5 rounded-xl border border-gray-100">
+                  <div className="flex items-center gap-2.5">
+                    <div className={`w-2 h-2 rounded-full ${selectedMachine.quantity > 0 ? 'bg-green-500 animate-pulse' : 'bg-rose-500'}`}></div>
+                    <p className="text-[10px] font-black text-gray-600 uppercase tracking-widest">
+                      Currently Available: <span className={selectedMachine.quantity > 0 ? 'text-green-600' : 'text-rose-600'}>
+                        {selectedMachine.quantity ?? 1} Units
+                      </span>
+                    </p>
+                  </div>
+                </div>
+              </div>
             </div>
           )}
+        </DialogContent>
+      </Dialog>
+      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-bold">Quick Edit Machine</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <label className="text-xs font-bold text-gray-500 uppercase tracking-widest pl-1">Machine Name</label>
+              <Input
+                value={editForm.machineName}
+                onChange={(e) => setEditForm(prev => ({ ...prev, machineName: e.target.value }))}
+                className="font-medium"
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <label className="text-xs font-bold text-gray-500 uppercase tracking-widest pl-1">Rental Price (₹)</label>
+                <Input
+                  type="number"
+                  value={editForm.rentalPrice}
+                  onChange={(e) => setEditForm(prev => ({ ...prev, rentalPrice: parseInt(e.target.value) || 0 }))}
+                  className="font-medium"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-xs font-bold text-gray-500 uppercase tracking-widest pl-1">Total Stock</label>
+                <Input
+                  type="number"
+                  value={editForm.stock}
+                  onChange={(e) => setEditForm(prev => ({ ...prev, stock: parseInt(e.target.value) || 0 }))}
+                  className="font-medium"
+                  min="1"
+                />
+              </div>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsEditDialogOpen(false)}>Cancel</Button>
+            <Button className="bg-green-600 hover:bg-green-700" onClick={handleQuickEdit}>Save Changes</Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>

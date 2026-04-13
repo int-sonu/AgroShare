@@ -7,17 +7,18 @@ type OperatorStepProps = {
   machineId: string;
   nextStep: () => void;
   prevStep: () => void;
+  initialData?: any;
 };
 
-export default function OperatorStep({ machineId, nextStep, prevStep }: OperatorStepProps) {
-  const { accessToken: ctxToken } = useAuth();
+export default function OperatorStep({ machineId, nextStep, prevStep, initialData }: OperatorStepProps) {
+  const { accessToken: token } = useAuth();
 
   const accessToken =
-    ctxToken || (typeof window !== 'undefined' ? localStorage.getItem('accessToken') : null);
+    token || (typeof window !== 'undefined' ? localStorage.getItem('accessToken') : null);
 
-  const [operatorIncluded, setOperatorIncluded] = useState(false);
-  const [operatorName, setOperatorName] = useState('');
-  const [operatorPhone, setOperatorPhone] = useState('');
+  const [operatorIncluded, setOperatorIncluded] = useState(initialData?.operator?.operatorIncluded ?? false);
+  const [operatorName, setOperatorName] = useState(initialData?.operator?.operatorName || '');
+  const [operatorPhone, setOperatorPhone] = useState(initialData?.operator?.operatorPhone || '');
 
   const handleSubmit = async () => {
     try {

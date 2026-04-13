@@ -139,19 +139,17 @@ export default function LocationModal({
                         <button
                           key={district}
                           onClick={() => onSelect(`${district}, ${state}`)}
-                          className={`flex items-center justify-between p-4 rounded-2xl border transition-all duration-200 group ${
-                            currentLocation === `${district}, ${state}`
+                          className={`flex items-center justify-between p-4 rounded-2xl border transition-all duration-200 group ${currentLocation === `${district}, ${state}`
                               ? 'bg-green-50 border-green-200 ring-2 ring-green-100'
                               : 'bg-gray-50/50 border-gray-100 hover:bg-white hover:border-green-200 hover:shadow-lg hover:shadow-green-900/5'
-                          }`}
+                            }`}
                         >
                           <div className="flex items-center gap-3">
                             <div
-                              className={`w-8 h-8 rounded-lg flex items-center justify-center group-hover:bg-green-600 group-hover:text-white transition-colors ${
-                                currentLocation === `${district}, ${state}`
+                              className={`w-8 h-8 rounded-lg flex items-center justify-center group-hover:bg-green-600 group-hover:text-white transition-colors ${currentLocation === `${district}, ${state}`
                                   ? 'bg-green-600 text-white'
                                   : 'bg-white text-gray-400'
-                              }`}
+                                }`}
                             >
                               <MapPin className="w-4 h-4" />
                             </div>

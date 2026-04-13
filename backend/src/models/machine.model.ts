@@ -50,6 +50,9 @@ export interface IMachine extends Document {
     transportCost?: number;
   };
 
+  stock: number;
+  quantity: number;
+
   isPublished: boolean;
   wizardStep: number;
 }
@@ -147,6 +150,15 @@ const machineSchema = new Schema<IMachine>(
         default: false,
       },
       transportCost: Number,
+    },
+
+    stock: {
+      type: Number,
+      default: 1,
+    },
+    quantity: {
+      type: Number,
+      default: 1,
     },
 
     isPublished: {

@@ -6,22 +6,23 @@ import { useAuth } from '@/context/AuthContext';
 type Props = {
   setMachineId: (id: string) => void;
   nextStep: () => void;
+  initialData?: any;
 };
 
-export default function MachineDetailsStep({ setMachineId, nextStep }: Props) {
-  const { accessToken: ctxToken } = useAuth();
+export default function MachineDetailsStep({ setMachineId, nextStep, initialData }: Props) {
+  const { accessToken: token } = useAuth();
 
   const accessToken =
-    ctxToken || (typeof window !== 'undefined' ? localStorage.getItem('accessToken') : null);
+    token || (typeof window !== 'undefined' ? localStorage.getItem('accessToken') : null);
 
-  const [machineName, setMachineName] = useState('');
-  const [category, setCategory] = useState('');
-  const [brandModel, setBrandModel] = useState('');
-  const [yearOfManufacture, setYearOfManufacture] = useState('');
-  const [condition, setCondition] = useState('');
-  const [machineCapacityHP, setMachineCapacityHP] = useState('');
-  const [fuelType, setFuelType] = useState('');
-  const [description, setDescription] = useState('');
+  const [machineName, setMachineName] = useState(initialData?.machineName || '');
+  const [category, setCategory] = useState(initialData?.category?._id || initialData?.category || '');
+  const [brandModel, setBrandModel] = useState(initialData?.brandModel || '');
+  const [yearOfManufacture, setYearOfManufacture] = useState(initialData?.yearOfManufacture || '');
+  const [condition, setCondition] = useState(initialData?.condition || '');
+  const [machineCapacityHP, setMachineCapacityHP] = useState(initialData?.machineCapacityHP || '');
+  const [fuelType, setFuelType] = useState(initialData?.fuelType || '');
+  const [description, setDescription] = useState(initialData?.description || '');
 
   const [categories, setCategories] = useState<{ _id: string; name: string }[]>([]);
 
@@ -61,8 +62,13 @@ export default function MachineDetailsStep({ setMachineId, nextStep }: Props) {
         return;
       }
 
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/machines`, {
-        method: 'POST',
+      const method = initialData ? 'PUT' : 'POST';
+      const url = initialData 
+        ? `${process.env.NEXT_PUBLIC_API_URL}/machines/${initialData._id}`
+        : `${process.env.NEXT_PUBLIC_API_URL}/machines`;
+
+      const res = await fetch(url, {
+        method,
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${accessToken}`,
@@ -76,7 +82,7 @@ export default function MachineDetailsStep({ setMachineId, nextStep }: Props) {
           machineCapacityHP: machineCapacityHP ? Number(machineCapacityHP) : undefined,
           fuelType,
           description,
-          wizardStep: 1,
+          wizardStep: initialData ? Math.max(initialData.wizardStep || 1, 1) : 1,
         }),
       });
 
@@ -86,7 +92,7 @@ export default function MachineDetailsStep({ setMachineId, nextStep }: Props) {
         setMachineId(data.data._id);
         nextStep();
       } else {
-        alert(data.message || 'Failed to create machine');
+        alert(data.message || 'Failed to save machine details');
       }
     } catch (error) {
       console.error('Submission error:', error);
@@ -95,83 +101,38 @@ export default function MachineDetailsStep({ setMachineId, nextStep }: Props) {
   };
 
   return (
-    <div className="space-y-4">
-      <input
-        value={machineName}
-        placeholder="Machine Name"
-        className="w-full p-2 border rounded-md"
-        onChange={(e) => setMachineName(e.target.value)}
-      />
+    <div className="space-y-3">
+      <input value={machineName} placeholder="Machine Name" className="w-full px-3 py-1.5 text-base border rounded-md focus:outline-none focus:ring-2 focus:ring-green-300" onChange={(e) => setMachineName(e.target.value)} />
 
-      <select
-        value={category}
-        className="w-full p-2 border rounded-md"
-        onChange={(e) => setCategory(e.target.value)}
-      >
+      <select value={category} className="w-full px-3 py-1.5 text-base border rounded-md focus:outline-none focus:ring-2 focus:ring-green-300" onChange={(e) => setCategory(e.target.value)}>
         <option value="">Select Category</option>
-
         {categories.map((cat) => (
-          <option key={cat._id} value={cat._id}>
-            {cat.name}
-          </option>
+          <option key={cat._id} value={cat._id}>{cat.name}</option>
         ))}
       </select>
 
-      <input
-        value={brandModel}
-        placeholder="Brand / Model"
-        className="w-full p-2 border rounded-md"
-        onChange={(e) => setBrandModel(e.target.value)}
-      />
+      <input value={brandModel} placeholder="Brand / Model" className="w-full px-3 py-1.5 text-base border rounded-md focus:outline-none focus:ring-2 focus:ring-green-300" onChange={(e) => setBrandModel(e.target.value)} />
 
-      <input
-        type="number"
-        value={yearOfManufacture}
-        placeholder="Year (e.g. 2024)"
-        className="w-full p-2 border rounded-md"
-        onChange={(e) => setYearOfManufacture(e.target.value)}
-      />
+      <input type="number" value={yearOfManufacture} placeholder="Year (e.g. 2024)" className="w-full px-3 py-1.5 text-base border rounded-md focus:outline-none focus:ring-2 focus:ring-green-300" onChange={(e) => setYearOfManufacture(e.target.value)} />
 
-      <select
-        value={condition}
-        className="w-full p-2 border rounded-md"
-        onChange={(e) => setCondition(e.target.value)}
-      >
+      <select value={condition} className="w-full px-3 py-1.5 text-base border rounded-md focus:outline-none focus:ring-2 focus:ring-green-300" onChange={(e) => setCondition(e.target.value)}>
         <option value="">Condition</option>
         <option value="New">New</option>
         <option value="Good">Good</option>
         <option value="Used">Used</option>
       </select>
 
-      <input
-        type="number"
-        value={machineCapacityHP}
-        placeholder="Capacity (HP)"
-        className="w-full p-2 border rounded-md"
-        onChange={(e) => setMachineCapacityHP(e.target.value)}
-      />
+      <input type="number" value={machineCapacityHP} placeholder="Capacity (HP)" className="w-full px-3 py-1.5 text-base border rounded-md focus:outline-none focus:ring-2 focus:ring-green-300" onChange={(e) => setMachineCapacityHP(e.target.value)} />
 
-      <select
-        value={fuelType}
-        className="w-full p-2 border rounded-md"
-        onChange={(e) => setFuelType(e.target.value)}
-      >
+      <select value={fuelType} className="w-full px-3 py-1.5 text-base border rounded-md focus:outline-none focus:ring-2 focus:ring-green-300" onChange={(e) => setFuelType(e.target.value)}>
         <option value="">Fuel Type</option>
         <option value="Diesel">Diesel</option>
         <option value="Petrol">Petrol</option>
       </select>
 
-      <textarea
-        value={description}
-        placeholder="Description"
-        className="w-full p-2 border rounded-md"
-        onChange={(e) => setDescription(e.target.value)}
-      />
+      <textarea value={description} placeholder="Description" rows={3} className="w-full px-3 py-1.5 text-base border rounded-md focus:outline-none focus:ring-2 focus:ring-green-300" onChange={(e) => setDescription(e.target.value)} />
 
-      <button
-        className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700"
-        onClick={handleSubmit}
-      >
+      <button className="bg-green-600 text-white px-4 py-1.5 text-base rounded-md hover:bg-green-700" onClick={handleSubmit}>
         Next
       </button>
     </div>

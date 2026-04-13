@@ -23,3 +23,16 @@ export const sendResetEmail = async (email: string, resetUrl: string) => {
     `,
   });
 };
+
+export const sendReservationExpiredEmail = async (email: string, machineName: string) => {
+  await transporter.sendMail({
+    from: `"Support" <${process.env.EMAIL_USER}>`,
+    to: email,
+    subject: 'Reservation Expired',
+    html: `
+      <h2>Reservation Expired</h2>
+      <p>Your reservation for <strong>${machineName}</strong> has expired as the payment was not completed within 6 hours.</p>
+      <p>The machine is now available for others to book.</p>
+    `,
+  });
+};

@@ -9,6 +9,8 @@ import categoryRoutes from './routes/category.routes.js';
 import adminRoutes from './routes/admin.routes.js';
 import sellerRoutes from './routes/seller.routes.js';
 import machineRoutes from './routes/machine.routes.js';
+import bookingRoutes from './routes/booking.routes.js';
+import paymentRoutes from './routes/payment.routes.js';
 
 import logger, { morganStream } from './config/logger.js';
 import cookieParser from 'cookie-parser';
@@ -38,6 +40,8 @@ app.use('/categories', categoryRoutes);
 app.use('/seller', sellerRoutes);
 app.use('/admin', adminRoutes);
 app.use('/machines', machineRoutes);
+app.use('/bookings', bookingRoutes);
+app.use('/payments', paymentRoutes);
 app.use('/uploads', express.static(uploadsPath));
 app.get('/health', (_req, res) => {
   logger.info('Health check endpoint hit');
@@ -45,3 +49,4 @@ app.get('/health', (_req, res) => {
 });
 
 export default app;
+

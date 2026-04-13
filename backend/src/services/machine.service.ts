@@ -1,6 +1,128 @@
 import * as machineRepo from '../repositories/machine.repository.js';
 import { IMachine } from '../models/machine.model.js';
+import Booking from '../models/booking.model.js';
 import mongoose from 'mongoose';
+
+export const checkAvailability = async (
+  machineId: string,
+  startDate: string,
+  endDate: string,
+  quantity: number
+): Promise<any> => {
+  const machine = await machineRepo.getMachineById(machineId);
+  if (!machine) throw new Error('Machine not found');
+
+  const start = new Date(startDate);
+  const end = new Date(endDate);
+
+  const overlappingBookings = await Booking.find({
+    machine: new mongoose.Types.ObjectId(machineId),
+    $or: [
+      { status: 'confirmed' },
+      { 
+        status: 'pending', 
+        $or: [
+          { holdExpiresAt: { $exists: false } },
+          { holdExpiresAt: { $gt: new Date() } }
+        ]
+      }
+    ],
+    $or: [
+      { startDate: { $lte: end }, endDate: { $gte: start } }
+    ]
+  });
+
+  // To find max concurrent usage:
+  // We only care about usage at points where it changes (start/end of bookings)
+  const timePoints = new Set<number>();
+  timePoints.add(start.getTime());
+  timePoints.add(end.getTime());
+  overlappingBookings.forEach(b => {
+    timePoints.add(new Date(b.startDate).getTime());
+    timePoints.add(new Date(b.endDate).getTime());
+  });
+
+  const sortedPoints = Array.from(timePoints).sort((a, b) => a - b);
+  let maxUsed = 0;
+
+  for (let i = 0; i < sortedPoints.length - 1; i++) {
+    const intervalStart = new Date(sortedPoints[i]);
+    const intervalEnd = new Date(sortedPoints[i + 1]);
+
+    // Check if this interval is within our requested range
+    if (intervalEnd <= start || intervalStart >= end) continue;
+
+    // The quantity used in this specific interval is the sum of all bookings spanning it
+    const usage = overlappingBookings
+      .filter(b => {
+        const bStart = new Date(b.startDate);
+        const bEnd = new Date(b.endDate);
+        return bStart < intervalEnd && bEnd > intervalStart;
+      })
+      .reduce((sum, b) => sum + b.quantity, 0);
+
+    if (usage > maxUsed) maxUsed = usage;
+  }
+
+  const availableQty = (machine.quantity || 0) - maxUsed;
+
+  // If not enough quantity, suggest the next available date
+  let nextAvailableDate = null;
+  if (availableQty < quantity) {
+    // Try to find a date in the next 3 months
+    const durationMs = end.getTime() - start.getTime();
+    let currentCheckStart = new Date(start.getTime() + 24 * 60 * 60 * 1000); // Start checking from tomorrow
+    const maxFutureScan = new Date(Date.now() + 90 * 24 * 60 * 60 * 1000);
+
+    // Heuristic: check after each existing booking's end date
+    const checkPoints = overlappingBookings
+      .map(b => new Date(new Date(b.endDate).getTime() + 24 * 60 * 60 * 1000))
+      .filter(d => d > start && d < maxFutureScan)
+      .sort((a, b) => a.getTime() - b.getTime());
+
+    for (const pStart of checkPoints) {
+      const pEnd = new Date(pStart.getTime() + durationMs);
+      
+      // Simple non-recursive check for this candidate point
+      const pOverlaps = await Booking.find({
+        machine: new mongoose.Types.ObjectId(machineId),
+        status: { $in: ['pending', 'confirmed'] },
+        $or: [{ startDate: { $lte: pEnd }, endDate: { $gte: pStart } }]
+      });
+
+      // Calculate max usage for this candidate start date
+      const pPoints = new Set<number>([pStart.getTime(), pEnd.getTime()]);
+      pOverlaps.forEach(b => {
+        pPoints.add(new Date(b.startDate).getTime());
+        pPoints.add(new Date(b.endDate).getTime());
+      });
+      const sPPoints = Array.from(pPoints).sort((a, b) => a - b);
+      let pMaxUsed = 0;
+
+      for (let j = 0; j < sPPoints.length - 1; j++) {
+        const iS = new Date(sPPoints[j]);
+        const iE = new Date(sPPoints[j+1]);
+        if (iE <= pStart || iS >= pEnd) continue;
+        const u = pOverlaps
+          .filter(b => new Date(b.startDate) < iE && new Date(b.endDate) > iS)
+          .reduce((sum, b) => sum + b.quantity, 0);
+        if (u > pMaxUsed) pMaxUsed = u;
+      }
+
+      if ((machine.quantity || 0) - pMaxUsed >= quantity) {
+        nextAvailableDate = pStart;
+        break;
+      }
+    }
+  }
+
+  return {
+    availableQty: Math.max(0, availableQty),
+    requestedQty: quantity,
+    isAvailable: availableQty >= quantity,
+    nextAvailableDate,
+  };
+};
 
 export const createMachine = async (sellerId: string, data: Partial<IMachine>) => {
   const machineData: Partial<IMachine> = {
@@ -163,6 +285,24 @@ export const getMachinesByCategory = async (categoryId: string) => {
   }
 
   return machineRepo.getMachinesByCategory(categoryId);
+};
+
+export const decrementQuantity = async (id: string, amount: number) => {
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    throw new Error('Invalid machine ID');
+  }
+
+  const result = await Machine.findOneAndUpdate(
+    { _id: id, quantity: { $gte: amount } },
+    { $inc: { quantity: -amount } },
+    { new: true }
+  );
+
+  if (!result) {
+    throw new Error('Insufficient quantity or machine not found');
+  }
+
+  return result;
 };
 
 export const getUniqueLocations = async () => {

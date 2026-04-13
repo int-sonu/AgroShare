@@ -128,8 +128,8 @@ export default function CategoriesPage() {
 
                   <td className="p-5">
                     <div className="font-bold text-slate-900">{cat.name}</div>
-                    <div className="text-[10px] text-gray-400 font-mono mt-0.5">
-                      /{cat.slug || 'no-slug'}
+                    <div className={`text-[10px] font-mono mt-0.5 ${cat.slug ? 'text-gray-400' : 'text-rose-500 font-bold'}`}>
+                      /{cat.slug || 'no-slug-detected'}
                     </div>
                   </td>
 
@@ -180,19 +180,20 @@ export default function CategoriesPage() {
                       <button
                         type="button"
                         onClick={() => router.push(`/admin/categories/edit/${cat._id}`)}
-                        className="p-2 hover:bg-blue-50 rounded-lg"
-                        title="Edit"
+                        className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 text-blue-700 hover:bg-blue-100 rounded-lg transition-colors border border-blue-100"
+                        title="Edit Category Details"
                       >
-                        <Pencil size={18} className="text-blue-600" />
+                        <Pencil size={14} strokeWidth={2.5} />
+                        <span className="text-[10px] font-black uppercase tracking-tight">Edit</span>
                       </button>
 
                       <button
                         type="button"
                         onClick={() => deleteCategory(cat._id)}
-                        className="p-2 hover:bg-rose-50 rounded-lg"
-                        title="Delete"
+                        className="p-2 hover:bg-rose-50 rounded-lg group"
+                        title="Delete Category"
                       >
-                        <Trash2 size={18} className="text-rose-600" />
+                        <Trash2 size={16} className="text-rose-400 group-hover:text-rose-600 transition-colors" />
                       </button>
                     </div>
                   </td>

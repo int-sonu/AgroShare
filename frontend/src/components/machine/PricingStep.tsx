@@ -7,21 +7,23 @@ type PricingStepProps = {
   machineId: string;
   nextStep: () => void;
   prevStep: () => void;
+  initialData?: any;
 };
 
-export default function PricingStep({ machineId, nextStep, prevStep }: PricingStepProps) {
-  const { accessToken: ctxToken } = useAuth();
+export default function PricingStep({ machineId, nextStep, prevStep, initialData }: PricingStepProps) {
+  const { accessToken: token } = useAuth();
 
   const accessToken =
-    ctxToken || (typeof window !== 'undefined' ? localStorage.getItem('accessToken') : null);
+    token || (typeof window !== 'undefined' ? localStorage.getItem('accessToken') : null);
 
-  const [priceType, setPriceType] = useState('');
-  const [rentalPrice, setRentalPrice] = useState('');
-  const [minimumRentalDuration, setMinimumRentalDuration] = useState('');
-  const [securityDeposit, setSecurityDeposit] = useState('');
+  const [priceType, setPriceType] = useState(initialData?.pricing?.priceType || '');
+  const [rentalPrice, setRentalPrice] = useState(String(initialData?.pricing?.rentalPrice || ''));
+  const [minimumRentalDuration, setMinimumRentalDuration] = useState(String(initialData?.pricing?.minimumRentalDuration || ''));
+  const [securityDeposit, setSecurityDeposit] = useState(String(initialData?.pricing?.securityDeposit || ''));
+  const [stock, setStock] = useState(String(initialData?.stock || '1'));
 
   const handleSubmit = async () => {
-    if (!priceType || !rentalPrice) {
+    if (!priceType || !rentalPrice || !stock) {
       alert('Please fill required fields');
       return;
     }
@@ -37,11 +39,11 @@ export default function PricingStep({ machineId, nextStep, prevStep }: PricingSt
           pricing: {
             priceType,
             rentalPrice: Number(rentalPrice),
-            minimumRentalDuration: minimumRentalDuration
-              ? Number(minimumRentalDuration)
-              : undefined,
+            minimumRentalDuration: minimumRentalDuration ? Number(minimumRentalDuration) : undefined,
             securityDeposit: securityDeposit ? Number(securityDeposit) : undefined,
           },
+          stock: Number(stock),
+          quantity: Number(stock),
           wizardStep: 2,
         }),
       });
@@ -90,11 +92,24 @@ export default function PricingStep({ machineId, nextStep, prevStep }: PricingSt
         onChange={(e) => setSecurityDeposit(e.target.value)}
       />
 
+      <div className="space-y-1">
+        <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest pl-1">
+          Total Stock (Units Owned)
+        </label>
+        <input
+          type="number"
+          placeholder="Enter total units"
+          value={stock}
+          className="w-full p-2 border rounded-md font-bold"
+          min="1"
+          onChange={(e) => setStock(e.target.value)}
+        />
+      </div>
+
       <div className="flex gap-3">
         <button className="px-4 py-2 border rounded-md" onClick={prevStep}>
           Back
         </button>
-
         <button
           className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700"
           onClick={handleSubmit}

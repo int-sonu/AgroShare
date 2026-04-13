@@ -11,8 +11,17 @@ export class CategoryService {
       throw new Error('Category already exists');
     }
 
-    if (!data.slug && data.name) {
-      data.slug = data.name.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '');
+    // Always generate or sanitize slug
+    const nameToUse = data.name || '';
+    const slugToUse = data.slug || nameToUse;
+    data.slug = slugToUse
+      .toLowerCase()
+      .trim()
+      .replace(/ /g, '-')
+      .replace(/[^\w-]+/g, '');
+
+    if (!data.slug) {
+      throw new Error('Slug is required');
     }
 
     return await this.repository.create(data);
@@ -35,6 +44,8 @@ export class CategoryService {
   async updateCategory(id: string, data: Partial<ICategory>) {
     if (data.name && !data.slug) {
       data.slug = data.name.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '');
+    } else if (data.slug) {
+      data.slug = data.slug.toLowerCase().trim().replace(/ /g, '-').replace(/[^\w-]+/g, '');
     }
     return await this.repository.update(id, data);
   }
