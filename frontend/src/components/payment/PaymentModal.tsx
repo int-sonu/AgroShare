@@ -14,7 +14,6 @@ interface PaymentModalProps {
   onClose: () => void;
   onSuccess: (paymentIntentId: string) => void;
   amount: number;
-  bookingId: string;
   clientSecret: string;
 }
 
@@ -23,7 +22,6 @@ export function PaymentModal({
   onClose,
   onSuccess,
   amount,
-  bookingId,
   clientSecret,
 }: PaymentModalProps) {
   const stripe = useStripe();

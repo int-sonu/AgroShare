@@ -49,7 +49,7 @@ function BookingContent() {
   const { slug } = useParams();
   const searchParams = useSearchParams();
   const router = useRouter();
-  const { user, accessToken } = useAuth();
+  const { accessToken } = useAuth();
 
   const initialQty = parseInt(searchParams.get('qty') || '1', 10);
 
@@ -68,7 +68,6 @@ function BookingContent() {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
   const [paymentData, setPaymentData] = useState<{ clientSecret: string; bookingId: string; amount: number } | null>(null);
-  const [paymentInfo, setPaymentInfo] = useState<{ intentId: string } | null>(null);
   const [duration, setDuration] = useState(0);
   const [currentBookingId, setCurrentBookingId] = useState<string | null>(null);
   const [availabilityData, setAvailabilityData] = useState<{
@@ -130,7 +129,7 @@ function BookingContent() {
       
       fetchAvailability();
     }
-  }, [startDate, endDate, quantity, machine?._id]);
+  }, [startDate, endDate, quantity, machine?._id, duration, machine?.pricing?.minimumRentalDuration, machine?.pricing?.priceType]);
 
   if (loading || !machine) {
     return (
@@ -842,12 +841,6 @@ function BookingContent() {
               <span className="text-gray-400 font-bold uppercase tracking-tighter">Total Price</span>
               <span className="font-black text-green-600">₹{(((machine.pricing?.rentalPrice || 0) * duration * quantity) + (machine.pricing?.securityDeposit || 0) + (deliveryMethod === 'delivery' ? (machine.transport?.transportCost || 200) : 0)).toLocaleString()}</span>
             </div>
-            {paymentInfo?.intentId && (
-              <div className="flex justify-between items-center text-xs">
-                <span className="text-gray-400 font-bold uppercase tracking-tighter">TXN ID</span>
-                <span className="font-mono text-[9px] text-slate-500 truncate ml-4" title={paymentInfo.intentId}>{paymentInfo.intentId.slice(0, 15)}...</span>
-              </div>
-            )}
             <div className="flex justify-between items-center text-xs">
               <span className="text-gray-400 font-bold uppercase tracking-tighter">Status</span>
               <Badge variant="outline" className={`text-[9px] font-black uppercase px-2 py-0 ${bookingType === 'rental' ? 'text-green-600 border-green-200 bg-green-50' : 'text-amber-600 border-amber-200 bg-amber-50'}`}>

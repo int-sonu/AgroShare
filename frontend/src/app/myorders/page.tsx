@@ -42,7 +42,7 @@ type Booking = {
 };
 
 export default function MyOrdersPage() {
-  const { user, accessToken } = useAuth();
+  const { accessToken } = useAuth();
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
   const [paymentData, setPaymentData] = useState<{ clientSecret: string; bookingId: string; amount: number } | null>(null);
@@ -287,7 +287,6 @@ export default function MyOrdersPage() {
 function BookingCard({ booking, onCancel, onPay }: { booking: Booking; onCancel: (id: string) => void; onPay: (id: string) => void }) {
   const [isExpanded, setIsExpanded] = useState(false);
   const isPending = booking.status === 'pending';
-  const isReservation = booking.bookingType === 'reservation';
   
   const mainImage = booking.machine.images?.[0]
     ? typeof booking.machine.images[0] === 'string' 

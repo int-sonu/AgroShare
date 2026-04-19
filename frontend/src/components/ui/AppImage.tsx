@@ -46,10 +46,6 @@ export const AppImage = ({
 
   const [hasError, setHasError] = useState(false);
 
-  useEffect(() => {
-    setHasError(false);
-  }, [src]);
-
   const handleError = () => {
     setHasError(true);
   };
@@ -58,6 +54,7 @@ export const AppImage = ({
 
   return (
     <Image
+      key={typeof src === 'string' ? src : JSON.stringify(src)}
       src={finalSrc}
       alt={alt}
       onError={handleError}

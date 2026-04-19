@@ -19,7 +19,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 
-import { Edit, Trash2, Eye, MapPin, Phone, Mail, ShieldCheck, Gauge, Fuel, Calendar, Lock, Info } from 'lucide-react';
+import { Edit, Trash2, Eye } from 'lucide-react';
 
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 
@@ -68,23 +68,7 @@ export default function ProductsPage() {
   const [search, setSearch] = useState('');
   const [updatingStock, setUpdatingStock] = useState(false);
   const [editStockValue, setEditStockValue] = useState<number>(1);
-  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
-  const [editingMachine, setEditingMachine] = useState<Machine | null>(null);
-  const [editForm, setEditForm] = useState({
-    machineName: '',
-    rentalPrice: 0,
-    stock: 0
-  });
 
-  useEffect(() => {
-    if (editingMachine) {
-      setEditForm({
-        machineName: editingMachine.machineName,
-        rentalPrice: editingMachine.pricing?.rentalPrice || 0,
-        stock: editingMachine.stock || 1
-      });
-    }
-  }, [editingMachine]);
 
   const handleDelete = async (id: string) => {
     if (!window.confirm('Are you sure you want to delete this machine?')) return;
@@ -128,36 +112,6 @@ export default function ProductsPage() {
     }
   };
 
-  const handleQuickEdit = async () => {
-    if (!editingMachine) return;
-
-    try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/machines/${editingMachine._id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${accessToken}`,
-        },
-        body: JSON.stringify({
-          machineName: editForm.machineName,
-          pricing: {
-            ...(editingMachine.pricing || {}),
-            rentalPrice: editForm.rentalPrice
-          },
-          stock: editForm.stock,
-          quantity: editForm.stock // Reset quantity to stock on quick edit
-        }),
-      });
-
-      if (res.ok) {
-        const updated = await res.json();
-        setMachines(prev => prev.map(m => m._id === editingMachine._id ? updated.data : m));
-        setIsEditDialogOpen(false);
-      }
-    } catch (error) {
-      console.error('Quick edit error:', error);
-    }
-  };
 
   useEffect(() => {
     const fetchMachines = async () => {
@@ -474,48 +428,6 @@ export default function ProductsPage() {
               </div>
             </div>
           )}
-        </DialogContent>
-      </Dialog>
-      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle className="text-xl font-bold">Quick Edit Machine</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4 py-4">
-            <div className="space-y-2">
-              <label className="text-xs font-bold text-gray-500 uppercase tracking-widest pl-1">Machine Name</label>
-              <Input
-                value={editForm.machineName}
-                onChange={(e) => setEditForm(prev => ({ ...prev, machineName: e.target.value }))}
-                className="font-medium"
-              />
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <label className="text-xs font-bold text-gray-500 uppercase tracking-widest pl-1">Rental Price (₹)</label>
-                <Input
-                  type="number"
-                  value={editForm.rentalPrice}
-                  onChange={(e) => setEditForm(prev => ({ ...prev, rentalPrice: parseInt(e.target.value) || 0 }))}
-                  className="font-medium"
-                />
-              </div>
-              <div className="space-y-2">
-                <label className="text-xs font-bold text-gray-500 uppercase tracking-widest pl-1">Total Stock</label>
-                <Input
-                  type="number"
-                  value={editForm.stock}
-                  onChange={(e) => setEditForm(prev => ({ ...prev, stock: parseInt(e.target.value) || 0 }))}
-                  className="font-medium"
-                  min="1"
-                />
-              </div>
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setIsEditDialogOpen(false)}>Cancel</Button>
-            <Button className="bg-green-600 hover:bg-green-700" onClick={handleQuickEdit}>Save Changes</Button>
-          </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>

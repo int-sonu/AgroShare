@@ -5,13 +5,9 @@ import Link from 'next/link';
 import {
   ArrowRight,
   MapPin,
-  CheckCircle2,
   RotateCcw,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { AutoImageSlider } from '@/components/ui/AutoImageSlider';
 import { ProductCard } from '@/components/products/ProductCard';
 
 type Product = {
