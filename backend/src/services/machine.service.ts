@@ -27,13 +27,10 @@ export const checkAvailability = async (
         ]
       }
     ],
-    $or: [
-      { startDate: { $lte: end }, endDate: { $gte: start } }
-    ]
+    startDate: { $lte: end }, 
+    endDate: { $gte: start }
   });
 
-  // To find max concurrent usage:
-  // We only care about usage at points where it changes (start/end of bookings)
   const timePoints = new Set<number>();
   timePoints.add(start.getTime());
   timePoints.add(end.getTime());
@@ -49,10 +46,8 @@ export const checkAvailability = async (
     const intervalStart = new Date(sortedPoints[i]);
     const intervalEnd = new Date(sortedPoints[i + 1]);
 
-    // Check if this interval is within our requested range
     if (intervalEnd <= start || intervalStart >= end) continue;
 
-    // The quantity used in this specific interval is the sum of all bookings spanning it
     const usage = overlappingBookings
       .filter(b => {
         const bStart = new Date(b.startDate);
@@ -66,12 +61,9 @@ export const checkAvailability = async (
 
   const availableQty = (machine.quantity || 0) - maxUsed;
 
-  // If not enough quantity, suggest the next available date
   let nextAvailableDate = null;
   if (availableQty < quantity) {
-    // Try to find a date in the next 3 months
     const durationMs = end.getTime() - start.getTime();
-    let currentCheckStart = new Date(start.getTime() + 24 * 60 * 60 * 1000); // Start checking from tomorrow
     const maxFutureScan = new Date(Date.now() + 90 * 24 * 60 * 60 * 1000);
 
     // Heuristic: check after each existing booking's end date

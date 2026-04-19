@@ -17,7 +17,7 @@ export const createPaymentIntent = async (amount: number, currency: string = 'in
     });
     return paymentIntent;
   } catch (error: any) {
-    throw new Error(`Stripe error: ${error.message}`);
+    throw new Error(`Stripe error: ${error.message}`, { cause: error });
   }
 };
 

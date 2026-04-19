@@ -1,5 +1,4 @@
 import Booking from '../models/booking.model.js';
-import Machine from '../models/machine.model.js';
 import logger from '../config/logger.js';
 import { sendReservationExpiredEmail } from '../services/email.service.js';
 
