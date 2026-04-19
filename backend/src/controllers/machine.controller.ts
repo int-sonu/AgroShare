@@ -237,7 +237,7 @@ export const checkAvailability: RequestHandler = async (req, res) => {
     }
 
     const availability = await machineService.checkAvailability(
-      id,
+      id as string,
       startDate as string,
       endDate as string,
       Number(quantity)

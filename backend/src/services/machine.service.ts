@@ -1,5 +1,5 @@
 import * as machineRepo from '../repositories/machine.repository.js';
-import { IMachine } from '../models/machine.model.js';
+import Machine, { IMachine } from '../models/machine.model.js';
 import Booking from '../models/booking.model.js';
 import mongoose from 'mongoose';
 
