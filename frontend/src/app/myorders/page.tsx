@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -10,7 +10,6 @@ import {
   Clock, 
   CheckCircle2, 
   XCircle, 
-  AlertCircle,
   Package,
   ChevronRight,
   Download,
@@ -55,7 +54,7 @@ export default function MyOrdersPage() {
 
   const tabs = ['All', 'Reserved', 'Active', 'Completed', 'Cancelled'];
 
-  const fetchBookings = async () => {
+  const fetchBookings = useCallback(async () => {
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/bookings/customer`, {
         headers: {
@@ -71,11 +70,11 @@ export default function MyOrdersPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [accessToken]);
 
   useEffect(() => {
     if (accessToken) fetchBookings();
-  }, [accessToken]);
+  }, [accessToken, fetchBookings]);
 
   const handleCancelBooking = async (bookingId: string) => {
     if (!window.confirm('Are you sure you want to cancel this booking?')) return;
@@ -469,7 +468,7 @@ function BookingCard({ booking, onCancel, onPay }: { booking: Booking; onCancel:
   );
 }
 
-function DetailItem({ icon, label, value, valueClass = "text-gray-900 font-bold" }: { icon: any; label: string; value: string; valueClass?: string }) {
+function DetailItem({ icon, label, value, valueClass = "text-gray-900 font-bold" }: { icon: React.ReactNode; label: string; value: string; valueClass?: string }) {
   return (
     <div>
       <div className="flex items-center gap-1.5 mb-1 opacity-60">

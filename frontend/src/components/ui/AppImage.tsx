@@ -44,21 +44,21 @@ export const AppImage = ({
     return fallback;
   };
 
-  const [imgSrc, setImgSrc] = useState<string>(resolveImage());
+  const [hasError, setHasError] = useState(false);
 
   useEffect(() => {
-    setImgSrc(resolveImage());
+    setHasError(false);
   }, [src]);
 
   const handleError = () => {
-    if (imgSrc !== fallback) {
-      setImgSrc(fallback);
-    }
+    setHasError(true);
   };
+
+  const finalSrc = hasError ? fallback : resolveImage();
 
   return (
     <Image
-      src={imgSrc}
+      src={finalSrc}
       alt={alt}
       onError={handleError}
       {...props}

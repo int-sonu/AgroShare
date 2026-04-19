@@ -5,18 +5,25 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { 
   CheckCircle2, 
-  Calendar, 
-  Package, 
-  MapPin, 
-  Clock, 
-  CreditCard, 
-  XCircle,
-  ChevronRight,
-  ArrowLeft
+  CreditCard
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
+
+interface BookingData {
+  _id: string;
+  machine: {
+    machineName: string;
+  };
+  startDate: string;
+  endDate: string;
+  quantity: number;
+  totalPrice: number;
+  bookingType: 'reservation' | 'rental';
+  status: 'pending' | 'confirmed' | 'cancelled' | 'completed';
+  holdExpiresAt?: string;
+}
 
 function SuccessContent() {
   const searchParams = useSearchParams();
@@ -24,7 +31,7 @@ function SuccessContent() {
   const { accessToken } = useAuth();
   const bookingId = searchParams.get('id');
   
-  const [booking, setBooking] = useState<any>(null);
+  const [booking, setBooking] = useState<BookingData | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {

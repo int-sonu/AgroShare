@@ -30,7 +30,7 @@ type Product = {
 
 interface ProductCardProps {
   product: Product;
-  getImageUrl: (image: any) => string;
+  getImageUrl: (image: string | { url?: string; secure_url?: string } | null | undefined) => string;
 }
 
 export function ProductCard({ product, getImageUrl }: ProductCardProps) {

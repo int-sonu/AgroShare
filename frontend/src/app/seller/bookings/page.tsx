@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import {
   Table,
@@ -13,13 +13,6 @@ import {
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import {
-  Calendar,
-  User,
-  Package,
-  CreditCard,
-  Clock,
-} from 'lucide-react';
 
 interface Booking {
   _id: string;
@@ -45,7 +38,7 @@ export default function SellerBookingsPage() {
   const { accessToken } = useAuth();
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
-  const fetchBookings = async () => {
+  const fetchBookings = useCallback(async () => {
     try {
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/bookings/seller`,
@@ -75,13 +68,13 @@ export default function SellerBookingsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [accessToken]);
 
   useEffect(() => {
     if (accessToken) fetchBookings();
-  }, [accessToken]);
+  }, [accessToken, fetchBookings]);
 
-  const handleStatusUpdate = async (id: string, newStatus: string) => {
+  const handleStatusUpdate = async (id: string, newStatus: Booking['status']) => {
     try {
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/bookings/${id}/status`,
@@ -91,6 +84,7 @@ export default function SellerBookingsPage() {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${accessToken}`,
           },
+          body: JSON.stringify({ status: newStatus })
         }
       );
 
@@ -103,7 +97,7 @@ export default function SellerBookingsPage() {
       if (data?.success) {
         setBookings((prev) =>
           prev.map((b) =>
-            b._id === id ? { ...b, status: newStatus as any } : b
+            b._id === id ? { ...b, status: newStatus } : b
           )
         );
       }

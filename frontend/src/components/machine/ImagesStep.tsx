@@ -7,7 +7,7 @@ type Props = {
   machineId: string;
   nextStep: () => void;
   prevStep: () => void;
-  initialData?: any;
+  initialData?: Record<string, any>; // eslint-disable-line @typescript-eslint/no-explicit-any
 };
 
 export default function ImagesStep({ machineId, nextStep, prevStep, initialData }: Props) {

@@ -225,9 +225,10 @@ function BookingContent() {
       } else {
         router.push(`/booking-success?id=${bookingId}`);
       }
-    } catch (error: any) {
+    } catch (error) {
       console.error("Booking Error:", error);
-      alert("An error occurred while processing your booking");
+      const message = error instanceof Error ? error.message : "An error occurred while processing your booking";
+      alert(message);
     } finally {
       setLoading(false);
     }

@@ -7,7 +7,7 @@ type PricingStepProps = {
   machineId: string;
   nextStep: () => void;
   prevStep: () => void;
-  initialData?: any;
+  initialData?: Record<string, any>; // eslint-disable-line @typescript-eslint/no-explicit-any
 };
 
 export default function PricingStep({ machineId, nextStep, prevStep, initialData }: PricingStepProps) {

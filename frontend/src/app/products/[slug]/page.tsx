@@ -58,7 +58,7 @@ export default function MachineDetailPage() {
   const [selectedQuantity, setSelectedQuantity] = useState(1);
 
 
-  const getImageUrl = (image: any) => {
+  const getImageUrl = (image: string | { url?: string; secure_url?: string } | null | undefined) => {
     if (!image) return '/images/category-placeholder.png';
     const url = typeof image === 'string' ? image : image?.url || image?.secure_url;
     if (!url) return '/images/category-placeholder.png';

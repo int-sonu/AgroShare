@@ -3,15 +3,14 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowRight, Layers, LayoutGrid } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
+import { ArrowRight } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 type Category = {
   _id: string;
   name: string;
   slug: string;
-  image: string;
+  image: string | { url?: string; secure_url?: string };
   description?: string;
 };
 
@@ -19,7 +18,7 @@ export default function AllCategoriesPage() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const getImageUrl = (image: any) => {
+  const getImageUrl = (image: Category['image']) => {
     if (!image) return '/images/category-placeholder.png';
     const url = typeof image === 'string' ? image : image?.url || image?.secure_url;
     if (!url) return '/images/category-placeholder.png';

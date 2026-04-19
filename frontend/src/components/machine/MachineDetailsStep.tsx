@@ -6,7 +6,7 @@ import { useAuth } from '@/context/AuthContext';
 type Props = {
   setMachineId: (id: string) => void;
   nextStep: () => void;
-  initialData?: any;
+  initialData?: Record<string, any>; // eslint-disable-line @typescript-eslint/no-explicit-any
 };
 
 export default function MachineDetailsStep({ setMachineId, nextStep, initialData }: Props) {

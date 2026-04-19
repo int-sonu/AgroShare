@@ -330,7 +330,7 @@ export default function CategoryProductsPage() {
                   No equipment found
                 </h3>
                 <p className="text-slate-500 text-sm max-w-sm mb-8">
-                   Try adjusting your filters to find what you're looking for.
+                   Try adjusting your filters to find what you&apos;re looking for.
                 </p>
               </div>
             ) : (
@@ -341,7 +341,7 @@ export default function CategoryProductsPage() {
                     .map((product: Product) => (
                       <ProductCard 
                         key={product._id} 
-                        product={product as any} 
+                        product={product} 
                         getImageUrl={getImageUrl} 
                       />
                     ))}

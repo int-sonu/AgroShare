@@ -21,7 +21,7 @@ export default function EditMachinePage() {
 
   const [step, setStep] = useState(1);
   const [machineId, setMachineId] = useState<string>(id);
-  const [initialData, setInitialData] = useState<any>(null);
+  const [initialData, setInitialData] = useState<Record<string, any> | undefined>(undefined); // eslint-disable-line @typescript-eslint/no-explicit-any
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {

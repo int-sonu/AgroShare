@@ -182,7 +182,7 @@ export function InventorySection() {
                 </h3>
 
                 <p className="text-slate-400 font-bold max-w-sm mb-8 uppercase text-[9px] tracking-widest leading-relaxed">
-                  We couldn't find any listings nearby. Try expanding your search.
+                  We couldn&apos;t find any listings nearby. Try expanding your search.
                 </p>
 
                 <Button
@@ -196,7 +196,7 @@ export function InventorySection() {
               filteredProducts.map((product) => (
                 <ProductCard 
                   key={product._id} 
-                  product={product as any} 
+                  product={product} 
                   getImageUrl={getImageUrl} 
                 />
               ))
