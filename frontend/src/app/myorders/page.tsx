@@ -274,7 +274,6 @@ export default function MyOrdersPage() {
             isOpen={isPaymentModalOpen}
             onClose={() => setIsPaymentModalOpen(false)}
             clientSecret={paymentData.clientSecret}
-            bookingId={paymentData.bookingId}
             amount={paymentData.amount}
             onSuccess={handlePaymentSuccess}
           />
