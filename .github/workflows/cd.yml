@@ -16,10 +16,11 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             cd ~/AgroShare/backend
-            git pull origin main
+            git fetch --all
+            git reset --hard origin/main
             pnpm install
             pnpm run build
-            pm2 restart ecosystem.config.cjs
+            pm2 startOrReload ecosystem.config.cjs
 
   deploy-frontend:
     runs-on: ubuntu-latest

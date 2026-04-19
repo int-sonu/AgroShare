@@ -157,7 +157,7 @@ importers:
         specifier: ^7.71.1
         version: 7.71.1(react@19.2.3)
       react-hot-toast:
-        specifier: ^2.5.2
+        specifier: ^2.6.0
         version: 2.6.0(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       react-router-dom:
         specifier: ^7.13.1
