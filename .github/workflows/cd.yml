@@ -8,19 +8,45 @@ jobs:
   deploy-backend:
     runs-on: ubuntu-latest
     steps:
-      - name: SSH Deploy
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 10
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'pnpm'
+
+      - name: Build Backend
+        run: |
+          cd backend
+          pnpm install
+          pnpm run build
+
+      - name: Copy Artifacts to Server
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY }}
+          source: "backend/dist/**,backend/ecosystem.config.cjs,backend/package.json"
+          target: "/home/ubuntu/AgroShare"
+          strip_components: 1
+
+      - name: SSH Deploy & Restart
         uses: appleboy/ssh-action@v1
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ubuntu
           key: ${{ secrets.EC2_SSH_KEY }}
-          command_timeout: 20m
           script: |
             cd ~/AgroShare/backend
-            git fetch --all
-            git reset --hard origin/main
-            pnpm install
-            pnpm run build
+            pnpm install --prod
             pm2 startOrReload ecosystem.config.cjs
 
   deploy-frontend:
